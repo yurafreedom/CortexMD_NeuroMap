@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { DRUGS } from '../../data/drugs';
 import { cypVal, realD } from '../../lib/pharmacology';
 import type { ActiveDrugs } from '../../lib/pharmacology';
@@ -10,6 +11,8 @@ interface ConflictBoxProps {
 }
 
 export default function ConflictBox({ activeDrugs }: ConflictBoxProps) {
+  const t = useTranslations('conflicts');
+
   const { critical, warnings } = useMemo(() => {
     const cr: string[] = [];
     const c: string[] = [];
@@ -24,42 +27,42 @@ export default function ConflictBox({ activeDrugs }: ConflictBoxProps) {
       (AD.dextromethorphan !== undefined || AD.auvelity !== undefined) &&
       seroAll.some((d) => AD[d] !== undefined)
     ) {
-      cr.push('<span style="color:#ef4444">⛔ DXM НЕЛЬЗЯ с SSRI/SNRI — серотониновый синдром!</span>');
+      cr.push(`<span style="color:#ef4444">${t('dxmSsri')}</span>`);
     }
     if (
       AD.selegiline_oral !== undefined &&
       (AD.dextromethorphan !== undefined || AD.auvelity !== undefined)
     ) {
-      cr.push('<span style="color:#ef4444">⛔ Селегилин ПРОТИВОПОКАЗАН с DXM</span>');
+      cr.push(`<span style="color:#ef4444">${t('selegilineDxm')}</span>`);
     }
     if (AD.mucuna !== undefined && AD.selegiline_oral !== undefined) {
-      cr.push('<span style="color:#ef4444">⛔ Мукуна (L-DOPA) + ИМАО = опасно</span>');
+      cr.push(`<span style="color:#ef4444">${t('mucunaMaoi')}</span>`);
     }
 
     if (AD.selegiline_oral !== undefined && hasSSRI) {
-      c.push('\u26A0\uFE0F Селегилин: осторожность с SSRI');
+      c.push('\u26A0\uFE0F ' + t('selegilineSsri'));
     }
     if (AD.sertraline && AD.bupropion) {
-      c.push('Серт 5HT2C \u2192 DA VTA вниз 30-42%');
+      c.push(t('sert5ht2c'));
     }
     const s1inv = Object.keys(AD).some((d) => DRUGS[d]?.s1t === 'inv');
     const s1ag = Object.keys(AD).filter((d) => DRUGS[d]?.s1t === 'ag');
     if (s1inv && s1ag.length > 0) {
-      c.push('\u26A1 \u03C31-конфликт: инверсный агонист подавляет каскад пластичности');
+      c.push('\u26A1 ' + t('sigma1Conflict'));
     }
     if (AD.progesterone !== undefined && s1ag.length > 0) {
-      c.push('\u26A0\uFE0F Прогестерон — \u03C31-АНТАГОНИСТ. Блокирует \u03C31-агонисты');
+      c.push('\u26A0\uFE0F ' + t('progesteroneSigma1'));
     }
     const netDrugs = [
       'bupropion', 'duloxetine', 'atomoxetine', 'desipramine', 'nortriptyline',
       'protriptyline', 'reboxetine', 'milnacipran', 'levomilnacipran', 'venlafaxine',
     ].filter((d) => AD[d] !== undefined);
     if (netDrugs.length >= 3) {
-      c.push(`\u26A0\uFE0F Тройной+ NET (${netDrugs.length} препаратов) \u2192 NA-перегруз`);
+      c.push(`\u26A0\uFE0F ${t('tripleNet', { count: netDrugs.length })}`);
     }
     const cy = cypVal(AD);
     if (cy > 0) {
-      let cs = `CYP2D6 ингиб. ${cy}%: `;
+      let cs = t('cyp2d6Inhibition', { percent: cy });
       const cyps: string[] = [];
       Object.keys(AD).forEach((id) => {
         const d = DRUGS[id];
@@ -73,26 +76,26 @@ export default function ConflictBox({ activeDrugs }: ConflictBoxProps) {
       if (cyps.length) c.push(cs + cyps.join(', '));
     }
     if (AD.bupropion && (AD.aripiprazole || AD.brexpiprazole)) {
-      c.push('\u26A0\uFE0F С бупропионом: ПОЛОВИННАЯ доза арипипразола/брексипразола');
+      c.push('\u26A0\uFE0F ' + t('halfDoseWarning'));
     }
     if (AD.modafinil && AD.cariprazine) {
-      c.push('\u26A0\uFE0F Модафинил CYP3A4 индуктор \u2192 снижает карипразин');
+      c.push('\u26A0\uFE0F ' + t('modafinilCariprazine'));
     }
     if (AD.fluvoxamine && (AD.lamotrigine || AD.duloxetine)) {
-      c.push('\u26A0\uFE0F Флувоксамин CYP1A2/2C19 \u2192 повышает ламотриджин/дулоксетин');
+      c.push('\u26A0\uFE0F ' + t('fluvoxamineInteraction'));
     }
     if (AD.same && hasSSRI) {
-      c.push('SAMe+SSRI: редкий риск серотонинового синдрома');
+      c.push(t('sameSsri'));
     }
     if (AD.pramipexole !== undefined && AD.cariprazine !== undefined) {
-      c.push('Прам+карипразин: конкуренция D3');
+      c.push(t('pramCariprazine'));
     }
     if (AD.fluoxetine && Object.keys(AD).length > 2) {
-      c.push('Флуоксетин: Т\u00BD очень длинный, мощный CYP2D6 ингибитор');
+      c.push(t('fluoxetineWarning'));
     }
 
     return { critical: cr, warnings: c };
-  }, [activeDrugs]);
+  }, [activeDrugs, t]);
 
   if (critical.length === 0 && warnings.length === 0) return null;
 
@@ -102,7 +105,7 @@ export default function ConflictBox({ activeDrugs }: ConflictBoxProps) {
         <div className="cb">
           <div className="cb-inner">
             <div className="cbt" style={{ color: '#ef4444' }}>
-              КРИТИЧЕСКИЕ ({critical.length})
+              {t('criticalTitle')} ({critical.length})
             </div>
             {critical.map((item, i) => (
               <div
@@ -117,7 +120,7 @@ export default function ConflictBox({ activeDrugs }: ConflictBoxProps) {
       {warnings.length > 0 && (
         <div className="cb" style={{ background: 'linear-gradient(160deg,rgba(245,158,11,0.3),rgba(245,158,11,0.05),rgba(245,158,11,0.18))' }}>
           <div className="cb-inner">
-            <div className="cbt">Предупреждения ({warnings.length})</div>
+            <div className="cbt">{t('warningsTitle')} ({warnings.length})</div>
             {warnings.map((item, i) => (
               <div key={i} className="ci">
                 {item}

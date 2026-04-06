@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { DRUGS } from '../../data/drugs';
 import { realD } from '../../lib/pharmacology';
 import type { ActiveDrugs } from '../../lib/pharmacology';
@@ -16,12 +17,13 @@ export default function ActiveScheme({
   onRemove,
   onUpdateDose,
 }: ActiveSchemeProps) {
+  const t = useTranslations('dashboard');
   const ids = Object.keys(activeDrugs);
 
   if (ids.length === 0) {
     return (
       <div id="active-scheme">
-        <div className="empty-scheme">Добавьте препараты из каталога ниже</div>
+        <div className="empty-scheme">{t('addFromCatalog')}</div>
       </div>
     );
   }
@@ -55,7 +57,7 @@ export default function ActiveScheme({
                       e.stopPropagation();
                       onRemove(id);
                     }}
-                    title="Убрать"
+                    title={t('remove')}
                   >
                     &times;
                   </button>
@@ -66,7 +68,7 @@ export default function ActiveScheme({
                 </div>
                 {rd && Math.abs(rd - dose) > 1 && (
                   <div className="scheme-real-dose">
-                    реально ~{Math.round(rd)}
+                    {t('realDose')}{Math.round(rd)}
                     {d.u}
                   </div>
                 )}

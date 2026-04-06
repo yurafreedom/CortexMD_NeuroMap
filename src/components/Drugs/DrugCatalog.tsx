@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import { DRUGS } from '../../data/drugs';
 import { DCAT } from '../../data/presets';
 import type { ActiveDrugs } from '../../lib/pharmacology';
@@ -11,6 +12,7 @@ interface DrugCatalogProps {
 }
 
 export default function DrugCatalog({ activeDrugs, onAdd }: DrugCatalogProps) {
+  const t = useTranslations('dashboard');
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
 
@@ -49,7 +51,7 @@ export default function DrugCatalog({ activeDrugs, onAdd }: DrugCatalogProps) {
       <input
         className="dsearch"
         type="text"
-        placeholder="Поиск препарата..."
+        placeholder={t('searchDrug')}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
@@ -74,7 +76,7 @@ export default function DrugCatalog({ activeDrugs, onAdd }: DrugCatalogProps) {
               className={`di${inScheme ? ' in-scheme' : ''}`}
               style={{ '--c': d.c } as React.CSSProperties}
               onClick={() => handleAdd(id)}
-              title={d.n + (inScheme ? ' (добавлен)' : '')}
+              title={d.n + (inScheme ? ` (${t('added')})` : '')}
             >
               <div
                 className="ddt"
@@ -93,7 +95,7 @@ export default function DrugCatalog({ activeDrugs, onAdd }: DrugCatalogProps) {
         })}
       </div>
       <div className="disclaimer">
-        Образовательный инструмент. НЕ медицинский совет.
+        {t('disclaimer')}
       </div>
     </div>
   );

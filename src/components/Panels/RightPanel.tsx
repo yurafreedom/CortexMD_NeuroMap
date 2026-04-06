@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { DRUGS } from '../../data/drugs';
 import { RG } from '../../data/brainRegions';
 import { defTotalCov, covCol } from '../../lib/coverage';
@@ -29,8 +30,9 @@ export default function RightPanel({
   onShowSigma1,
   onSelectDeficit,
 }: RightPanelProps) {
+  const t = useTranslations();
+
   const hasConflicts = useMemo(() => {
-    // Check if there are any conflicts to show badge
     const ssris = ['sertraline', 'escitalopram', 'fluoxetine', 'fluvoxamine'];
     const snris = ['duloxetine', 'venlafaxine', 'desvenlafaxine', 'milnacipran', 'levomilnacipran'];
     const seroAll = [...ssris, ...snris];
@@ -48,7 +50,6 @@ export default function RightPanel({
     return false;
   }, [activeDrugs]);
 
-  // Active drug effects in the selected zone
   const zoneEffects = useMemo(() => {
     if (!selectedRegion) return [];
     const result: Array<{
@@ -65,12 +66,10 @@ export default function RightPanel({
     return result;
   }, [selectedRegion, activeDrugs]);
 
-  // Has sigma1 drugs
   const hasS1 = useMemo(() => {
     return Object.keys(activeDrugs).some((d) => DRUGS[d]?.s1t);
   }, [activeDrugs]);
 
-  // Related deficits
   const relatedDeficits = useMemo(() => {
     if (!selectedRegion) return [];
     return deficits.filter((d) => d.zones.includes(selectedRegion));
@@ -88,7 +87,6 @@ export default function RightPanel({
         <div id="ri">
           {region ? (
             <>
-              {/* Zone header card */}
               <div
                 className="zone-header-card"
                 style={{ background: `${region.c}18` }}
@@ -97,10 +95,9 @@ export default function RightPanel({
                 <div className="zone-header-subtitle">{region.fn}</div>
               </div>
 
-              {/* Active effects */}
               {zoneEffects.length > 0 ? (
                 <>
-                  <div className="panel-section-title">Активные эффекты</div>
+                  <div className="panel-section-title">{t('dashboard.activeEffects')}</div>
                   {zoneEffects.map((e, i) => {
                     const isBad = !!e.data.bad;
                     let arrow = isBad ? '\u2193' : '\u2191';
@@ -136,21 +133,19 @@ export default function RightPanel({
                     fontStyle: 'italic',
                   }}
                 >
-                  Нет активных препаратов для этой зоны
+                  {t('dashboard.noActiveDrugs')}
                 </div>
               )}
 
-              {/* Sigma1 button */}
               {hasS1 && (
                 <div className="cvbtn" onClick={onShowSigma1}>
-                  {'\u03C3'}1 Клеточный уровень {'\u2192'}
+                  {'\u03C3'}1 {t('dashboard.sigma1Cellular')} {'\u2192'}
                 </div>
               )}
 
-              {/* Related deficits */}
               {relatedDeficits.length > 0 && (
                 <>
-                  <div className="panel-section-title">Связанные дефициты</div>
+                  <div className="panel-section-title">{t('dashboard.relatedDeficits')}</div>
                   {relatedDeficits.map((d) => {
                     const sc =
                       d.status === 'critical'
@@ -214,7 +209,6 @@ export default function RightPanel({
         </div>
       </div>
 
-      {/* Panel toggle tab */}
       <div
         id="panel-toggle"
         onClick={onToggle}
@@ -224,7 +218,7 @@ export default function RightPanel({
           className={`badge${hasConflicts ? '' : ' hidden'}`}
           id="panel-badge"
         />
-        Инфо
+        {t('common.info')}
       </div>
     </>
   );

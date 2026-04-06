@@ -2,11 +2,14 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Settings, LogOut, Link } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { User, Settings, LogOut, Link, Globe } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { locales, localeNames, type Locale } from '@/i18n/config';
 
 export default function ProfileMenu() {
   const { user, profile, signOut, loading } = useAuth();
+  const t = useTranslations('profile');
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -34,6 +37,11 @@ export default function ProfileMenu() {
     router.push('/auth');
   };
 
+  const changeLocale = (locale: string) => {
+    document.cookie = `locale=${locale};path=/;max-age=31536000`;
+    window.location.reload();
+  };
+
   return (
     <div ref={ref} className="profile-menu-wrap">
       <button
@@ -56,17 +64,32 @@ export default function ProfileMenu() {
           </div>
           <div className="profile-dd-sep" />
           <button className="profile-dd-item" onClick={() => { setOpen(false); }}>
-            <User size={14} /> Профиль
+            <User size={14} /> {t('profile')}
           </button>
           <button className="profile-dd-item" onClick={() => { setOpen(false); }}>
-            <Settings size={14} /> Настройки
+            <Settings size={14} /> {t('settings')}
           </button>
           <button className="profile-dd-item" onClick={() => { setOpen(false); }}>
-            <Link size={14} /> Интеграции
+            <Link size={14} /> {t('integrations')}
           </button>
           <div className="profile-dd-sep" />
+          <div className="profile-dd-item profile-dd-lang">
+            <Globe size={14} /> {t('language')}
+            <div className="profile-lang-options">
+              {locales.map((loc) => (
+                <button
+                  key={loc}
+                  className="profile-lang-btn"
+                  onClick={() => changeLocale(loc)}
+                >
+                  {localeNames[loc]}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="profile-dd-sep" />
           <button className="profile-dd-item profile-dd-logout" onClick={handleSignOut}>
-            <LogOut size={14} /> Выйти
+            <LogOut size={14} /> {t('logout')}
           </button>
         </div>
       )}

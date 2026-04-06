@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { BrainCanvas } from '@/components/Brain3D';
 import LeftPanel from '@/components/Panels/LeftPanel';
 import RightPanel from '@/components/Panels/RightPanel';
@@ -14,6 +15,7 @@ import { useDeficits } from '@/hooks/useDeficits';
 const LEFT_PANEL_WIDTH = 280;
 
 export default function Home() {
+  const t = useTranslations('dashboard');
   const {
     scheme,
     addDrug,
@@ -139,7 +141,7 @@ export default function Home() {
       {/* Background animated blobs */}
       <div id="cv" className="absolute inset-0">
         <div
-          className="absolute w-[600px] h-[600px] rounded-full opacity-[0.04] blur-[120px] animate-pulse"
+          className="absolute w-[600px] h-[600px] rounded-full opacity-[0.08] blur-[120px] animate-pulse"
           style={{
             background: 'radial-gradient(circle, rgba(180,200,230,0.8) 0%, transparent 70%)',
             top: '10%',
@@ -148,7 +150,7 @@ export default function Home() {
           }}
         />
         <div
-          className="absolute w-[500px] h-[500px] rounded-full opacity-[0.04] blur-[100px] animate-pulse"
+          className="absolute w-[500px] h-[500px] rounded-full opacity-[0.08] blur-[100px] animate-pulse"
           style={{
             background: 'radial-gradient(circle, rgba(140,160,200,0.8) 0%, transparent 70%)',
             top: '40%',
@@ -157,7 +159,7 @@ export default function Home() {
           }}
         />
         <div
-          className="absolute w-[400px] h-[400px] rounded-full opacity-[0.04] blur-[80px] animate-pulse"
+          className="absolute w-[400px] h-[400px] rounded-full opacity-[0.08] blur-[80px] animate-pulse"
           style={{
             background: 'radial-gradient(circle, rgba(80,100,140,0.8) 0%, transparent 70%)',
             bottom: '10%',
@@ -275,7 +277,7 @@ export default function Home() {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             color: '#080b12', fontWeight: 700,
           }}
-          title="AI Ассистент"
+          title={t('aiAssistant')}
         >
           AI
         </button>

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { DRUGS } from '../../data/drugs';
 import { RG, NTC } from '../../data/brainRegions';
 import { defCov, defTotalCov, covCol } from '../../lib/coverage';
@@ -28,6 +29,7 @@ export default function DeficitCard({
   onZoneClick,
   onZoneHover,
 }: DeficitCardProps) {
+  const t = useTranslations();
   const df = deficit;
   const isExp = isSelected;
 
@@ -125,7 +127,7 @@ export default function DeficitCard({
       {/* Blocking warnings */}
       {blockers.length > 0 && (
         <div className="dc-block">
-          {'\u26A0'} Блокирует:{' '}
+          {'\u26A0'} {t('dashboard.blocks')}:{' '}
           {blockers.map((id) => DRUGS[id]?.s || id).join(', ')}
         </div>
       )}
@@ -135,7 +137,7 @@ export default function DeficitCard({
         <div className="dc-desc">{df.desc}</div>
 
         {/* Deficits section */}
-        <div className="dc-sec">Дефициты</div>
+        <div className="dc-sec">{t('deficits.deficits')}</div>
         {df.defs.map((d, i) => {
           const rg = RG[d.zone];
           const zn = rg ? rg.n : d.zone;
@@ -152,7 +154,7 @@ export default function DeficitCard({
         })}
 
         {/* Coverage details */}
-        <div className="dc-sec">Покрытие схемой</div>
+        <div className="dc-sec">{t('deficits.schemeCoverage')}</div>
         {covs.map((c, i) => {
           if (c.np) {
             return (
@@ -180,7 +182,7 @@ export default function DeficitCard({
               )}
               {c.blocking.length > 0 && (
                 <div className="dc-need-block">
-                  {'\u26A0'} Блокирует:{' '}
+                  {'\u26A0'} {t('dashboard.blocks')}:{' '}
                   {c.blocking.map((id) => DRUGS[id]?.s || id).join(', ')}
                 </div>
               )}
@@ -191,7 +193,7 @@ export default function DeficitCard({
         {/* AI placeholder */}
         <div className="dc-ai">
           <div className="dc-ai-text">
-            AI-анализ будет доступен в следующей версии
+            {t('deficits.aiAnalysisComingSoon')}
           </div>
         </div>
 
@@ -203,9 +205,9 @@ export default function DeficitCard({
             onClick={(e) => e.stopPropagation()}
             onChange={(e) => onStatusChange(e.target.value as DeficitStatus)}
           >
-            <option value="critical">Критично</option>
-            <option value="working">В работе</option>
-            <option value="resolved">Компенсировано</option>
+            <option value="critical">{t('deficits.critical')}</option>
+            <option value="working">{t('deficits.working')}</option>
+            <option value="resolved">{t('deficits.resolved')}</option>
           </select>
           <span
             className="dc-del"
@@ -214,7 +216,7 @@ export default function DeficitCard({
               onDelete();
             }}
           >
-            {'\u{1F5D1}'} Удалить
+            {'\u{1F5D1}'} {t('common.delete')}
           </span>
         </div>
       </div>

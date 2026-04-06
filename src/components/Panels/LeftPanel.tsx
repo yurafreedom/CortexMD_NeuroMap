@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import { PRESETS } from '../../data/presets';
 import ActiveScheme from '../Drugs/ActiveScheme';
 import DrugCatalog from '../Drugs/DrugCatalog';
@@ -65,6 +66,7 @@ export default function LeftPanel({
   onZoneClick,
   onZoneHover,
 }: LeftPanelProps) {
+  const t = useTranslations();
   const [catalogOpen, setCatalogOpen] = useState(false);
   const schemeCount = Object.keys(activeDrugs).length;
 
@@ -80,13 +82,13 @@ export default function LeftPanel({
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
         <div>
           <div className="logo" style={{ textAlign: 'left', padding: '4px 0 0' }}>CortexMD</div>
-          <div className="sub" style={{ textAlign: 'left', marginBottom: 0 }}>{'\u041D\u0435\u0439\u0440\u043E\u0444\u0430\u0440\u043C\u0430\u043A\u043E\u043B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u043A\u0430\u0440\u0442\u0430 v4'}</div>
+          <div className="sub" style={{ textAlign: 'left', marginBottom: 0 }}>{t('dashboard.subtitle')}</div>
         </div>
         <ProfileMenu />
       </div>
 
       {/* Presets */}
-      <Section title="Пресеты">
+      <Section title={t('dashboard.presets')}>
         <div className="pl">
           {Object.keys(PRESETS).map((id) => (
             <button
@@ -103,7 +105,7 @@ export default function LeftPanel({
       {/* Active scheme */}
       <div className="section">
         <div className="sh">
-          <span className="st">Активная схема</span>
+          <span className="st">{t('dashboard.activeScheme')}</span>
           <span
             style={{
               fontSize: '9px',
@@ -111,7 +113,7 @@ export default function LeftPanel({
               marginLeft: 'auto',
             }}
           >
-            {schemeCount > 0 ? `${schemeCount} шт` : ''}
+            {schemeCount > 0 ? `${schemeCount} ${t('dashboard.items')}` : ''}
           </span>
         </div>
         <div className="sb open" style={{ display: 'block' }}>
@@ -125,7 +127,7 @@ export default function LeftPanel({
           className="catalog-toggle-btn"
           onClick={() => setCatalogOpen(!catalogOpen)}
         >
-          Каталог препаратов{' '}
+          {t('dashboard.drugCatalog')}{' '}
           <span>{catalogOpen ? '\u25B2' : '\u25BC'}</span>
         </button>
         {catalogOpen && (
@@ -134,7 +136,7 @@ export default function LeftPanel({
       </div>
 
       {/* Deficits */}
-      <Section title="Мои дефициты">
+      <Section title={t('dashboard.myDeficits')}>
         <DeficitList
           deficits={deficits}
           activeDrugs={activeDrugs}
@@ -148,9 +150,9 @@ export default function LeftPanel({
       </Section>
 
       {/* Visualization */}
-      <Section title="Визуализация">
+      <Section title={t('dashboard.visualization')}>
         <div style={{ fontSize: '9px', color: '#94a3b8', marginBottom: '3px' }}>
-          Прозрачность коры
+          {t('dashboard.cortexOpacity')}
         </div>
         <input
           type="range"

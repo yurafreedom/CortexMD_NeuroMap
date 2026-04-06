@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { DRUGS } from '../../data/drugs';
 import { realD, cypVal } from '../../lib/pharmacology';
 import type { ActiveDrugs } from '../../lib/pharmacology';
@@ -20,6 +21,7 @@ export default function DoseSlider({
   activeDrugs,
   onChange,
 }: DoseSliderProps) {
+  const t = useTranslations('dashboard');
   const drug = DRUGS[drugId];
   if (!drug) return null;
 
@@ -50,7 +52,7 @@ export default function DoseSlider({
         </span>
         {rd && Math.abs(rd - currentDose) > 1 && (
           <span style={{ color: 'var(--accent)' }}>
-            реально ~{Math.round(rd)}
+            {t('realDose')}{Math.round(rd)}
             {drug.u}
           </span>
         )}

@@ -3,8 +3,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { User, Stethoscope, Mail, ArrowLeft, Eye, EyeOff, Dice5, Copy, Check, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
 import { generatePassphrase } from '@/lib/passphrase';
+import { translateError } from '@/lib/errorMessages';
 
 type AuthStep =
   | 'role'
@@ -17,6 +19,7 @@ type UserRole = 'patient' | 'doctor';
 
 export default function AuthPage() {
   const router = useRouter();
+  const t = useTranslations();
   const {
     user,
     loading: authLoading,
@@ -75,13 +78,13 @@ export default function AuthPage() {
     try {
       await signInWithGoogle();
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Ошибка OAuth');
+      setError(e instanceof Error ? translateError(e.message, t) : t('errors.oauthError'));
     }
   };
 
   const handleEmailContinue = () => {
     if (!email.includes('@')) {
-      setError('Введите корректный email');
+      setError(t('auth.enterValidEmail'));
       return;
     }
     setError('');
@@ -109,19 +112,19 @@ export default function AuthPage() {
     e.preventDefault();
     setError('');
     if (!firstName.trim()) {
-      setError('Введите имя');
+      setError(t('auth.enterFirstName'));
       return;
     }
     if (password.length < 6) {
-      setError('Минимум 6 символов');
+      setError(t('auth.minChars'));
       return;
     }
     if (password !== passwordConfirm) {
-      setError('Пароли не совпадают');
+      setError(t('auth.passwordsMismatch'));
       return;
     }
     if (!agreed) {
-      setError('Необходимо принять Политику конфиденциальности');
+      setError(t('auth.acceptPolicy'));
       return;
     }
     setBusy(true);
@@ -134,7 +137,7 @@ export default function AuthPage() {
       setStep('confirm');
       setResendTimer(60);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Ошибка регистрации');
+      setError(e instanceof Error ? translateError(e.message, t) : t('errors.registrationError'));
     } finally {
       setBusy(false);
     }
@@ -144,7 +147,7 @@ export default function AuthPage() {
     e.preventDefault();
     setError('');
     if (!password) {
-      setError('Введите пароль');
+      setError(t('auth.enterPassword'));
       return;
     }
     setBusy(true);
@@ -152,7 +155,7 @@ export default function AuthPage() {
       await signInWithPassword(email, password);
       router.push('/');
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Неверный пароль');
+      setError(e instanceof Error ? translateError(e.message, t) : t('errors.wrongPassword'));
     } finally {
       setBusy(false);
     }
@@ -164,14 +167,14 @@ export default function AuthPage() {
       await signInWithEmail(email);
       setResendTimer(60);
     } catch {
-      setError('Ошибка отправки');
+      setError(t('errors.sendError'));
     }
   };
 
   const handleOnboarding = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!firstName.trim()) {
-      setError('Введите имя');
+      setError(t('auth.enterFirstName'));
       return;
     }
     setBusy(true);
@@ -184,7 +187,7 @@ export default function AuthPage() {
       });
       router.push('/');
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Ошибка');
+      setError(e instanceof Error ? translateError(e.message, t) : t('errors.genericError'));
     } finally {
       setBusy(false);
     }
@@ -213,8 +216,8 @@ export default function AuthPage() {
           {/* Step 0: Role selection */}
           {step === 'role' && (
             <div className="auth-step">
-              <h2 className="auth-title">Добро пожаловать</h2>
-              <p className="auth-subtitle">Выберите вашу роль</p>
+              <h2 className="auth-title">{t('auth.welcome')}</h2>
+              <p className="auth-subtitle">{t('auth.selectRole')}</p>
               <div className="auth-role-grid">
                 <button
                   className={`role-card${role === 'patient' ? ' selected' : ''}`}
@@ -222,9 +225,9 @@ export default function AuthPage() {
                 >
                   <div className="role-card-inner">
                     <User size={32} strokeWidth={1.5} />
-                    <span className="role-label">Я пациент</span>
+                    <span className="role-label">{t('auth.iAmPatient')}</span>
                     <span className="role-desc">
-                      Отслеживание схемы лечения
+                      {t('auth.patientDesc')}
                     </span>
                   </div>
                 </button>
@@ -234,9 +237,9 @@ export default function AuthPage() {
                 >
                   <div className="role-card-inner">
                     <Stethoscope size={32} strokeWidth={1.5} />
-                    <span className="role-label">Я врач</span>
+                    <span className="role-label">{t('auth.iAmDoctor')}</span>
                     <span className="role-desc">
-                      Фармакологический анализ
+                      {t('auth.doctorDesc')}
                     </span>
                   </div>
                 </button>
@@ -254,15 +257,15 @@ export default function AuthPage() {
                   setError('');
                 }}
               >
-                <ArrowLeft size={16} /> Назад
+                <ArrowLeft size={16} /> {t('common.back')}
               </button>
               <h2 className="auth-title">
-                {isSignIn ? 'Войти' : 'Создать аккаунт'}
+                {isSignIn ? t('auth.signInBtn') : t('auth.createAccount')}
               </h2>
               <p className="auth-subtitle">
                 {isSignIn
-                  ? 'Введите email для входа'
-                  : 'Выберите способ регистрации'}
+                  ? t('auth.enterEmailSignIn')
+                  : t('auth.selectMethod')}
               </p>
 
               <button className="auth-btn-oauth" onClick={handleGoogle}>
@@ -284,19 +287,19 @@ export default function AuthPage() {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                Продолжить с Google
+                {t('auth.continueGoogle')}
               </button>
 
               <div className="auth-divider">
-                <span>или</span>
+                <span>{t('common.or')}</span>
               </div>
 
               <div className="auth-field">
-                <label className="auth-label">Email</label>
+                <label className="auth-label">{t('auth.email')}</label>
                 <input
                   className="auth-input"
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder={t('auth.emailPlaceholder')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleEmailContinue()}
@@ -308,7 +311,7 @@ export default function AuthPage() {
                 className="auth-btn-primary"
                 onClick={handleEmailContinue}
               >
-                Продолжить
+                {t('common.continue')}
               </button>
 
               {error && <div className="auth-error">{error}</div>}
@@ -316,15 +319,15 @@ export default function AuthPage() {
               <div className="auth-switch">
                 {isSignIn ? (
                   <>
-                    Нет аккаунта?{' '}
+                    {t('auth.noAccount')}{' '}
                     <button onClick={() => setIsSignIn(false)}>
-                      Зарегистрироваться
+                      {t('auth.register')}
                     </button>
                   </>
                 ) : (
                   <>
-                    Уже есть аккаунт?{' '}
-                    <button onClick={() => setIsSignIn(true)}>Войти</button>
+                    {t('auth.haveAccount')}{' '}
+                    <button onClick={() => setIsSignIn(true)}>{t('auth.signInBtn')}</button>
                   </>
                 )}
               </div>
@@ -344,32 +347,32 @@ export default function AuthPage() {
               >
                 <ArrowLeft size={16} /> {email}
               </button>
-              <h2 className="auth-title">Создание аккаунта</h2>
+              <h2 className="auth-title">{t('auth.creatingAccount')}</h2>
 
               <div className="auth-row">
                 <div className="auth-field">
-                  <label className="auth-label">Имя</label>
+                  <label className="auth-label">{t('auth.firstName')}</label>
                   <input
                     className="auth-input"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    placeholder="Имя"
+                    placeholder={t('auth.firstName')}
                     autoFocus
                   />
                 </div>
                 <div className="auth-field">
-                  <label className="auth-label">Фамилия</label>
+                  <label className="auth-label">{t('auth.lastName')}</label>
                   <input
                     className="auth-input"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    placeholder="Фамилия"
+                    placeholder={t('auth.lastName')}
                   />
                 </div>
               </div>
 
               <div className="auth-field">
-                <label className="auth-label">Пароль</label>
+                <label className="auth-label">{t('auth.password')}</label>
                 <div className="auth-pw-row">
                   <div className="auth-pw-wrap">
                     <input
@@ -377,7 +380,7 @@ export default function AuthPage() {
                       type={showPw ? 'text' : 'password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Минимум 6 символов"
+                      placeholder={t('auth.passwordPlaceholder')}
                     />
                     <button
                       type="button"
@@ -391,7 +394,7 @@ export default function AuthPage() {
                     type="button"
                     className="auth-btn-gen"
                     onClick={handleGeneratePassphrase}
-                    title="Сгенерировать passphrase"
+                    title={t('auth.generatePassphrase')}
                   >
                     <Dice5 size={16} />
                   </button>
@@ -413,10 +416,10 @@ export default function AuthPage() {
                         setPasswordConfirm(pp);
                       }}
                     >
-                      <option value={3}>3 слова</option>
-                      <option value={4}>4 слова</option>
-                      <option value={5}>5 слов</option>
-                      <option value={6}>6 слов</option>
+                      <option value={3}>{t('auth.words3')}</option>
+                      <option value={4}>{t('auth.words4')}</option>
+                      <option value={5}>{t('auth.words5')}</option>
+                      <option value={6}>{t('auth.words6')}</option>
                     </select>
                     <button
                       type="button"
@@ -430,13 +433,13 @@ export default function AuthPage() {
               )}
 
               <div className="auth-field">
-                <label className="auth-label">Подтвердите пароль</label>
+                <label className="auth-label">{t('auth.confirmPassword')}</label>
                 <input
                   className="auth-input"
                   type={showPw ? 'text' : 'password'}
                   value={passwordConfirm}
                   onChange={(e) => setPasswordConfirm(e.target.value)}
-                  placeholder="Повторите пароль"
+                  placeholder={t('auth.confirmPasswordPlaceholder')}
                 />
               </div>
 
@@ -447,9 +450,9 @@ export default function AuthPage() {
                   onChange={(e) => setAgreed(e.target.checked)}
                 />
                 <span>
-                  Я согласен с{' '}
+                  {t('auth.agreePolicy')}{' '}
                   <a href="/privacy" target="_blank">
-                    Политикой конфиденциальности
+                    {t('auth.privacyPolicy')}
                   </a>
                 </span>
               </label>
@@ -462,7 +465,7 @@ export default function AuthPage() {
                 {busy ? (
                   <Loader2 size={18} className="auth-spinner" />
                 ) : (
-                  'Создать аккаунт'
+                  t('auth.signUpBtn')
                 )}
               </button>
 
@@ -483,17 +486,17 @@ export default function AuthPage() {
               >
                 <ArrowLeft size={16} /> {email}
               </button>
-              <h2 className="auth-title">Вход</h2>
+              <h2 className="auth-title">{t('auth.signIn')}</h2>
 
               <div className="auth-field">
-                <label className="auth-label">Пароль</label>
+                <label className="auth-label">{t('auth.password')}</label>
                 <div className="auth-pw-wrap">
                   <input
                     className="auth-input"
                     type={showPw ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Пароль"
+                    placeholder={t('auth.password')}
                     autoFocus
                   />
                   <button
@@ -514,7 +517,7 @@ export default function AuthPage() {
                 {busy ? (
                   <Loader2 size={18} className="auth-spinner" />
                 ) : (
-                  'Войти'
+                  t('auth.signInBtn')
                 )}
               </button>
 
@@ -528,15 +531,15 @@ export default function AuthPage() {
               <div className="auth-confirm-icon">
                 <Mail size={40} strokeWidth={1.5} />
               </div>
-              <h2 className="auth-title">Проверьте почту</h2>
+              <h2 className="auth-title">{t('auth.checkEmail')}</h2>
               <p className="auth-subtitle">
-                Мы отправили письмо на{' '}
+                {t('auth.emailSentTo')}{' '}
                 <strong style={{ color: 'rgba(255,255,255,0.9)' }}>
                   {email}
                 </strong>
               </p>
               <p className="auth-subtitle">
-                Нажмите ссылку в письме для подтверждения
+                {t('auth.clickLinkToConfirm')}
               </p>
               <button
                 className="auth-btn-secondary"
@@ -544,8 +547,8 @@ export default function AuthPage() {
                 disabled={resendTimer > 0}
               >
                 {resendTimer > 0
-                  ? `Отправить повторно (${resendTimer}с)`
-                  : 'Отправить повторно'}
+                  ? t('auth.resendIn', { seconds: resendTimer })
+                  : t('auth.resend')}
               </button>
             </div>
           )}
@@ -554,32 +557,32 @@ export default function AuthPage() {
           {step === 'onboarding' && (
             <form className="auth-step" onSubmit={handleOnboarding}>
               <h2 className="auth-title">
-                {firstName ? 'Подтвердите данные' : 'Как вас зовут?'}
+                {firstName ? t('auth.confirmData') : t('auth.howToCallYou')}
               </h2>
               <p className="auth-subtitle">
                 {firstName
-                  ? 'Проверьте правильность данных из вашего аккаунта'
-                  : 'Заполните профиль для начала работы'}
+                  ? t('auth.checkDataFromAccount')
+                  : t('auth.fillProfileToStart')}
               </p>
 
               <div className="auth-row">
                 <div className="auth-field">
-                  <label className="auth-label">Имя</label>
+                  <label className="auth-label">{t('auth.firstName')}</label>
                   <input
                     className="auth-input"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    placeholder="Имя"
+                    placeholder={t('auth.firstName')}
                     autoFocus
                   />
                 </div>
                 <div className="auth-field">
-                  <label className="auth-label">Фамилия</label>
+                  <label className="auth-label">{t('auth.lastName')}</label>
                   <input
                     className="auth-input"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    placeholder="Фамилия"
+                    placeholder={t('auth.lastName')}
                   />
                 </div>
               </div>
@@ -592,9 +595,9 @@ export default function AuthPage() {
                 {busy ? (
                   <Loader2 size={18} className="auth-spinner" />
                 ) : firstName ? (
-                  'Всё верно'
+                  t('auth.allCorrect')
                 ) : (
-                  'Продолжить'
+                  t('common.continue')
                 )}
               </button>
 
@@ -608,9 +611,9 @@ export default function AuthPage() {
       <footer className="auth-footer">
         <p>
           &copy; 2026 CortexMD &middot;{' '}
-          <a href="/privacy">Политика конфиденциальности</a>
+          <a href="/privacy">{t('footer.privacy')}</a>
         </p>
-        <p className="auth-footer-sub">Ваши данные защищены шифрованием</p>
+        <p className="auth-footer-sub">{t('footer.dataProtected')}</p>
       </footer>
     </div>
   );

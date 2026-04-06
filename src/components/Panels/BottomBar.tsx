@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { gH, hCol, hSt, cypVal } from '../../lib/pharmacology';
 import type { ActiveDrugs } from '../../lib/pharmacology';
 
@@ -8,23 +9,17 @@ interface BottomBarProps {
   activeDrugs: ActiveDrugs;
 }
 
-interface BarItem {
-  key: string;
-  label: string;
-  nt?: string;
-  isCyp?: boolean;
-}
-
-const BARS: BarItem[] = [
-  { key: 'da', label: 'Дофамин (DA)', nt: 'DA' },
-  { key: 'na', label: 'Норадреналин (NA)', nt: 'NA' },
-  { key: '5ht', label: 'Серотонин (5-HT)', nt: '5-HT' },
-  { key: 's1', label: 'Пластичность (s1)', nt: 's1' },
-  { key: 'cyp', label: 'CYP2D6', isCyp: true },
-];
-
 export default function BottomBar({ activeDrugs }: BottomBarProps) {
+  const t = useTranslations('neurotransmitters');
   const hasActive = Object.keys(activeDrugs).length > 0;
+
+  const BARS = useMemo(() => [
+    { key: 'da', label: t('da'), nt: 'DA' },
+    { key: 'na', label: t('na'), nt: 'NA' },
+    { key: '5ht', label: t('serotonin'), nt: '5-HT' },
+    { key: 's1', label: t('sigma1'), nt: 's1' },
+    { key: 'cyp', label: t('cyp'), isCyp: true },
+  ], [t]);
 
   const barData = useMemo(() => {
     return BARS.map((bar) => {
@@ -37,7 +32,7 @@ export default function BottomBar({ activeDrugs }: BottomBarProps) {
       const c = hCol(v);
       return { ...bar, value: v, color: c, width: Math.min(100, v / 2) };
     });
-  }, [activeDrugs, hasActive]);
+  }, [activeDrugs, hasActive, BARS]);
 
   return (
     <div className="bottom-bar-wrap">

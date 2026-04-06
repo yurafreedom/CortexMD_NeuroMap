@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -17,6 +18,9 @@ interface ChatPanelProps {
 }
 
 export default function ChatPanel({ isOpen, onClose, activeDrugs, deficits, zoneContext, suggestedQuestion }: ChatPanelProps) {
+  const t = useTranslations('chat');
+  const te = useTranslations('errors');
+  const td = useTranslations('dashboard');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -44,9 +48,9 @@ export default function ChatPanel({ isOpen, onClose, activeDrugs, deficits, zone
         body: JSON.stringify({ message: text, activeScheme: activeDrugs, deficits, zoneContext }),
       });
       const data = await res.json();
-      setMessages(prev => [...prev, { role: 'assistant', content: data.response || data.error || 'Ошибка' }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: data.response || data.error || te('genericError') }]);
     } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Ошибка сети' }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: te('networkError') }]);
     }
     setLoading(false);
   }
@@ -66,7 +70,7 @@ export default function ChatPanel({ isOpen, onClose, activeDrugs, deficits, zone
         borderBottom: '1px solid rgba(255,255,255,0.06)',
       }}>
         <span style={{ fontFamily: 'var(--font-head)', fontSize: 14, fontWeight: 600, color: '#f0f2f5' }}>
-          AI Ассистент
+          {t('aiAssistant')}
         </span>
         <button onClick={onClose} style={{
           background: 'none', border: 'none', color: '#5a6478', fontSize: 18, cursor: 'pointer',
@@ -77,7 +81,7 @@ export default function ChatPanel({ isOpen, onClose, activeDrugs, deficits, zone
       <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
         {messages.length === 0 && (
           <div style={{ textAlign: 'center', color: '#5a6478', fontSize: 12, padding: 32 }}>
-            Задайте вопрос о препаратах, рецепторах или взаимодействиях
+            {t('emptyPrompt')}
           </div>
         )}
         {messages.map((m, i) => (
@@ -97,7 +101,7 @@ export default function ChatPanel({ isOpen, onClose, activeDrugs, deficits, zone
             background: 'rgba(255,255,255,0.04)', color: '#5a6478', fontSize: 12,
             border: '1px solid rgba(255,255,255,0.06)',
           }}>
-            Думаю...
+            {t('thinking')}
           </div>
         )}
       </div>
@@ -105,11 +109,7 @@ export default function ChatPanel({ isOpen, onClose, activeDrugs, deficits, zone
       {/* Quick questions */}
       {messages.length === 0 && (
         <div style={{ padding: '0 12px 8px', display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-          {[
-            'Какие конфликты в моей схеме?',
-            'Как улучшить покрытие рабочей памяти?',
-            'Объясни серотониновый потолок',
-          ].map(q => (
+          {[t('q1'), t('q2'), t('q3')].map(q => (
             <button key={q} onClick={() => { setInput(q); }} style={{
               padding: '4px 8px', fontSize: 9, borderRadius: 6,
               border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)',
@@ -126,7 +126,7 @@ export default function ChatPanel({ isOpen, onClose, activeDrugs, deficits, zone
       }}>
         <input
           value={input} onChange={e => setInput(e.target.value)}
-          placeholder="Спросите о препаратах..."
+          placeholder={t('askAboutDrugs')}
           disabled={loading}
           style={{
             flex: 1, padding: '8px 12px', borderRadius: 8,
@@ -145,7 +145,7 @@ export default function ChatPanel({ isOpen, onClose, activeDrugs, deficits, zone
 
       {/* Disclaimer */}
       <div style={{ padding: '4px 12px 8px', fontSize: 8, color: '#334155', textAlign: 'center' }}>
-        Образовательный инструмент. НЕ медицинский совет.
+        {td('disclaimer')}
       </div>
     </div>
   );

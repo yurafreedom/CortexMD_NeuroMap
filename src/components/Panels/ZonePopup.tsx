@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { DRUGS } from '../../data/drugs';
 import { RG } from '../../data/brainRegions';
 import type { ActiveDrugs } from '../../lib/pharmacology';
@@ -20,6 +21,8 @@ export default function ZonePopup({
   onClose,
   onOpenDetail,
 }: ZonePopupProps) {
+  const t = useTranslations();
+
   const effects = useMemo(() => {
     if (!zoneId) return [];
     const result: Array<{
@@ -94,12 +97,12 @@ export default function ZonePopup({
               fontSize: '11px',
             }}
           >
-            Нет активных препаратов
+            {t('dashboard.noActiveDrugsShort')}
           </div>
         )}
       </div>
       <button className="zone-popup-more" onClick={onOpenDetail}>
-        Подробнее &rarr;
+        {t('common.details')} &rarr;
       </button>
     </div>
   );
