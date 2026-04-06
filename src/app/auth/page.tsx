@@ -199,7 +199,7 @@ export default function AuthPage() {
         data: { first_name: firstName, last_name: lastName, onboarded: true },
       });
 
-      router.push('/');
+      window.location.href = '/';
     } catch (e: unknown) {
       setError(e instanceof Error ? translateError(e.message, t) : t('errors.genericError'));
     } finally {
