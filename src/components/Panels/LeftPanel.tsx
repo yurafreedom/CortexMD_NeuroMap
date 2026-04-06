@@ -5,6 +5,7 @@ import { PRESETS } from '../../data/presets';
 import ActiveScheme from '../Drugs/ActiveScheme';
 import DrugCatalog from '../Drugs/DrugCatalog';
 import DeficitList from '../Deficits/DeficitList';
+import ProfileMenu from '../Header/ProfileMenu';
 import type { Deficit, DeficitStatus } from '../../data/defaultDeficits';
 import type { ActiveDrugs } from '../../lib/pharmacology';
 
@@ -76,8 +77,13 @@ export default function LeftPanel({
 
   return (
     <div id="lp">
-      <div className="logo">CortexMD</div>
-      <div className="sub">{'\u041D\u0435\u0439\u0440\u043E\u0444\u0430\u0440\u043C\u0430\u043A\u043E\u043B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u043A\u0430\u0440\u0442\u0430 v4'}</div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+        <div>
+          <div className="logo" style={{ textAlign: 'left', padding: '4px 0 0' }}>CortexMD</div>
+          <div className="sub" style={{ textAlign: 'left', marginBottom: 0 }}>{'\u041D\u0435\u0439\u0440\u043E\u0444\u0430\u0440\u043C\u0430\u043A\u043E\u043B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u043A\u0430\u0440\u0442\u0430 v4'}</div>
+        </div>
+        <ProfileMenu />
+      </div>
 
       {/* Presets */}
       <Section title="Пресеты">

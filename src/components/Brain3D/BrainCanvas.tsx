@@ -4,10 +4,7 @@ import { useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
+// Post-processing removed — bloom was breaking transparency
 import { RG, TR, NTC, type BrainRegion, type Tract } from '@/data/brainRegions';
 
 // ---------------------------------------------------------------------------
@@ -80,7 +77,7 @@ export default function BrainCanvas({
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const composerRef = useRef<EffectComposer | null>(null);
+  // composerRef removed — no more post-processing
   const controlsRef = useRef<OrbitControls | null>(null);
   const clockRef = useRef<THREE.Clock | null>(null);
   const markerGroupRef = useRef<THREE.Group | null>(null);
@@ -179,8 +176,8 @@ export default function BrainCanvas({
 
     // === Camera ===
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-    camera.position.set(3.5, 0.5, 0);
-    camera.lookAt(0, 0, 0);
+    camera.position.set(3.5, 0.2, 0);
+    camera.lookAt(-0.2, -0.1, 0);
     cameraRef.current = camera;
 
     // === Renderer ===
@@ -193,18 +190,7 @@ export default function BrainCanvas({
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // === Post‑processing ===
-    const composer = new EffectComposer(renderer);
-    composer.addPass(new RenderPass(scene, camera));
-    const bloomPass = new UnrealBloomPass(
-      new THREE.Vector2(window.innerWidth, window.innerHeight),
-      0.5,  // strength
-      0.8,  // radius
-      0.75, // threshold
-    );
-    composer.addPass(bloomPass);
-    composer.addPass(new OutputPass());
-    composerRef.current = composer;
+    // Post-processing removed — direct render
 
     // === Controls ===
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -212,6 +198,7 @@ export default function BrainCanvas({
     controls.dampingFactor = 0.05;
     controls.minDistance = 1.5;
     controls.maxDistance = 8;
+    controls.target.set(-0.2, -0.1, 0);
     controlsRef.current = controls;
 
     // === Lighting ===
@@ -487,14 +474,13 @@ export default function BrainCanvas({
     // Resize handler
     // ------------------------------------------------------------------
     function handleResize() {
-      if (!container || !renderer || !camera || !composer) return;
+      if (!container || !renderer || !camera) return;
       const w = container.clientWidth;
       const h = container.clientHeight;
       if (w <= 0 || h <= 0) return;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
-      composer.setSize(w, h);
     }
 
     window.addEventListener('resize', handleResize);
@@ -557,7 +543,7 @@ export default function BrainCanvas({
         mat.opacity = propsRef.current.opacity;
       });
 
-      composer.render();
+      renderer.render(scene, camera);
     }
     animate();
 
@@ -571,7 +557,6 @@ export default function BrainCanvas({
       renderer.domElement.removeEventListener('mousemove', handleMouseMove);
       controls.dispose();
       renderer.dispose();
-      composer.dispose();
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
@@ -585,9 +570,8 @@ export default function BrainCanvas({
   useEffect(() => {
     const renderer = rendererRef.current;
     const camera = cameraRef.current;
-    const composer = composerRef.current;
     const container = containerRef.current;
-    if (!renderer || !camera || !composer || !container) return;
+    if (!renderer || !camera || !container) return;
 
     function doResize() {
       const w = container!.clientWidth;
@@ -596,7 +580,6 @@ export default function BrainCanvas({
       camera!.aspect = w / h;
       camera!.updateProjectionMatrix();
       renderer!.setSize(w, h);
-      composer!.setSize(w, h);
     }
 
     // Immediate resize + delayed resize after CSS transition finishes

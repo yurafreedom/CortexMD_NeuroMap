@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { Loader2 } from 'lucide-react';
 
 export default function AuthCallback() {
   const router = useRouter();
@@ -16,12 +17,13 @@ export default function AuthCallback() {
   }, [router]);
 
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      height: '100vh', background: '#080b12', color: '#9ba3b5',
-      fontFamily: 'var(--font-body)', fontSize: 14
-    }}>
-      Авторизация...
+    <div className="auth-page">
+      <div className="auth-loader">
+        <Loader2 size={24} className="auth-spinner" style={{ color: '#60a5fa' }} />
+        <p style={{ marginTop: 16, fontSize: 14, color: 'rgba(255,255,255,0.5)' }}>
+          Авторизация...
+        </p>
+      </div>
     </div>
   );
 }

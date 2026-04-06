@@ -31,38 +31,35 @@ export default function BottomBar({ activeDrugs }: BottomBarProps) {
       if (bar.isCyp) {
         const cy = cypVal(activeDrugs);
         const cc = cy > 60 ? '#ef4444' : cy > 30 ? '#f59e0b' : '#22c55e';
-        const st = cy > 60 ? 'Сильное' : cy > 30 ? 'Среднее' : cy > 0 ? 'Слабое' : 'Нет';
-        return { ...bar, value: cy, color: cc, status: st, width: cy };
+        return { ...bar, value: cy, color: cc, width: cy };
       }
       const v = hasActive ? gH(bar.nt!, activeDrugs) : 65;
       const c = hCol(v);
-      const st = hSt(v);
-      return { ...bar, value: v, color: c, status: st, width: Math.min(100, v / 2) };
+      return { ...bar, value: v, color: c, width: Math.min(100, v / 2) };
     });
   }, [activeDrugs, hasActive]);
 
   return (
-    <div id="bb">
-      {barData.map((bar) => (
-        <div className="hb" key={bar.key}>
-          <div className="hl">{bar.label}</div>
-          <div className="hv" style={{ color: bar.color }}>
-            {bar.isCyp ? `${bar.value}%` : `${bar.value.toFixed(0)}%`}
+    <div className="bottom-bar-wrap">
+      <div id="bb">
+        {barData.map((bar) => (
+          <div className="hb" key={bar.key}>
+            <div className="hl">{bar.label}</div>
+            <div className="hv" style={{ color: bar.color }}>
+              {bar.isCyp ? `${bar.value}%` : `${bar.value.toFixed(0)}%`}
+            </div>
+            <div className="hbar">
+              <div
+                className="hfill"
+                style={{
+                  width: `${bar.width}%`,
+                  background: bar.color,
+                }}
+              />
+            </div>
           </div>
-          <div className="hbar">
-            <div
-              className="hfill"
-              style={{
-                width: `${bar.width}%`,
-                background: bar.color,
-              }}
-            />
-          </div>
-          <div className="hs" style={{ color: bar.color }}>
-            {bar.status}
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
