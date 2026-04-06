@@ -1,29 +1,28 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
 import { supabase } from '@/lib/supabase';
 import { Loader2 } from 'lucide-react';
 
 export default function AuthCallback() {
-  const router = useRouter();
-  const t = useTranslations('auth');
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN') {
-        router.push('/');
+    // Supabase парсит hash из URL и сохраняет сессию в cookies
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        window.location.href = '/';
+      } else {
+        window.location.href = '/auth?error=no_session';
       }
     });
-  }, [router]);
+  }, []);
 
   return (
     <div className="auth-page">
       <div className="auth-loader">
         <Loader2 size={24} className="auth-spinner" style={{ color: '#60a5fa' }} />
         <p style={{ marginTop: 16, fontSize: 14, color: 'rgba(255,255,255,0.5)' }}>
-          {t('authorizing')}
+          Авторизация...
         </p>
       </div>
     </div>
