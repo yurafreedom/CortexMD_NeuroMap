@@ -117,27 +117,27 @@ export default function Home() {
       {/* Background animated blobs */}
       <div id="cv" className="absolute inset-0">
         <div
-          className="absolute w-[600px] h-[600px] rounded-full opacity-30 blur-[120px] animate-pulse"
+          className="absolute w-[600px] h-[600px] rounded-full opacity-[0.04] blur-[120px] animate-pulse"
           style={{
-            background: 'radial-gradient(circle, #60a5fa 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(180,200,230,0.8) 0%, transparent 70%)',
             top: '10%',
             left: '20%',
             animationDuration: '8s',
           }}
         />
         <div
-          className="absolute w-[500px] h-[500px] rounded-full opacity-20 blur-[100px] animate-pulse"
+          className="absolute w-[500px] h-[500px] rounded-full opacity-[0.04] blur-[100px] animate-pulse"
           style={{
-            background: 'radial-gradient(circle, #f472b6 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(140,160,200,0.8) 0%, transparent 70%)',
             top: '40%',
             right: '15%',
             animationDuration: '12s',
           }}
         />
         <div
-          className="absolute w-[400px] h-[400px] rounded-full opacity-25 blur-[80px] animate-pulse"
+          className="absolute w-[400px] h-[400px] rounded-full opacity-[0.04] blur-[80px] animate-pulse"
           style={{
-            background: 'radial-gradient(circle, #fbbf24 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(80,100,140,0.8) 0%, transparent 70%)',
             bottom: '10%',
             left: '40%',
             animationDuration: '10s',

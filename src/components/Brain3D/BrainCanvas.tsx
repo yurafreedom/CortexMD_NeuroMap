@@ -297,7 +297,7 @@ export default function BrainCanvas({
     // Helper: create particle cloud from a geometry
     // ------------------------------------------------------------------
     function createParticles(positions: THREE.BufferAttribute, parent: THREE.Object3D) {
-      const particleCount = Math.min(positions.count, 5000);
+      const particleCount = Math.min(positions.count, 2000);
       const step = Math.max(1, Math.floor(positions.count / particleCount));
       const geo = new THREE.BufferGeometry();
       const pos = new Float32Array(particleCount * 3);
@@ -306,12 +306,23 @@ export default function BrainCanvas({
         pos[j * 3 + 1] = positions.getY(i);
         pos[j * 3 + 2] = positions.getZ(i);
       }
+      // Push particles 5-20% outward from center
+      for (let k = 0; k < particleCount * 3; k += 3) {
+        const dx = pos[k], dy = pos[k + 1], dz = pos[k + 2];
+        const len = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        if (len > 0) {
+          const expand = 1 + Math.random() * 0.15 + 0.05;
+          pos[k] *= expand;
+          pos[k + 1] *= expand;
+          pos[k + 2] *= expand;
+        }
+      }
       geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
       const mat = new THREE.PointsMaterial({
-        color: 0xaabbcc,
-        size: 0.008,
+        color: 0xddeeff,
+        size: 0.005,
         transparent: true,
-        opacity: 0.4,
+        opacity: 0.3,
         depthWrite: false,
         sizeAttenuation: true,
         blending: THREE.AdditiveBlending,
@@ -342,7 +353,7 @@ export default function BrainCanvas({
       geo.computeVertexNormals();
 
       const brainMat = new THREE.MeshPhysicalMaterial({
-        color: 0x8899aa,
+        color: 0xc0c8d4,
         transparent: true,
         opacity: propsRef.current.opacity,
         roughness: 0.6,
@@ -396,7 +407,7 @@ export default function BrainCanvas({
           if ((child as THREE.Mesh).isMesh) {
             const mesh = child as THREE.Mesh;
             const mat = new THREE.MeshPhysicalMaterial({
-              color: 0x8899aa,
+              color: 0xc0c8d4,
               transparent: true,
               opacity: propsRef.current.opacity,
               roughness: 0.6,
@@ -419,7 +430,7 @@ export default function BrainCanvas({
 
             // Wireframe clone
             const wireMat = new THREE.MeshBasicMaterial({
-              color: 0x6ee7b7,
+              color: 0xccddee,
               wireframe: true,
               transparent: true,
               opacity: 0.06,
@@ -484,19 +495,14 @@ export default function BrainCanvas({
 
       const { selectedRegion: sr, selectedDeficit: sd } = propsRef.current;
 
-      // --- Marker pulsing ---
-      Object.entries(markersRef.current).forEach(([_id, m]) => {
-        if ((m.material as THREE.MeshPhysicalMaterial).emissiveIntensity > 0.3) {
-          (m.material as THREE.MeshPhysicalMaterial).emissiveIntensity +=
-            Math.sin(t * 3) * 0.015;
-        }
-      });
-
-      // --- Deficit zone critical pulsing ---
-      if (sd) {
-        // We don't have the DEFICITS array here; the parent can highlight
-        // zones via selectedDeficit. For now pulse selected‑deficit zones
-        // based on external highlighting done via props in updateVisuals().
+      // --- Marker pulsing (skip when deficit mode is active to preserve highlighting) ---
+      if (!sd) {
+        Object.entries(markersRef.current).forEach(([_id, m]) => {
+          if ((m.material as THREE.MeshPhysicalMaterial).emissiveIntensity > 0.3) {
+            (m.material as THREE.MeshPhysicalMaterial).emissiveIntensity +=
+              Math.sin(t * 3) * 0.015;
+          }
+        });
       }
 
       // --- Ring billboards ---
