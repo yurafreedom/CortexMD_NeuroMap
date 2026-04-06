@@ -119,6 +119,22 @@ export default function ChatPanel({ isOpen, onClose, activeDrugs, deficits, zone
         </div>
       )}
 
+      {/* Database quick buttons */}
+      <div style={{ padding: '0 12px 4px', display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+        {[
+          { label: '\uD83D\uDD2C PubMed', prefix: '\u041D\u0430\u0439\u0434\u0438 \u0432 PubMed: ' },
+          { label: '\uD83D\uDCCA Ki (ChEMBL)', prefix: 'Ki-\u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F \u0434\u043B\u044F: ' },
+          { label: '\uD83D\uDCCB Cochrane', prefix: 'Cochrane \u043E\u0431\u0437\u043E\u0440\u044B: ' },
+          { label: '\uD83D\uDC8A FDA', prefix: 'FDA \u043F\u043E\u0431\u043E\u0447\u043D\u044B\u0435 \u044D\u0444\u0444\u0435\u043A\u0442\u044B: ' },
+        ].map(btn => (
+          <button key={btn.label} onClick={() => setInput(btn.prefix)} style={{
+            fontSize: 10, padding: '4px 8px', borderRadius: 6,
+            background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)',
+            color: '#9ba3b5', cursor: 'pointer',
+          }}>{btn.label}</button>
+        ))}
+      </div>
+
       {/* Input */}
       <form onSubmit={e => { e.preventDefault(); send(); }} style={{
         padding: 12, borderTop: '1px solid rgba(255,255,255,0.06)',

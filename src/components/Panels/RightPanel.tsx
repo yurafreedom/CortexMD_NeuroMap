@@ -18,6 +18,8 @@ interface RightPanelProps {
   onToggle: () => void;
   onShowSigma1: () => void;
   onSelectDeficit: (id: string) => void;
+  onConflictHover?: (zones: string[]) => void;
+  onConflictLeave?: () => void;
 }
 
 export default function RightPanel({
@@ -29,6 +31,8 @@ export default function RightPanel({
   onToggle,
   onShowSigma1,
   onSelectDeficit,
+  onConflictHover,
+  onConflictLeave,
 }: RightPanelProps) {
   const t = useTranslations();
 
@@ -83,7 +87,7 @@ export default function RightPanel({
         <button className="panel-close" onClick={onClose}>
           &times;
         </button>
-        <ConflictBox activeDrugs={activeDrugs} />
+        <ConflictBox activeDrugs={activeDrugs} onConflictHover={onConflictHover} onConflictLeave={onConflictLeave} />
         <div id="ri">
           {region ? (
             <>

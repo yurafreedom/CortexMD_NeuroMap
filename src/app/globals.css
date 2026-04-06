@@ -164,9 +164,16 @@ body{background:var(--bg-deep);color:rgba(255,255,255,0.87);font-family:var(--fo
 .scheme-dose{font-family:var(--font-mono);font-size:22px;font-weight:500;color:rgba(255,255,255,0.92);
   letter-spacing:-0.03em;margin:4px 0}
 .scheme-unit{font-family:var(--font-body);font-size:11px;color:rgba(255,255,255,0.35)}
-.scheme-real-dose{font-family:var(--font-mono);font-size:10px;color:var(--accent);opacity:0.8;margin-top:2px}
 .scheme-warning{position:absolute;top:4px;right:20px;font-size:11px}
-.scheme-warn-text{font-size:7px;color:#f59e0b;font-family:var(--font-mono);margin-top:1px}
+.scheme-warn-text{font-size:8px;color:#f59e0b;font-family:var(--font-mono);margin-top:2px;line-height:1.3}
+.scheme-warn-text.danger{color:#ef4444}
+.scheme-card.scheme-warn{border-color:rgba(245,158,11,0.3)}
+.scheme-card.scheme-danger{border-color:rgba(239,68,68,0.3)}
+.dose-real{font-family:var(--font-mono);font-size:12px;color:#f59e0b;font-weight:600;margin-top:2px}
+.cyp-alerts{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
+.cyp-alert{font-size:10px;color:#ef4444;font-family:var(--font-mono);font-weight:600;
+  padding:6px 8px;border-radius:6px;background:rgba(239,68,68,0.08);
+  border:1px solid rgba(239,68,68,0.2);line-height:1.4}
 .scheme-slider{width:100%;height:2px;margin-top:10px;appearance:none;-webkit-appearance:none;
   background:rgba(255,255,255,0.06);border-radius:1px;outline:none;cursor:pointer}
 .scheme-slider::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:12px;height:12px;
@@ -229,6 +236,8 @@ body{background:var(--bg-deep);color:rgba(255,255,255,0.87);font-family:var(--fo
   background:linear-gradient(90deg,transparent 5%,rgba(239,68,68,0.2) 50%,transparent 95%)}
 .cbt{font-family:var(--font-display);font-size:11px;font-weight:600;color:var(--status-warning);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.3px}
 .ci{font-size:10px;color:#fde68a;margin-bottom:2px;line-height:1.4}
+.ci-hoverable{border-radius:4px;padding:2px 4px;margin:-2px -4px;transition:background 0.2s}
+.ci-hoverable:hover{background:rgba(239,68,68,0.15)}
 
 /* === BOTTOM BAR === */
 .bottom-bar-wrap{border-radius:14px;padding:1.5px;
@@ -618,3 +627,33 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;bac
   border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);
   color:rgba(255,255,255,0.6);cursor:pointer;transition:all 0.2s}
 .profile-lang-btn:hover{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.9)}
+
+/* ================================================================ */
+/* === WHOOP CARD === */
+/* ================================================================ */
+.whoop-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);
+  border-radius:10px;padding:10px;margin-top:8px}
+.whoop-header{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;
+  color:rgba(255,255,255,0.7);margin-bottom:8px}
+.whoop-header span{flex:1}
+.whoop-disconnect{background:none;border:none;color:rgba(255,255,255,0.3);cursor:pointer;
+  padding:2px;border-radius:4px;transition:color 0.2s}
+.whoop-disconnect:hover{color:rgba(239,68,68,0.7)}
+.whoop-loading{font-size:10px;color:rgba(255,255,255,0.3);text-align:center;padding:12px 0}
+.whoop-error{font-size:10px;color:rgba(239,68,68,0.7);text-align:center;padding:8px 0}
+.whoop-connect-prompt{text-align:center;padding:8px 0}
+.whoop-connect-prompt p{font-size:10px;color:rgba(255,255,255,0.4);margin:0 0 8px}
+.whoop-connect-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;
+  font-size:10px;font-weight:600;border-radius:6px;text-decoration:none;
+  background:rgba(110,231,183,0.12);color:#6ee7b7;
+  border:1px solid rgba(110,231,183,0.2);transition:all 0.2s}
+.whoop-connect-btn:hover{background:rgba(110,231,183,0.2)}
+.whoop-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.whoop-metric{background:rgba(255,255,255,0.02);border-radius:8px;padding:8px}
+.whoop-metric-wide{grid-column:1/-1}
+.whoop-metric-label{display:flex;align-items:center;gap:4px;font-size:9px;
+  color:rgba(255,255,255,0.4);margin-bottom:4px;font-weight:500}
+.whoop-metric-value{font-family:var(--font-mono);font-size:18px;font-weight:700;
+  color:rgba(255,255,255,0.9)}
+.whoop-unit{font-size:10px;font-weight:400;color:rgba(255,255,255,0.4);margin-left:2px}
+.whoop-sleep-legend{display:flex;gap:8px;margin-top:4px;font-size:8px;font-family:var(--font-mono)}

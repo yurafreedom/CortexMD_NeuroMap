@@ -94,6 +94,7 @@
     "cortexOpacity": "Cortex opacity",
     "items": "items",
     "realDose": "actual ~",
+    "realDoseMax": "Approaching maximum",
     "blocks": "Blocks",
     "searchDrug": "Search drug...",
     "disclaimer": "Educational tool. NOT medical advice.",
@@ -161,6 +162,19 @@
     "integrations": "Integrations",
     "logout": "Log out",
     "language": "Language"
+  },
+  "whoop": {
+    "loading": "Loading Whoop data...",
+    "connectPrompt": "Connect Whoop to track HRV, sleep, and recovery",
+    "connect": "Connect Whoop",
+    "disconnect": "Disconnect Whoop",
+    "recovery": "Recovery",
+    "restingHR": "Resting HR",
+    "sleep": "Sleep",
+    "light": "Light",
+    "connected": "Connected",
+    "denied": "Whoop access denied",
+    "errorGeneric": "Whoop connection error"
   },
   "footer": {
     "copyright": "© 2026 CortexMD",

@@ -1,64 +1,64 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { DRUGS } from '../../data/drugs';
 import { cypVal, realD } from '../../lib/pharmacology';
+import { detectConflicts } from '../../data/conflictRules';
 import type { ActiveDrugs } from '../../lib/pharmacology';
+
+interface ConflictItem {
+  text: string;
+  zones: string[];
+  isHtml?: boolean;
+}
 
 interface ConflictBoxProps {
   activeDrugs: ActiveDrugs;
+  onConflictHover?: (zones: string[]) => void;
+  onConflictLeave?: () => void;
 }
 
-export default function ConflictBox({ activeDrugs }: ConflictBoxProps) {
+export default function ConflictBox({ activeDrugs, onConflictHover, onConflictLeave }: ConflictBoxProps) {
   const t = useTranslations('conflicts');
 
   const { critical, warnings } = useMemo(() => {
-    const cr: string[] = [];
-    const c: string[] = [];
+    const cr: ConflictItem[] = [];
+    const w: ConflictItem[] = [];
     const AD = activeDrugs;
 
-    const ssris = ['sertraline', 'escitalopram', 'fluoxetine', 'fluvoxamine'];
-    const snris = ['duloxetine', 'venlafaxine', 'desvenlafaxine', 'milnacipran', 'levomilnacipran'];
-    const seroAll = [...ssris, ...snris];
-    const hasSSRI = ssris.some((d) => AD[d] !== undefined);
-
-    if (
-      (AD.dextromethorphan !== undefined || AD.auvelity !== undefined) &&
-      seroAll.some((d) => AD[d] !== undefined)
-    ) {
-      cr.push(`<span style="color:#ef4444">${t('dxmSsri')}</span>`);
-    }
-    if (
-      AD.selegiline_oral !== undefined &&
-      (AD.dextromethorphan !== undefined || AD.auvelity !== undefined)
-    ) {
-      cr.push(`<span style="color:#ef4444">${t('selegilineDxm')}</span>`);
-    }
-    if (AD.mucuna !== undefined && AD.selegiline_oral !== undefined) {
-      cr.push(`<span style="color:#ef4444">${t('mucunaMaoi')}</span>`);
+    // Use rule-based detection for conflicts with zone data
+    const ruleConflicts = detectConflicts(AD);
+    for (const rule of ruleConflicts) {
+      const item: ConflictItem = { text: rule.description, zones: rule.zones };
+      if (rule.severity === 'critical') {
+        item.text = `<span style="color:#ef4444">\u26D4 ${rule.title}: ${rule.description}</span>`;
+        item.isHtml = true;
+        cr.push(item);
+      } else if (rule.severity === 'serious') {
+        item.text = `\u26A0\uFE0F ${rule.title}: ${rule.description}`;
+        w.push(item);
+      } else {
+        item.text = `${rule.title}: ${rule.description}`;
+        w.push(item);
+      }
     }
 
-    if (AD.selegiline_oral !== undefined && hasSSRI) {
-      c.push('\u26A0\uFE0F ' + t('selegilineSsri'));
-    }
-    if (AD.sertraline && AD.bupropion) {
-      c.push(t('sert5ht2c'));
-    }
+    // Inline-only checks (sigma1, CYP, NET, progesterone) — not in conflictRules.ts
     const s1inv = Object.keys(AD).some((d) => DRUGS[d]?.s1t === 'inv');
     const s1ag = Object.keys(AD).filter((d) => DRUGS[d]?.s1t === 'ag');
     if (s1inv && s1ag.length > 0) {
-      c.push('\u26A1 ' + t('sigma1Conflict'));
+      w.push({ text: '\u26A1 ' + t('sigma1Conflict'), zones: ['dlPFC', 'hippo', 'amygdala'] });
     }
     if (AD.progesterone !== undefined && s1ag.length > 0) {
-      c.push('\u26A0\uFE0F ' + t('progesteroneSigma1'));
+      w.push({ text: '\u26A0\uFE0F ' + t('progesteroneSigma1'), zones: ['dlPFC', 'hippo'] });
     }
     const netDrugs = [
       'bupropion', 'duloxetine', 'atomoxetine', 'desipramine', 'nortriptyline',
       'protriptyline', 'reboxetine', 'milnacipran', 'levomilnacipran', 'venlafaxine',
     ].filter((d) => AD[d] !== undefined);
     if (netDrugs.length >= 3) {
-      c.push(`\u26A0\uFE0F ${t('tripleNet', { count: netDrugs.length })}`);
+      w.push({ text: `\u26A0\uFE0F ${t('tripleNet', { count: netDrugs.length })}`, zones: ['lc', 'dlPFC', 'amygdala'] });
     }
     const cy = cypVal(AD);
     if (cy > 0) {
@@ -73,29 +73,19 @@ export default function ConflictBox({ activeDrugs }: ConflictBoxProps) {
       });
       if (AD.atomoxetine) cyps.push(`АТОМ\u2192${realD('atomoxetine', AD).toFixed(0)}мг`);
       if (AD.vortioxetine) cyps.push(`ВОРТ\u2192${realD('vortioxetine', AD).toFixed(0)}мг`);
-      if (cyps.length) c.push(cs + cyps.join(', '));
-    }
-    if (AD.bupropion && (AD.aripiprazole || AD.brexpiprazole)) {
-      c.push('\u26A0\uFE0F ' + t('halfDoseWarning'));
-    }
-    if (AD.modafinil && AD.cariprazine) {
-      c.push('\u26A0\uFE0F ' + t('modafinilCariprazine'));
-    }
-    if (AD.fluvoxamine && (AD.lamotrigine || AD.duloxetine)) {
-      c.push('\u26A0\uFE0F ' + t('fluvoxamineInteraction'));
-    }
-    if (AD.same && hasSSRI) {
-      c.push(t('sameSsri'));
-    }
-    if (AD.pramipexole !== undefined && AD.cariprazine !== undefined) {
-      c.push(t('pramCariprazine'));
-    }
-    if (AD.fluoxetine && Object.keys(AD).length > 2) {
-      c.push(t('fluoxetineWarning'));
+      if (cyps.length) w.push({ text: cs + cyps.join(', '), zones: ['dlPFC', 'nac'] });
     }
 
-    return { critical: cr, warnings: c };
+    return { critical: cr, warnings: w };
   }, [activeDrugs, t]);
+
+  const handleEnter = useCallback((zones: string[]) => {
+    onConflictHover?.(zones);
+  }, [onConflictHover]);
+
+  const handleLeave = useCallback(() => {
+    onConflictLeave?.();
+  }, [onConflictLeave]);
 
   if (critical.length === 0 && warnings.length === 0) return null;
 
@@ -110,8 +100,11 @@ export default function ConflictBox({ activeDrugs }: ConflictBoxProps) {
             {critical.map((item, i) => (
               <div
                 key={i}
-                className="ci"
-                dangerouslySetInnerHTML={{ __html: item }}
+                className="ci ci-hoverable"
+                style={{ cursor: 'pointer' }}
+                onMouseEnter={() => handleEnter(item.zones)}
+                onMouseLeave={handleLeave}
+                {...(item.isHtml ? { dangerouslySetInnerHTML: { __html: item.text } } : { children: item.text })}
               />
             ))}
           </div>
@@ -122,8 +115,14 @@ export default function ConflictBox({ activeDrugs }: ConflictBoxProps) {
           <div className="cb-inner">
             <div className="cbt">{t('warningsTitle')} ({warnings.length})</div>
             {warnings.map((item, i) => (
-              <div key={i} className="ci">
-                {item}
+              <div
+                key={i}
+                className="ci ci-hoverable"
+                style={{ cursor: 'pointer' }}
+                onMouseEnter={() => handleEnter(item.zones)}
+                onMouseLeave={handleLeave}
+              >
+                {item.text}
               </div>
             ))}
           </div>

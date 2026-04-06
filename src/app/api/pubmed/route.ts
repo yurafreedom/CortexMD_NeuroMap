@@ -2,11 +2,16 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const query = searchParams.get('q');
   const max = parseInt(searchParams.get('max') || '3', 10);
+  const cochrane = searchParams.get('cochrane') === 'true';
 
   if (!query) return Response.json({ error: 'Missing q param' }, { status: 400 });
 
+  const finalQuery = cochrane
+    ? `${query} AND "cochrane database syst rev"[journal]`
+    : query;
+
   try {
-    const searchUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${encodeURIComponent(query)}&retmax=${max}&retmode=json`;
+    const searchUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${encodeURIComponent(finalQuery)}&retmax=${max}&retmode=json`;
     const searchRes = await fetch(searchUrl);
     const searchData = await searchRes.json();
     const pmids: string[] = searchData.esearchresult?.idlist || [];

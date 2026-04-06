@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import { DRUGS } from '../../data/drugs';
-import { realD, cypVal } from '../../lib/pharmacology';
+import { realD } from '../../lib/pharmacology';
 import type { ActiveDrugs } from '../../lib/pharmacology';
 
 interface DoseSliderProps {
@@ -12,6 +12,17 @@ interface DoseSliderProps {
   color: string;
   activeDrugs: ActiveDrugs;
   onChange: (dose: number) => void;
+}
+
+function getActiveWarning(drug: typeof DRUGS[string], dose: number): string | null {
+  if (!drug.warnings) return null;
+  const thresholds = Object.keys(drug.warnings)
+    .map(Number)
+    .sort((a, b) => b - a);
+  for (const th of thresholds) {
+    if (dose >= th) return drug.warnings[th];
+  }
+  return null;
 }
 
 export default function DoseSlider({
@@ -32,9 +43,18 @@ export default function DoseSlider({
   const hasWarn = drug.warnDose !== undefined && currentDose >= drug.warnDose;
   const isDanger = drug.maxDose !== undefined && currentDose >= drug.maxDose;
 
+  // Determine slider accent color based on dose level
+  const sliderColor = isDanger ? '#ef4444' : hasWarn ? '#f59e0b' : color;
+
+  // Get the most relevant warning message
+  const warningMsg = getActiveWarning(drug, currentDose);
+
+  // Check if CYP-adjusted real dose exceeds maxSafeDose of this drug
+  const rdExceedsMax = rd && drug.maxDose && rd >= drug.maxDose && Math.abs(rd - currentDose) > 1;
+
   return (
-    <div className="dr show" style={{ '--c': color } as React.CSSProperties}>
-      <div className="dval">
+    <div className="dr show" style={{ '--c': sliderColor } as React.CSSProperties}>
+      <div className="dval" style={isDanger ? { color: '#ef4444' } : hasWarn ? { color: '#f59e0b' } : undefined}>
         {currentDose} {drug.u}
       </div>
       <input
@@ -43,7 +63,7 @@ export default function DoseSlider({
         max={mx}
         step={step}
         value={currentDose}
-        style={{ accentColor: color }}
+        style={{ accentColor: sliderColor }}
         onChange={(e) => onChange(parseFloat(e.target.value))}
       />
       <div className="dinfo">
@@ -51,15 +71,19 @@ export default function DoseSlider({
           {mn}–{mx} {drug.u}
         </span>
         {rd && Math.abs(rd - currentDose) > 1 && (
-          <span style={{ color: 'var(--accent)' }}>
-            {t('realDose')}{Math.round(rd)}
-            {drug.u}
+          <span className="dose-real">
+            {t('realDose')}{Math.round(rd)}{drug.u}
           </span>
         )}
       </div>
-      {hasWarn && drug.warnText && (
+      {warningMsg && (
         <div className={`dwarn show${isDanger ? ' danger' : ''}`}>
-          {drug.warnText}
+          {warningMsg}
+        </div>
+      )}
+      {rdExceedsMax && (
+        <div className="dwarn show danger">
+          ⛔ {t('realDose')}{drug.s} ~{Math.round(rd!)}{drug.u} (CYP2D6). {t('realDoseMax')}
         </div>
       )}
     </div>

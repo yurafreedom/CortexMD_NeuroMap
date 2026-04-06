@@ -17,6 +17,7 @@ export interface Drug {
   warnDose?: number;
   maxDose?: number;
   warnText?: string;
+  warnings?: Record<number, string>;
   ki: Record<string, number>;
   s1t?: 'ag' | 'inv' | 'ant';
   cyp?: number;
@@ -39,6 +40,7 @@ export const DRUGS: Record<string, Drug> = {
     warnDose: 150,
     maxDose: 200,
     warnText: 'Серотониновый синдром при комбинации',
+    warnings: { 200: '⚠ Максимальная доза' },
     ki: { SERT: 0.29, DAT: 25, NET: 420, s1: 35 },
     s1t: 'inv',
     z: {
@@ -66,6 +68,7 @@ export const DRUGS: Record<string, Drug> = {
     warnDose: 300,
     maxDose: 450,
     warnText: 'Судорожный риск дозозависим',
+    warnings: { 300: '⚠ >300мг: повышенный риск судорог (FDA)', 450: '⛔ Максимальная одобренная доза' },
     ki: { DAT: 526, NET: 2170 },
     cyp: 1,
     z: {
@@ -87,6 +90,7 @@ export const DRUGS: Record<string, Drug> = {
     warnDose: 60,
     maxDose: 80,
     warnText: 'Гепатотоксичность — контроль печени',
+    warnings: { 60: '⚠ Высокая доза — контроль печени', 80: '⛔ Максимальная доза' },
     ki: { NET: 5, SERT: 77, DAT: 1451 },
     z: {
       dlPFC: { nt: ['NA', 'DA'], fx: ['NET->NA x3+DA x2.5 (нет DAT!)', 'a2A->HCN->рабочая память'], i: 5 },
@@ -131,6 +135,7 @@ export const DRUGS: Record<string, Drug> = {
     warnDose: 1.0,
     maxDose: 1.5,
     warnText: 'Импульсный контроль — мониторинг',
+    warnings: { 1.0: '⚠ Риск нарушений импульсного контроля', 1.5: '⛔ Максимальная доза' },
     ki: { D3: 0.5, D2: 3.9 },
     z: {
       nac: { nt: ['D3'], fx: ['D3 ПОЛНЫЙ агонист->shell хочу', 'Обходит серот. потолок'], i: 4 },
@@ -146,6 +151,10 @@ export const DRUGS: Record<string, Drug> = {
     doses: [20, 30, 60, 90, 120],
     def: 30,
     u: 'мг',
+    warnDose: 90,
+    maxDose: 120,
+    warnText: 'Гепатотоксичность при высоких дозах',
+    warnings: { 90: '⚠ Высокая доза', 120: '⛔ Максимальная доза' },
     ki: { SERT: 0.8, NET: 7.5, DAT: 240 },
     z: {
       dlPFC: { nt: ['5-HT', 'NA'], fx: ['SERT+NET->двойная'], i: 2 },
@@ -254,6 +263,7 @@ export const DRUGS: Record<string, Drug> = {
     warnDose: 200,
     maxDose: 400,
     warnText: 'SJS-риск при быстрой титрации',
+    warnings: { 200: '⚠ Титровать медленно — SJS-риск', 400: '⛔ Максимальная доза' },
     ki: {},
     z: {
       dlPFC: { nt: ['Glu'], fx: ['Na-каналы->глутамат вниз'], i: 2 },
@@ -289,6 +299,7 @@ export const DRUGS: Record<string, Drug> = {
     warnDose: 150,
     maxDose: 300,
     warnText: 'Кардиотоксичность — ЭКГ обязательно',
+    warnings: { 150: '⚠ Высокая доза — ЭКГ мониторинг', 300: '⛔ Максимальная доза — кардиотоксичность' },
     ki: { NET: 0.83, SERT: 17.6, H1: 60, alpha1: 100 },
     cyp2d6s: 3,
     z: {
@@ -423,6 +434,10 @@ export const DRUGS: Record<string, Drug> = {
     doses: [37.5, 75, 150, 225, 300, 375],
     def: 75,
     u: 'мг',
+    warnDose: 225,
+    maxDose: 375,
+    warnText: 'Рост АД при высоких дозах',
+    warnings: { 225: '⚠ >225мг: рост АД — мониторинг', 375: '⛔ Максимальная доза' },
     ki: { NET: 538, SERT: 7.8 },
     cyp2d6s: 1.5,
     z: {

@@ -15,6 +15,8 @@ export interface BrainCanvasProps {
   activeDrugs: Record<string, number>;
   selectedRegion: string | null;
   selectedDeficit: string | null;
+  /** Zone IDs to highlight red when a conflict is hovered */
+  conflictZones?: string[];
   onRegionClick: (id: string | null, screenPos?: { x: number; y: number }) => void;
   onRegionHover: (id: string | null, event?: MouseEvent) => void;
   /** Overall brain‑mesh opacity override (0‑1). Defaults to 0.15 */
@@ -35,6 +37,7 @@ export default function BrainCanvas({
   activeDrugs,
   selectedRegion,
   selectedDeficit,
+  conflictZones = [],
   onRegionClick,
   onRegionHover,
   opacity = 0.15,
@@ -50,6 +53,7 @@ export default function BrainCanvas({
     activeDrugs,
     selectedRegion,
     selectedDeficit,
+    conflictZones,
     onRegionClick,
     onRegionHover,
     opacity,
@@ -63,6 +67,7 @@ export default function BrainCanvas({
     activeDrugs,
     selectedRegion,
     selectedDeficit,
+    conflictZones,
     onRegionClick,
     onRegionHover,
     opacity,
@@ -628,6 +633,19 @@ export default function BrainCanvas({
           mat.emissiveIntensity *= 0.3;
         }
       }
+
+      // Conflict zone highlighting — red glow
+      if (conflictZones.length > 0) {
+        if (conflictZones.includes(id)) {
+          mat.emissive.set(0xef4444);
+          mat.emissiveIntensity = 2.5;
+          mat.opacity = 1;
+          m.scale.setScalar(1.3);
+        } else {
+          mat.opacity *= 0.3;
+          mat.emissiveIntensity *= 0.2;
+        }
+      }
     });
 
     // Tract activation
@@ -658,7 +676,7 @@ export default function BrainCanvas({
       if (t.nt === '5-HT') active = activeIds.some((d) => SERT_DRUGS.includes(d));
       (line.material as THREE.LineBasicMaterial).opacity = active ? 0.4 : 0;
     });
-  }, [activeDrugs, selectedRegion, selectedDeficit]);
+  }, [activeDrugs, selectedRegion, selectedDeficit, conflictZones]);
 
   // -----------------------------------------------------------------------
   // Render

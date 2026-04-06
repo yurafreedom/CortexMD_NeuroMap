@@ -42,6 +42,7 @@ export default function Home() {
   } | null>(null);
   const [brainOpacity, setBrainOpacity] = useState(0.15);
   const [chatOpen, setChatOpen] = useState(false);
+  const [conflictZones, setConflictZones] = useState<string[]>([]);
   const [tooltip, setTooltip] = useState<{
     text: string;
     x: number;
@@ -128,6 +129,14 @@ export default function Home() {
     setZonePopup(null);
   }, []);
 
+  const handleConflictHover = useCallback((zones: string[]) => {
+    setConflictZones(zones);
+  }, []);
+
+  const handleConflictLeave = useCallback(() => {
+    setConflictZones([]);
+  }, []);
+
   const handleZoneClickFromPanel = useCallback(
     (zoneId: string) => {
       setSelectedRegion(zoneId);
@@ -182,6 +191,7 @@ export default function Home() {
             activeDrugs={scheme}
             selectedRegion={selectedRegion}
             selectedDeficit={selectedDeficit}
+            conflictZones={conflictZones}
             onRegionClick={handleRegionClick}
             onRegionHover={handleRegionHover}
             opacity={brainOpacity}
@@ -235,6 +245,8 @@ export default function Home() {
           onToggle={toggleRightPanel}
           onShowSigma1={showSigma1}
           onSelectDeficit={selectDeficit}
+          onConflictHover={handleConflictHover}
+          onConflictLeave={handleConflictLeave}
         />
       </div>
 

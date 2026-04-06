@@ -6,6 +6,7 @@ import { PRESETS } from '../../data/presets';
 import ActiveScheme from '../Drugs/ActiveScheme';
 import DrugCatalog from '../Drugs/DrugCatalog';
 import DeficitList from '../Deficits/DeficitList';
+import WhoopCard from '../Whoop/WhoopCard';
 import ProfileMenu from '../Header/ProfileMenu';
 import type { Deficit, DeficitStatus } from '../../data/defaultDeficits';
 import type { ActiveDrugs } from '../../lib/pharmacology';
@@ -163,6 +164,9 @@ export default function LeftPanel({
           onChange={handleOpacity}
         />
       </Section>
+
+      {/* Whoop Integration */}
+      <WhoopCard />
 
       <div
         style={{

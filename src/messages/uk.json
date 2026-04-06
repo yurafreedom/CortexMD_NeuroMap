@@ -94,6 +94,7 @@
     "cortexOpacity": "Прозорість кори",
     "items": "шт",
     "realDose": "реально ~",
+    "realDoseMax": "Наближається до максимуму",
     "blocks": "Блокує",
     "searchDrug": "Пошук препарату...",
     "disclaimer": "Освітній інструмент. НЕ медична порада.",
@@ -161,6 +162,19 @@
     "integrations": "Інтеграції",
     "logout": "Вийти",
     "language": "Мова"
+  },
+  "whoop": {
+    "loading": "Завантаження даних Whoop...",
+    "connectPrompt": "Підключіть Whoop для відстеження HRV, сну та відновлення",
+    "connect": "Підключити Whoop",
+    "disconnect": "Відключити Whoop",
+    "recovery": "Відновлення",
+    "restingHR": "ЧСС спокою",
+    "sleep": "Сон",
+    "light": "Легкий",
+    "connected": "Підключено",
+    "denied": "Доступ до Whoop відхилено",
+    "errorGeneric": "Помилка підключення Whoop"
   },
   "footer": {
     "copyright": "© 2026 CortexMD",
