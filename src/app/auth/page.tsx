@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { User, Stethoscope, Mail, ArrowLeft, Eye, EyeOff, Dice5, Copy, Check, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/lib/supabase';
 import { generatePassphrase } from '@/lib/passphrase';
 import { translateError } from '@/lib/errorMessages';
 
@@ -179,12 +180,25 @@ export default function AuthPage() {
     }
     setBusy(true);
     try {
-      await updateProfile({
-        firstName,
-        lastName,
-        role: role || 'patient',
-        onboarded: true,
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (!currentUser) return;
+
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          display_name: `${firstName} ${lastName}`.trim(),
+        })
+        .eq('id', currentUser.id);
+
+      if (profileError) {
+        setError(translateError(profileError.message, t));
+        return;
+      }
+
+      await supabase.auth.updateUser({
+        data: { first_name: firstName, last_name: lastName, onboarded: true },
       });
+
       router.push('/');
     } catch (e: unknown) {
       setError(e instanceof Error ? translateError(e.message, t) : t('errors.genericError'));
