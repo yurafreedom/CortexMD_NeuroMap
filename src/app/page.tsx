@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { BrainCanvas } from '@/components/Brain3D';
 import LeftPanel from '@/components/Panels/LeftPanel';
 import RightPanel from '@/components/Panels/RightPanel';
@@ -48,6 +48,7 @@ export default function Home() {
     x: number;
     y: number;
   } | null>(null);
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Event handlers
   const handleRegionClick = useCallback(
@@ -64,13 +65,26 @@ export default function Home() {
 
   const handleRegionHover = useCallback(
     (id: string | null, event?: MouseEvent) => {
+      if (hoverTimerRef.current) {
+        clearTimeout(hoverTimerRef.current);
+        hoverTimerRef.current = null;
+      }
       if (id && event) {
-        setTooltip({ text: id, x: event.clientX, y: event.clientY });
+        // Don't show tooltip if popup is already open for this zone
+        if (zonePopup?.zoneId === id) {
+          setTooltip(null);
+          return;
+        }
+        const x = event.clientX;
+        const y = event.clientY;
+        hoverTimerRef.current = setTimeout(() => {
+          setTooltip({ text: id, x, y });
+        }, 300);
       } else {
         setTooltip(null);
       }
     },
-    [],
+    [zonePopup],
   );
 
   const toggleRightPanel = useCallback(() => {
@@ -131,17 +145,28 @@ export default function Home() {
         />
 
         {/* 3D Brain Canvas */}
-        <BrainCanvas
-          activeDrugs={scheme}
-          selectedRegion={selectedRegion}
-          selectedDeficit={selectedDeficit}
-          onRegionClick={handleRegionClick}
-          onRegionHover={handleRegionHover}
-          opacity={brainOpacity}
-          rightPanelOpen={rightPanelOpen}
-          leftPanelWidth={LEFT_PANEL_WIDTH}
-          rightPanelWidth={RIGHT_PANEL_WIDTH}
-        />
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: LEFT_PANEL_WIDTH,
+            right: rightPanelOpen ? RIGHT_PANEL_WIDTH : 0,
+            bottom: 48,
+            transition: 'right 0.3s ease',
+          }}
+        >
+          <BrainCanvas
+            activeDrugs={scheme}
+            selectedRegion={selectedRegion}
+            selectedDeficit={selectedDeficit}
+            onRegionClick={handleRegionClick}
+            onRegionHover={handleRegionHover}
+            opacity={brainOpacity}
+            rightPanelOpen={rightPanelOpen}
+            leftPanelWidth={LEFT_PANEL_WIDTH}
+            rightPanelWidth={RIGHT_PANEL_WIDTH}
+          />
+        </div>
       </div>
 
       {/* Zone Popup (conditional, positioned) */}
@@ -235,12 +260,17 @@ export default function Home() {
       )}
 
       {/* Tooltip (follows mouse on region hover) */}
-      {tooltip && (
+      {tooltip && !zonePopup && (
         <div
-          className="fixed z-50 px-2 py-1 text-xs text-white bg-black/80 rounded pointer-events-none whitespace-nowrap"
+          className="fixed z-50 pointer-events-none whitespace-nowrap"
           style={{
             left: tooltip.x + 12,
             top: tooltip.y - 8,
+            background: 'rgba(0,0,0,0.75)',
+            padding: '4px 8px',
+            borderRadius: '4px',
+            fontSize: '12px',
+            color: '#fff',
           }}
         >
           {tooltip.text}

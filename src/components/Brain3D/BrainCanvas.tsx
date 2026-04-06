@@ -106,6 +106,7 @@ export default function BrainCanvas({
       -((ev.clientY - rect.top) / rect.height) * 2 + 1,
     );
     const rc = new THREE.Raycaster();
+    rc.params.Points = { threshold: 0.05 };
     rc.setFromCamera(mouse, camera);
     const hits = rc.intersectObjects(mg.children);
 
@@ -140,6 +141,7 @@ export default function BrainCanvas({
       -((ev.clientY - rect.top) / rect.height) * 2 + 1,
     );
     const rc = new THREE.Raycaster();
+    rc.params.Points = { threshold: 0.05 };
     rc.setFromCamera(mouse, camera);
     const hits = rc.intersectObjects(mg.children);
 
@@ -148,7 +150,7 @@ export default function BrainCanvas({
       renderer.domElement.style.cursor = 'pointer';
       propsRef.current.onRegionHover(id, ev);
     } else {
-      renderer.domElement.style.cursor = 'grab';
+      renderer.domElement.style.cursor = '';
       propsRef.current.onRegionHover(null);
     }
   }, []);
@@ -231,7 +233,7 @@ export default function BrainCanvas({
       const markers: Record<string, THREE.Mesh> = {};
       (Object.entries(RG) as [string, BrainRegion][]).forEach(([id, r]) => {
         const sphere = new THREE.Mesh(
-          new THREE.SphereGeometry(0.035, 16, 16),
+          new THREE.SphereGeometry(0.06, 16, 16),
           new THREE.MeshPhysicalMaterial({
             color: new THREE.Color(r.c),
             emissive: new THREE.Color(r.c),
@@ -454,10 +456,9 @@ export default function BrainCanvas({
     // ------------------------------------------------------------------
     function handleResize() {
       if (!container || !renderer || !camera || !composer) return;
-      const { rightPanelOpen: rpo, leftPanelWidth: lpw, rightPanelWidth: rpw } = propsRef.current;
-      const rpOffset = rpo ? rpw : 0;
-      const w = window.innerWidth - lpw - rpOffset;
-      const h = window.innerHeight - 48; // top bar
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      if (w <= 0 || h <= 0) return;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
@@ -561,14 +562,20 @@ export default function BrainCanvas({
     const container = containerRef.current;
     if (!renderer || !camera || !composer || !container) return;
 
-    const { rightPanelOpen: rpo, leftPanelWidth: lpw, rightPanelWidth: rpw } = propsRef.current;
-    const rpOffset = rpo ? rpw : 0;
-    const w = window.innerWidth - lpw - rpOffset;
-    const h = window.innerHeight - 48;
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-    renderer.setSize(w, h);
-    composer.setSize(w, h);
+    function doResize() {
+      const w = container!.clientWidth;
+      const h = container!.clientHeight;
+      if (w <= 0 || h <= 0) return;
+      camera!.aspect = w / h;
+      camera!.updateProjectionMatrix();
+      renderer!.setSize(w, h);
+      composer!.setSize(w, h);
+    }
+
+    // Immediate resize + delayed resize after CSS transition finishes
+    doResize();
+    const timer = setTimeout(doResize, 350);
+    return () => clearTimeout(timer);
   }, [rightPanelOpen, leftPanelWidth, rightPanelWidth]);
 
   // -----------------------------------------------------------------------
@@ -649,7 +656,7 @@ export default function BrainCanvas({
   return (
     <div
       ref={containerRef}
-      style={{ width: '100%', height: '100%', position: 'relative' }}
+      style={{ width: '100%', height: '100%', position: 'relative', cursor: 'default' }}
     />
   );
 }
