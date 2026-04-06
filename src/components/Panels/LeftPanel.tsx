@@ -38,7 +38,9 @@ function Section({
     <div className="section">
       <div className="sh" onClick={() => setOpen(!open)}>
         <span className="st">{title}</span>
-        <span className={`sa${open ? ' open' : ''}`}>{'\u25BC'}</span>
+        <span className={`sa${open ? ' open' : ''}`}>
+          <span /><span /><span />
+        </span>
       </div>
       <div className={`sb${open ? ' open' : ''}`} style={open ? { display: 'block' } : undefined}>
         {children}

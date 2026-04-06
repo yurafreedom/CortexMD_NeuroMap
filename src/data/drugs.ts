@@ -7,6 +7,7 @@ export interface DrugZoneEffect {
 
 export interface Drug {
   id: string;
+  brand: string;
   n: string;
   c: string;
   s: string;
@@ -28,6 +29,7 @@ export interface Drug {
 export const DRUGS: Record<string, Drug> = {
   sertraline: {
     id: 'sertraline',
+    brand: 'Zoloft',
     n: 'Золофт',
     c: '#60a5fa',
     s: 'СЕРТ',
@@ -54,6 +56,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   bupropion: {
     id: 'bupropion',
+    brand: 'Wellbutrin',
     n: 'Бупропион',
     c: '#fbbf24',
     s: 'БУПРО',
@@ -74,6 +77,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   atomoxetine: {
     id: 'atomoxetine',
+    brand: 'Strattera',
     n: 'Атомоксетин',
     c: '#34d399',
     s: 'АТОМ',
@@ -98,6 +102,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   vortioxetine: {
     id: 'vortioxetine',
+    brand: 'Brintellix',
     n: 'Вортиоксетин',
     c: '#a78bfa',
     s: 'ВОРТ',
@@ -116,6 +121,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   pramipexole: {
     id: 'pramipexole',
+    brand: 'Mirapex',
     n: 'Прамипексол',
     c: '#f87171',
     s: 'ПРАМ',
@@ -133,6 +139,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   duloxetine: {
     id: 'duloxetine',
+    brand: 'Cymbalta',
     n: 'Дулоксетин',
     c: '#22d3ee',
     s: 'ДУЛО',
@@ -152,6 +159,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   cariprazine: {
     id: 'cariprazine',
+    brand: 'Vraylar',
     n: 'Карипразин',
     c: '#fb923c',
     s: 'КАРИ',
@@ -166,6 +174,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   dhea: {
     id: 'dhea',
+    brand: 'DHEA',
     n: 'DHEA',
     c: '#f472b6',
     s: 'DHEA',
@@ -182,6 +191,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   escitalopram: {
     id: 'escitalopram',
+    brand: 'Lexapro',
     n: 'Эсциталопрам',
     c: '#38bdf8',
     s: 'ЭСЦИ',
@@ -200,6 +210,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   fluvoxamine: {
     id: 'fluvoxamine',
+    brand: 'Luvox',
     n: 'Флувоксамин',
     c: '#4ade80',
     s: 'ФЛУВ',
@@ -216,6 +227,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   guanfacine: {
     id: 'guanfacine',
+    brand: 'Intuniv',
     n: 'Гуанфацин',
     c: '#2dd4bf',
     s: 'ГУАН',
@@ -232,6 +244,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   lamotrigine: {
     id: 'lamotrigine',
+    brand: 'Lamictal',
     n: 'Ламотриджин',
     c: '#e879f9',
     s: 'ЛАМО',
@@ -250,6 +263,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   nac_supp: {
     id: 'nac_supp',
+    brand: 'NAC',
     n: 'NAC',
     c: '#a3e635',
     s: 'NAC',
@@ -265,6 +279,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   desipramine: {
     id: 'desipramine',
+    brand: 'Norpramin',
     n: 'Дезипрамин',
     c: '#f97316',
     s: 'ДЕЗИ',
@@ -288,6 +303,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   nortriptyline: {
     id: 'nortriptyline',
+    brand: 'Pamelor',
     n: 'Нортриптилин',
     c: '#fb923c',
     s: 'НОРТ',
@@ -307,6 +323,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   protriptyline: {
     id: 'protriptyline',
+    brand: 'Vivactil',
     n: 'Протриптилин',
     c: '#d97706',
     s: 'ПРОТ',
@@ -324,6 +341,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   reboxetine: {
     id: 'reboxetine',
+    brand: 'Edronax',
     n: 'Ребоксетин',
     c: '#06b6d4',
     s: 'РЕБО',
@@ -341,6 +359,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   amitriptyline: {
     id: 'amitriptyline',
+    brand: 'Elavil',
     n: 'Амитриптилин',
     c: '#eab308',
     s: 'АМИТ',
@@ -361,6 +380,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   milnacipran: {
     id: 'milnacipran',
+    brand: 'Savella',
     n: 'Милнаципран',
     c: '#0891b2',
     s: 'МИЛН',
@@ -378,6 +398,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   levomilnacipran: {
     id: 'levomilnacipran',
+    brand: 'Fetzima',
     n: 'Левомилнаципран',
     c: '#0284c7',
     s: 'ЛЕВО',
@@ -395,6 +416,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   venlafaxine: {
     id: 'venlafaxine',
+    brand: 'Effexor',
     n: 'Венлафаксин',
     c: '#0369a1',
     s: 'ВЕНЛ',
@@ -415,6 +437,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   desvenlafaxine: {
     id: 'desvenlafaxine',
+    brand: 'Pristiq',
     n: 'Десвенлафаксин',
     c: '#1d4ed8',
     s: 'ДЕСВ',
@@ -432,6 +455,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   quetiapine: {
     id: 'quetiapine',
+    brand: 'Seroquel',
     n: 'Кветиапин',
     c: '#7c3aed',
     s: 'КВЕТ',
@@ -448,6 +472,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   opipramol: {
     id: 'opipramol',
+    brand: 'Insidon',
     n: 'Опипрамол',
     c: '#d946ef',
     s: 'ОПИП',
@@ -464,6 +489,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   donepezil: {
     id: 'donepezil',
+    brand: 'Aricept',
     n: 'Донепезил',
     c: '#ec4899',
     s: 'ДОНЕ',
@@ -480,6 +506,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   dextromethorphan: {
     id: 'dextromethorphan',
+    brand: 'DXM',
     n: 'Декстрометорфан',
     c: '#a855f7',
     s: 'DXM',
@@ -496,6 +523,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   auvelity: {
     id: 'auvelity',
+    brand: 'Auvelity',
     n: 'Auvelity (DXM/бупро)',
     c: '#8b5cf6',
     s: 'АУВЛ',
@@ -512,6 +540,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   fluoxetine: {
     id: 'fluoxetine',
+    brand: 'Prozac',
     n: 'Флуоксетин',
     c: '#0ea5e9',
     s: 'ФЛУО',
@@ -532,6 +561,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   pregnenolone: {
     id: 'pregnenolone',
+    brand: 'Pregnenolone',
     n: 'Прегненолон',
     c: '#f9a8d4',
     s: 'ПРЕГ',
@@ -548,6 +578,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   ifenprodil: {
     id: 'ifenprodil',
+    brand: 'Ifenprodil',
     n: 'Ифенпродил',
     c: '#c084fc',
     s: 'ИФЕН',
@@ -564,6 +595,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   ketamine: {
     id: 'ketamine',
+    brand: 'Ketalar',
     n: 'Кетамин',
     c: '#f43f5e',
     s: 'КЕТА',
@@ -579,6 +611,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   progesterone: {
     id: 'progesterone',
+    brand: 'Prometrium',
     n: 'Прогестерон',
     c: '#be185d',
     s: 'ПРОГ',
@@ -594,6 +627,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   aripiprazole: {
     id: 'aripiprazole',
+    brand: 'Abilify',
     n: 'Арипипразол',
     c: '#dc2626',
     s: 'АРИП',
@@ -611,6 +645,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   brexpiprazole: {
     id: 'brexpiprazole',
+    brand: 'Rexulti',
     n: 'Брексипразол',
     c: '#e11d48',
     s: 'БРЕК',
@@ -628,6 +663,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   methylphenidate: {
     id: 'methylphenidate',
+    brand: 'Ritalin',
     n: 'Метилфенидат',
     c: '#b45309',
     s: 'МФД',
@@ -643,6 +679,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   lisdexamfetamine: {
     id: 'lisdexamfetamine',
+    brand: 'Vyvanse',
     n: 'Лисдексамфетамин',
     c: '#ca8a04',
     s: 'ЛИСД',
@@ -659,6 +696,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   modafinil: {
     id: 'modafinil',
+    brand: 'Provigil',
     n: 'Модафинил',
     c: '#84cc16',
     s: 'МОДА',
@@ -673,6 +711,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   selegiline_oral: {
     id: 'selegiline_oral',
+    brand: 'Emsam',
     n: 'Селегилин',
     c: '#65a30d',
     s: 'СЕЛЕ',
@@ -688,6 +727,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   amisulpride_low: {
     id: 'amisulpride_low',
+    brand: 'Solian',
     n: 'Амисульприд',
     c: '#fb7185',
     s: 'АМИС',
@@ -702,6 +742,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   levodopa: {
     id: 'levodopa',
+    brand: 'Sinemet',
     n: 'L-DOPA',
     c: '#16a34a',
     s: 'ЛДОП',
@@ -717,6 +758,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   same: {
     id: 'same',
+    brand: 'SAMe',
     n: 'SAMe',
     c: '#86efac',
     s: 'SAMe',
@@ -732,6 +774,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   omega3: {
     id: 'omega3',
+    brand: 'Omega-3',
     n: 'Омега-3 EPA/DHA',
     c: '#a7f3d0',
     s: 'ОМ3',
@@ -747,6 +790,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   rhodiola: {
     id: 'rhodiola',
+    brand: 'Rhodiola',
     n: 'Родиола',
     c: '#d8b4fe',
     s: 'РОДО',
@@ -761,6 +805,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   curcumin: {
     id: 'curcumin',
+    brand: 'Curcumin',
     n: 'Куркумин',
     c: '#c4b5fd',
     s: 'КУРК',
@@ -775,6 +820,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   b_vitamins: {
     id: 'b_vitamins',
+    brand: 'B-Complex',
     n: 'B-вит/L-метилфолат',
     c: '#bef264',
     s: 'BВИТ',
@@ -789,6 +835,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   l_tyrosine: {
     id: 'l_tyrosine',
+    brand: 'L-Tyrosine',
     n: 'L-тирозин',
     c: '#d9f99d',
     s: 'ТИРО',
@@ -803,6 +850,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   lions_mane: {
     id: 'lions_mane',
+    brand: 'Lion\'s Mane',
     n: 'Ежовик гребенчатый',
     c: '#fde68a',
     s: 'ЕЖОВ',
@@ -817,6 +865,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   magnesium_threonate: {
     id: 'magnesium_threonate',
+    brand: 'Magtein',
     n: 'Магний L-треонат',
     c: '#99f6e4',
     s: 'MgTr',
@@ -831,6 +880,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   pea_um: {
     id: 'pea_um',
+    brand: 'PEA',
     n: 'PEA ультрамикрониз.',
     c: '#fecaca',
     s: 'PEA',
@@ -845,6 +895,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   mucuna: {
     id: 'mucuna',
+    brand: 'Mucuna',
     n: 'Мукуна жгучая',
     c: '#bbf7d0',
     s: 'МУКУ',
@@ -859,6 +910,7 @@ export const DRUGS: Record<string, Drug> = {
   },
   vitamin_d: {
     id: 'vitamin_d',
+    brand: 'Vitamin D',
     n: 'Витамин D3',
     c: '#fef08a',
     s: 'ВитD',

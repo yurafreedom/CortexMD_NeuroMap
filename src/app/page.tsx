@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { BrainCanvas } from '@/components/Brain3D';
 import LeftPanel from '@/components/Panels/LeftPanel';
 import RightPanel from '@/components/Panels/RightPanel';
@@ -12,10 +12,8 @@ import { useScheme } from '@/hooks/useScheme';
 import { useDeficits } from '@/hooks/useDeficits';
 
 const LEFT_PANEL_WIDTH = 280;
-const RIGHT_PANEL_WIDTH = 340;
 
 export default function Home() {
-  // Hooks
   const {
     scheme,
     addDrug,
@@ -33,7 +31,6 @@ export default function Home() {
     deleteDeficit,
   } = useDeficits();
 
-  // Local UI state
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const [rightPanelOpen, setRightPanelOpen] = useState(false);
   const [sigma1Open, setSigma1Open] = useState(false);
@@ -49,8 +46,34 @@ export default function Home() {
     y: number;
   } | null>(null);
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rightPanelRef = useRef<HTMLDivElement>(null);
 
-  // Event handlers
+  // БЛОК D: Auto-hide right panel after 6s of inactivity
+  useEffect(() => {
+    if (!rightPanelOpen) return;
+
+    let timer = setTimeout(() => setRightPanelOpen(false), 6000);
+
+    const reset = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => setRightPanelOpen(false), 6000);
+    };
+
+    const panel = rightPanelRef.current;
+    if (panel) {
+      panel.addEventListener('mousemove', reset);
+      panel.addEventListener('click', reset);
+    }
+
+    return () => {
+      clearTimeout(timer);
+      if (panel) {
+        panel.removeEventListener('mousemove', reset);
+        panel.removeEventListener('click', reset);
+      }
+    };
+  }, [rightPanelOpen]);
+
   const handleRegionClick = useCallback(
     (id: string | null, screenPos?: { x: number; y: number }) => {
       setSelectedRegion(id);
@@ -70,7 +93,6 @@ export default function Home() {
         hoverTimerRef.current = null;
       }
       if (id && event) {
-        // Don't show tooltip if popup is already open for this zone
         if (zonePopup?.zoneId === id) {
           setTooltip(null);
           return;
@@ -144,15 +166,14 @@ export default function Home() {
           }}
         />
 
-        {/* 3D Brain Canvas */}
+        {/* 3D Brain Canvas — БЛОК C: always left:280px to right:0, right panel overlays */}
         <div
           style={{
             position: 'absolute',
             top: 0,
             left: LEFT_PANEL_WIDTH,
-            right: rightPanelOpen ? RIGHT_PANEL_WIDTH : 0,
+            right: 0,
             bottom: 48,
-            transition: 'right 0.3s ease',
           }}
         >
           <BrainCanvas
@@ -162,14 +183,14 @@ export default function Home() {
             onRegionClick={handleRegionClick}
             onRegionHover={handleRegionHover}
             opacity={brainOpacity}
-            rightPanelOpen={rightPanelOpen}
+            rightPanelOpen={false}
             leftPanelWidth={LEFT_PANEL_WIDTH}
-            rightPanelWidth={RIGHT_PANEL_WIDTH}
+            rightPanelWidth={0}
           />
         </div>
       </div>
 
-      {/* Zone Popup (conditional, positioned) */}
+      {/* Zone Popup */}
       {zonePopup && (
         <ZonePopup
           zoneId={zonePopup.zoneId}
@@ -180,7 +201,7 @@ export default function Home() {
         />
       )}
 
-      {/* Left Panel (always visible, fixed 280px) */}
+      {/* Left Panel */}
       <div
         className="absolute top-0 left-0 h-full z-20"
         style={{ width: LEFT_PANEL_WIDTH }}
@@ -201,32 +222,33 @@ export default function Home() {
         />
       </div>
 
-      {/* Right Panel (slide-in) */}
-      <RightPanel
-        isOpen={rightPanelOpen}
-        selectedRegion={selectedRegion}
-        activeDrugs={scheme}
-        deficits={deficits}
-        onClose={() => setRightPanelOpen(false)}
-        onToggle={toggleRightPanel}
-        onShowSigma1={showSigma1}
-        onSelectDeficit={selectDeficit}
-      />
+      {/* Right Panel — БЛОК C: overlays canvas, no resize */}
+      <div ref={rightPanelRef}>
+        <RightPanel
+          isOpen={rightPanelOpen}
+          selectedRegion={selectedRegion}
+          activeDrugs={scheme}
+          deficits={deficits}
+          onClose={() => setRightPanelOpen(false)}
+          onToggle={toggleRightPanel}
+          onShowSigma1={showSigma1}
+          onSelectDeficit={selectDeficit}
+        />
+      </div>
 
-      {/* Bottom Bar (fixed bottom) */}
+      {/* Bottom Bar — always from left panel to right edge */}
       <div
         className="absolute bottom-0 z-20"
         style={{
           left: LEFT_PANEL_WIDTH,
-          right: rightPanelOpen ? RIGHT_PANEL_WIDTH : 0,
+          right: 0,
           height: 48,
-          transition: 'right 0.3s ease',
         }}
       >
         <BottomBar activeDrugs={scheme} />
       </div>
 
-      {/* Sigma-1 Cascade Overlay (conditional) */}
+      {/* Sigma-1 Cascade Overlay */}
       <CascadeOverlay
         isOpen={sigma1Open}
         activeDrugs={scheme}
@@ -247,30 +269,25 @@ export default function Home() {
           style={{
             position: 'fixed', right: 20, bottom: 64, zIndex: 40,
             width: 48, height: 48, borderRadius: '50%',
-            background: 'linear-gradient(135deg,#6ee7b7,#818cf8)',
+            background: 'linear-gradient(135deg,#60a5fa,#818cf8)',
             border: 'none', cursor: 'pointer', fontSize: 20,
-            boxShadow: '0 4px 20px rgba(110,231,183,0.3)',
+            boxShadow: '0 4px 20px rgba(96,165,250,0.3)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             color: '#080b12', fontWeight: 700,
           }}
           title="AI Ассистент"
         >
-          💬
+          AI
         </button>
       )}
 
-      {/* Tooltip (follows mouse on region hover) */}
+      {/* Tooltip (follows mouse on region hover) — E5 with background */}
       {tooltip && !zonePopup && (
         <div
-          className="fixed z-50 pointer-events-none whitespace-nowrap"
+          className="zone-hover-label fixed z-50"
           style={{
             left: tooltip.x + 12,
             top: tooltip.y - 8,
-            background: 'rgba(0,0,0,0.75)',
-            padding: '4px 8px',
-            borderRadius: '4px',
-            fontSize: '12px',
-            color: '#fff',
           }}
         >
           {tooltip.text}

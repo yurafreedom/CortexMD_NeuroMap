@@ -108,13 +108,17 @@ export default function BrainCanvas({
     const rc = new THREE.Raycaster();
     rc.params.Points = { threshold: 0.05 };
     rc.setFromCamera(mouse, camera);
-    const hits = rc.intersectObjects(mg.children);
+    const hits = rc.intersectObjects(mg.children, true);
 
-    if (hits.length > 0 && hits[0].object.userData.rid) {
-      const id = hits[0].object.userData.rid as string;
+    if (hits.length > 0) {
+      // Walk up to find the userData.rid (could be on hitbox child or marker itself)
+      let hitObj = hits[0].object;
+      while (hitObj && !hitObj.userData.rid && hitObj.parent) hitObj = hitObj.parent;
+      if (!hitObj?.userData.rid) { propsRef.current.onRegionClick(null); return; }
+      const id = hitObj.userData.rid as string;
       // Compute screen‑space position of the marker for popup placement
       const vec = new THREE.Vector3();
-      hits[0].object.getWorldPosition(vec);
+      hitObj.getWorldPosition(vec);
       vec.project(camera);
       const cx = (vec.x * 0.5 + 0.5) * rect.width + rect.left;
       const cy = (-vec.y * 0.5 + 0.5) * rect.height + rect.top;
@@ -143,14 +147,21 @@ export default function BrainCanvas({
     const rc = new THREE.Raycaster();
     rc.params.Points = { threshold: 0.05 };
     rc.setFromCamera(mouse, camera);
-    const hits = rc.intersectObjects(mg.children);
+    const hits = rc.intersectObjects(mg.children, true);
 
-    if (hits.length > 0 && hits[0].object.userData.rid) {
-      const id = hits[0].object.userData.rid as string;
-      renderer.domElement.style.cursor = 'pointer';
-      propsRef.current.onRegionHover(id, ev);
+    if (hits.length > 0) {
+      let hitObj = hits[0].object;
+      while (hitObj && !hitObj.userData.rid && hitObj.parent) hitObj = hitObj.parent;
+      if (hitObj?.userData.rid) {
+        const id = hitObj.userData.rid as string;
+        document.body.style.cursor = 'pointer';
+        propsRef.current.onRegionHover(id, ev);
+      } else {
+        document.body.style.cursor = 'default';
+        propsRef.current.onRegionHover(null);
+      }
     } else {
-      renderer.domElement.style.cursor = '';
+      document.body.style.cursor = 'default';
       propsRef.current.onRegionHover(null);
     }
   }, []);
@@ -168,7 +179,8 @@ export default function BrainCanvas({
 
     // === Camera ===
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-    camera.position.set(0, 0.5, 3.5);
+    camera.position.set(3.5, 0.5, 0);
+    camera.lookAt(0, 0, 0);
     cameraRef.current = camera;
 
     // === Renderer ===
@@ -232,8 +244,9 @@ export default function BrainCanvas({
     function initScene() {
       const markers: Record<string, THREE.Mesh> = {};
       (Object.entries(RG) as [string, BrainRegion][]).forEach(([id, r]) => {
+        const markerRadius = 0.09; // 1.5x original 0.06
         const sphere = new THREE.Mesh(
-          new THREE.SphereGeometry(0.06, 16, 16),
+          new THREE.SphereGeometry(markerRadius, 16, 16),
           new THREE.MeshPhysicalMaterial({
             color: new THREE.Color(r.c),
             emissive: new THREE.Color(r.c),
@@ -248,9 +261,17 @@ export default function BrainCanvas({
         mg.add(sphere);
         markers[id] = sphere;
 
+        // Invisible hitbox for easier clicking (E2)
+        const hitbox = new THREE.Mesh(
+          new THREE.SphereGeometry(markerRadius * 2.5, 8, 8),
+          new THREE.MeshBasicMaterial({ visible: false }),
+        );
+        hitbox.userData = { rid: id };
+        sphere.add(hitbox);
+
         // Ring billboard
         const ring = new THREE.Mesh(
-          new THREE.RingGeometry(0.045, 0.065, 32),
+          new THREE.RingGeometry(0.07, 0.1, 32),
           new THREE.MeshBasicMaterial({
             color: new THREE.Color(r.c),
             transparent: true,
@@ -369,7 +390,7 @@ export default function BrainCanvas({
 
       // Wireframe clone
       const wireMat = new THREE.MeshBasicMaterial({
-        color: 0x6ee7b7,
+        color: 0x60a5fa,
         wireframe: true,
         transparent: true,
         opacity: 0.06,

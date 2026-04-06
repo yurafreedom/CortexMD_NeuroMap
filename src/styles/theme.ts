@@ -14,9 +14,9 @@ export const theme = {
     textSecondary: "#9ba3b5",
     textMuted: "#5a6478",
 
-    accent: "#6ee7b7",
-    accentDim: "rgba(110,231,183,0.15)",
-    accentGlow: "rgba(110,231,183,0.08)",
+    accent: "#60a5fa",
+    accentDim: "rgba(96,165,250,0.12)",
+    accentGlow: "rgba(96,165,250,0.25)",
     accentBlue: "#818cf8",
     accentBlueDim: "rgba(129,140,248,0.15)",
 
@@ -36,13 +36,14 @@ export const theme = {
     lg: "16px",
   },
 
-  ease: "cubic-bezier(0.4,0,0.2,1)",
+  ease: "cubic-bezier(0.32,0.72,0,1)",
   dur: "0.25s",
 
   fonts: {
-    head: "'Outfit', sans-serif",
-    body: "'DM Sans', sans-serif",
-    mono: "'JetBrains Mono', monospace",
+    display: "'Outfit', -apple-system, sans-serif",
+    head: "'Outfit', -apple-system, sans-serif",
+    body: "'Plus Jakarta Sans', -apple-system, sans-serif",
+    mono: "'JetBrains Mono', 'Fira Code', monospace",
   },
 } as const;
 

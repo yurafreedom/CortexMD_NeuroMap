@@ -40,48 +40,50 @@ export default function ActiveScheme({
           const step = d.doses.length > 1 ? d.doses[1] - d.doses[0] : 1;
 
           return (
-            <div
-              className="scheme-card"
-              key={id}
-              style={{ '--c': d.c } as React.CSSProperties}
-            >
-              <div className="scheme-header">
-                <span className="scheme-dot" style={{ background: d.c }} />
-                <span className="scheme-name">{d.s}</span>
-                <button
-                  className="scheme-remove"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onRemove(id);
-                  }}
-                  title="Убрать"
-                >
-                  &times;
-                </button>
-              </div>
-              <div className="scheme-dose">
-                <span>{dose}</span> {d.u}
-              </div>
-              {rd && Math.abs(rd - dose) > 1 && (
-                <div className="scheme-real-dose">
-                  реально ~{Math.round(rd)}
-                  {d.u}
+            <div className="scheme-card-wrap" key={id}>
+              <div className="scheme-card">
+                <div className="scheme-header">
+                  <div style={{ flex: 1 }}>
+                    <div className="scheme-brand">
+                      {(d as any).brand || d.s}
+                    </div>
+                    <div className="scheme-generic">{d.n}</div>
+                  </div>
+                  <button
+                    className="scheme-remove"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRemove(id);
+                    }}
+                    title="Убрать"
+                  >
+                    &times;
+                  </button>
                 </div>
-              )}
-              {hasWarn && <div className="scheme-warning">{'\u26A0'}</div>}
-              {hasWarn && d.warnText && (
-                <div className="scheme-warn-text">{d.warnText}</div>
-              )}
-              <input
-                type="range"
-                className="scheme-slider"
-                min={mn}
-                max={mx}
-                step={step}
-                value={dose}
-                style={{ accentColor: d.c }}
-                onChange={(e) => onUpdateDose(id, parseFloat(e.target.value))}
-              />
+                <div className="scheme-dose">
+                  <span>{dose}</span>{' '}
+                  <span className="scheme-unit">{d.u}</span>
+                </div>
+                {rd && Math.abs(rd - dose) > 1 && (
+                  <div className="scheme-real-dose">
+                    реально ~{Math.round(rd)}
+                    {d.u}
+                  </div>
+                )}
+                {hasWarn && <div className="scheme-warning">{'\u26A0'}</div>}
+                {hasWarn && d.warnText && (
+                  <div className="scheme-warn-text">{d.warnText}</div>
+                )}
+                <input
+                  type="range"
+                  className="scheme-slider"
+                  min={mn}
+                  max={mx}
+                  step={step}
+                  value={dose}
+                  onChange={(e) => onUpdateDose(id, parseFloat(e.target.value))}
+                />
+              </div>
             </div>
           );
         })}
