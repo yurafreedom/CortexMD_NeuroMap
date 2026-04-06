@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CortexMD v4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-deep:#080b12;--bg-base:#0d1117;--bg-elevated:#141820;--bg-surface:#1a1f2e;
+  --glass:rgba(255,255,255,0.03);--glass-hover:rgba(255,255,255,0.06);
+  --glass-border:rgba(255,255,255,0.08);--glass-border-hover:rgba(255,255,255,0.15);
+  --text-primary:#f0f2f5;--text-secondary:#9ba3b5;--text-muted:#5a6478;
+  --accent:#6ee7b7;--accent-dim:rgba(110,231,183,0.15);--accent-glow:rgba(110,231,183,0.08);
+  --accent-blue:#818cf8;--accent-blue-dim:rgba(129,140,248,0.15);
+  --status-optimal:#22c55e;--status-warning:#f59e0b;--status-danger:#ef4444;
+  --shadow-sm:0 2px 8px rgba(0,0,0,0.3);--shadow-md:0 8px 32px rgba(0,0,0,0.4);
+  --radius-sm:8px;--radius-md:12px;--radius-lg:16px;
+  --ease:cubic-bezier(0.4,0,0.2,1);--dur:0.25s;
+  --font-head:'Outfit',sans-serif;--font-body:'DM Sans',sans-serif;--font-mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-body);overflow:hidden;height:100vh}
+
+/* === 3D CANVAS + AMBIENT GLOW === */
+#cv{position:absolute;inset:0;z-index:0;
+  background:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px),radial-gradient(ellipse at 50% 45%,rgba(110,231,183,0.12) 0%,rgba(129,140,248,0.08) 35%,transparent 65%),#080b12;
+  background-size:50px 50px,50px 50px,100% 100%,100% 100%}
+.cv-btn{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:10;
+  padding:5px 14px;font-size:9px;font-family:var(--font-mono);font-weight:600;
+  background:rgba(15,23,42,0.7);backdrop-filter:blur(8px);color:var(--text-secondary);
+  border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius-full);cursor:pointer;
+  transition:all var(--dur) var(--ease);letter-spacing:0.3px}
+.cv-btn:hover{background:rgba(30,41,59,0.8);color:var(--text-primary);border-color:rgba(255,255,255,0.15)}
+.cv-btn.active{background:rgba(99,102,241,0.2);color:#a78bfa;border-color:rgba(167,139,250,0.3)}
+#cv canvas{position:relative;z-index:3;background:transparent !important}
+#cv::before{content:'';position:absolute;left:0;top:10%;bottom:10%;width:40px;z-index:2;pointer-events:none;
+  background:repeating-linear-gradient(to bottom,transparent,transparent 8px,rgba(110,231,183,0.06) 8px,rgba(110,231,183,0.06) 9px);
+  mask-image:linear-gradient(to bottom,transparent,white 20%,white 80%,transparent);
+  -webkit-mask-image:linear-gradient(to bottom,transparent,white 20%,white 80%,transparent)}
+#cv::after{content:'';position:absolute;right:0;top:10%;bottom:10%;width:40px;z-index:2;pointer-events:none;
+  background:repeating-linear-gradient(to bottom,transparent,transparent 8px,rgba(129,140,248,0.06) 8px,rgba(129,140,248,0.06) 9px);
+  mask-image:linear-gradient(to bottom,transparent,white 20%,white 80%,transparent);
+  -webkit-mask-image:linear-gradient(to bottom,transparent,white 20%,white 80%,transparent)}
+
+@keyframes blobD{0%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.1)}66%{transform:translate(-20px,30px) scale(0.9)}100%{transform:translate(10px,-10px) scale(1.05)}}
+
+/* === SCROLLBAR === */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.18)}
+
+/* === LEFT PANEL === */
+#lp{position:absolute;left:0;top:0;bottom:48px;width:280px;z-index:10;
+  background:rgba(13,17,23,0.85);border-right:1px solid rgba(255,255,255,0.08);
+  overflow-y:auto;padding:14px;backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px)}
+
+/* === RIGHT PANEL — hidden by default, slides in === */
+#rp{position:fixed;right:0;top:0;bottom:48px;width:340px;z-index:15;
+  background:rgba(13,17,23,0.92);border-left:1px solid var(--glass-border);
+  overflow-y:auto;padding:16px;backdrop-filter:blur(30px) saturate(1.2);-webkit-backdrop-filter:blur(30px) saturate(1.2);
+  transform:translateX(100%);transition:transform 0.3s var(--ease)}
+#rp.open{transform:translateX(0)}
+
+/* Panel toggle tab */
+#panel-toggle{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:16;
+  width:28px;height:80px;background:rgba(13,17,23,0.8);backdrop-filter:blur(10px);
+  border:1px solid var(--glass-border);border-right:none;border-radius:8px 0 0 8px;
+  color:var(--text-muted);font-size:10px;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;writing-mode:vertical-rl;text-orientation:mixed;
+  transition:all 0.3s var(--ease);font-family:var(--font-body);letter-spacing:0.3px}
+#panel-toggle:hover{background:rgba(13,17,23,0.95);color:var(--text-primary);width:32px}
+#rp.open~#panel-toggle{right:340px}
+#panel-toggle .badge{position:absolute;top:8px;left:50%;transform:translateX(-50%);
+  width:8px;height:8px;border-radius:50%;background:#ef4444;
+  animation:pulse-badge 2s infinite}
+@keyframes pulse-badge{0%,100%{opacity:1;box-shadow:0 0 4px #ef4444}50%{opacity:0.5;box-shadow:0 0 8px #ef4444}}
+#panel-toggle .badge.hidden{display:none}
+
+/* Panel close button */
+.panel-close{position:sticky;top:0;float:right;background:none;border:none;color:var(--text-muted);
+  font-size:20px;cursor:pointer;width:28px;height:28px;display:flex;align-items:center;
+  justify-content:center;border-radius:6px;z-index:1}
+.panel-close:hover{background:var(--glass);color:var(--text-primary)}
+
+/* === LOGO === */
+.logo{font-family:var(--font-head);font-size:22px;font-weight:700;text-align:center;padding:8px 0 2px;letter-spacing:-0.5px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-family:var(--font-body);font-size:9px;text-align:center;color:var(--text-muted);margin-bottom:12px;letter-spacing:0.5px;text-transform:uppercase}
+
+/* === SECTIONS (collapsible) === */
+.section{border:1px solid var(--glass-border);border-radius:var(--radius-md);margin-bottom:8px;overflow:hidden;
+  background:var(--glass);transition:border-color var(--dur) var(--ease)}
+.section:hover{border-color:var(--glass-border-hover)}
+.sh{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;
+  background:rgba(255,255,255,0.02);cursor:pointer;user-select:none;transition:background var(--dur) var(--ease)}
+.sh:hover{background:rgba(255,255,255,0.04)}
+.st{font-family:var(--font-head);font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.6px}
+.sa{font-size:10px;color:var(--text-muted);transition:transform .2s var(--ease)}
+.sa.open{transform:rotate(180deg)}
+.sb{padding:8px;display:none}
+.sb.open{display:block}
+
+/* === DRUG GRID === */
+.dg{display:flex;flex-wrap:wrap;gap:4px}
+.di{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:var(--radius-sm);cursor:pointer;
+  border:1px solid transparent;font-size:10px;color:var(--text-muted);transition:all var(--dur) var(--ease);min-width:calc(50% - 4px)}
+.di:hover{background:var(--glass-hover);color:var(--text-secondary)}
+.di.on{border-color:var(--c);background:color-mix(in srgb,var(--c) 8%,transparent);color:var(--c);font-weight:600}
+.ddt{width:8px;height:8px;border-radius:50%;border:2px solid var(--c);flex-shrink:0;transition:all var(--dur) var(--ease)}
+.di.on .ddt{background:var(--c);box-shadow:0 0 8px var(--c)}
+
+/* === DOSE SLIDER === */
+.dr{display:none;padding:6px 8px;background:var(--bg-elevated);border-radius:var(--radius-sm);margin:3px 0;
+  border:1px solid var(--glass-border)}
+.dr.show{display:block}
+.dr input[type=range]{width:100%;height:16px;accent-color:var(--c);cursor:pointer}
+.dinfo{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:8px;color:var(--text-muted)}
+.dwarn{font-size:8px;color:#f59e0b;margin-top:2px;display:none;font-family:var(--font-mono)}
+.dwarn.show{display:block}
+.dwarn.danger{color:#ef4444}
+.dval{font-family:var(--font-mono);font-size:11px;font-weight:500;text-align:center;letter-spacing:-0.3px}
+
+/* === ACTIVE SCHEME === */
+#active-scheme{padding:8px 0;min-height:32px}
+.empty-scheme{text-align:center;padding:16px 10px;color:var(--text-muted);font-size:11px;font-style:italic}
+.scheme-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.scheme-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-left:3px solid var(--c);
+  border-radius:8px;padding:7px 8px;position:relative;transition:all var(--dur) var(--ease);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.scheme-card:hover{border-color:var(--glass-border-hover);background:var(--glass-hover)}
+.scheme-header{display:flex;align-items:center;gap:4px;margin-bottom:1px}
+.scheme-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.scheme-name{font-size:10px;font-weight:600;color:var(--c);flex:1;font-family:var(--font-head)}
+.scheme-remove{background:none;border:none;color:var(--text-muted);font-size:14px;cursor:pointer;padding:0 2px;line-height:1;transition:color var(--dur)}
+.scheme-remove:hover{color:#ef4444}
+.scheme-dose{font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--text-primary);margin:1px 0}
+.scheme-real-dose{font-size:8px;color:var(--accent);font-family:var(--font-mono)}
+.scheme-warning{position:absolute;top:4px;right:20px;font-size:11px}
+.scheme-warn-text{font-size:7px;color:#f59e0b;font-family:var(--font-mono);margin-top:1px}
+.scheme-slider{width:100%;margin-top:3px}
+.catalog-toggle-btn{width:100%;display:flex;justify-content:space-between;align-items:center;padding:9px 12px;
+  background:rgba(255,255,255,0.02);border:none;border-top:1px solid var(--glass-border);
+  color:var(--text-secondary);font-size:11px;font-weight:600;cursor:pointer;
+  font-family:var(--font-head);text-transform:uppercase;letter-spacing:0.5px;transition:all var(--dur) var(--ease)}
+.catalog-toggle-btn:hover{color:var(--text-primary);background:rgba(255,255,255,0.04)}
+#catalog-section{display:none;padding:8px}
+#catalog-section.open{display:block}
+.di.in-scheme{opacity:0.4;position:relative}
+.di.in-scheme::after{content:'\2713';position:absolute;right:4px;top:50%;transform:translateY(-50%);font-size:9px;color:var(--accent)}
+
+/* === PRESETS === */
+.pl{display:flex;flex-wrap:wrap;gap:4px}
+.pb{padding:6px 10px;font-size:10px;border-radius:var(--radius-sm);
+  border:1px solid var(--glass-border);background:var(--glass);color:var(--text-secondary);
+  cursor:pointer;flex:1;min-width:45%;text-align:center;font-family:var(--font-body);
+  transition:all var(--dur) var(--ease)}
+.pb:hover{border-color:var(--glass-border-hover);color:var(--text-primary);background:var(--glass-hover);box-shadow:var(--shadow-sm)}
+
+/* === CARDS (right panel) === */
+.card{background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:1px solid var(--glass-border);border-radius:var(--radius-md);padding:14px;margin-bottom:8px;
+  transition:border-color var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
+.card:hover{border-color:var(--glass-border-hover);box-shadow:var(--shadow-sm)}
+.ct{font-family:var(--font-head);font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:4px}
+.cs{font-size:10px;color:var(--text-secondary);line-height:1.5;margin-bottom:8px}
+
+/* === RECEPTOR BADGES === */
+.rg{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:8px}
+.rc{font-family:var(--font-mono);font-size:8px;padding:3px 6px;border-radius:5px;border:1px solid rgba(255,255,255,0.1);color:var(--text-secondary);
+  transition:all var(--dur) var(--ease)}
+.rc.h{border-color:rgba(34,197,94,0.4);color:#86efac;background:rgba(34,197,94,0.1)}
+.rc.m{border-color:rgba(245,158,11,0.4);color:#fde68a;background:rgba(245,158,11,0.08)}
+.rc.l{border-color:rgba(255,255,255,0.08);color:var(--text-muted)}
+.rc.a{border-color:rgba(239,68,68,0.4);color:#fca5a5;background:rgba(239,68,68,0.08);text-decoration:line-through}
+
+/* === DRUG EFFECT ITEMS === */
+.fi{padding:6px 8px;margin-bottom:4px;border-radius:var(--radius-sm);border-left:3px solid var(--c);
+  background:rgba(255,255,255,0.02);transition:background var(--dur) var(--ease)}
+.fi:hover{background:rgba(255,255,255,0.04)}
+.fi.bad{border-left-color:var(--status-danger);background:rgba(239,68,68,0.06)}
+.fd{font-size:10px;font-weight:600}
+.fx{font-size:9px;color:var(--text-secondary);margin-top:2px;line-height:1.4}
+.fo{font-family:var(--font-mono);font-size:8px;color:var(--text-muted);margin-top:3px;display:flex;flex-wrap:wrap;gap:3px}
+.fo-bar{display:inline-flex;align-items:center;gap:3px}
+.fo-bar-track{width:32px;height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden}
+.fo-bar-fill{height:100%;border-radius:2px;transition:width .3s ease}
+.fo-bar-lbl{font-size:7px;color:var(--text-muted);font-family:var(--font-mono)}
+.nb{display:inline-block;font-size:8px;padding:2px 5px;border-radius:4px;margin-right:2px;font-weight:500}
+
+/* === CONFLICT BOX === */
+.cb{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:var(--radius-md);padding:10px;margin-bottom:8px}
+.cbt{font-family:var(--font-head);font-size:11px;font-weight:600;color:var(--status-warning);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.3px}
+.ci{font-size:10px;color:#fde68a;margin-bottom:2px;line-height:1.4}
+
+/* === BOTTOM BAR === */
+#bb{position:absolute;bottom:0;left:0;right:0;height:48px;z-index:10;
+  background:rgba(8,11,18,0.95);border-top:1px solid rgba(255,255,255,0.08);
+  display:flex;align-items:center;padding:0 16px;gap:0;
+  backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px)}
+.hb{flex:1;padding:4px 8px;text-align:center;position:relative;border-right:1px solid rgba(255,255,255,0.06)}
+.hb:last-child{border-right:none}
+.hl{font-family:var(--font-body);font-size:9px;color:rgba(155,163,181,0.7);margin-bottom:2px;text-transform:uppercase;letter-spacing:1px}
+.hv{font-family:var(--font-mono);font-size:18px;font-weight:500;letter-spacing:-0.5px}
+.hbar{height:2px;background:rgba(255,255,255,0.06);border-radius:1px;overflow:hidden;margin-top:3px}
+.hfill{height:100%;border-radius:1px;transition:width 0.5s var(--ease),background 0.5s var(--ease)}
+.hs{display:none}
+
+/* === TOOLTIP === */
+#tooltip{position:absolute;z-index:20;padding:8px 12px;
+  background:rgba(13,17,23,0.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid var(--glass-border-hover);border-radius:var(--radius-sm);
+  font-size:11px;color:var(--text-primary);pointer-events:none;display:none;max-width:240px;
+  box-shadow:var(--shadow-md)}
+
+/* === SEARCH === */
+.dsearch{width:100%;padding:8px 10px;background:var(--bg-surface);
+  border:1px solid var(--glass-border);border-radius:var(--radius-sm);
+  color:var(--text-primary);font-family:var(--font-body);font-size:12px;margin-bottom:8px;outline:none;
+  transition:border-color var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
+.dsearch:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim)}
+.dsearch::placeholder{color:var(--text-muted)}
+
+/* === CATEGORY TABS === */
+.dtabs{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:8px}
+.dtab{padding:4px 8px;font-family:var(--font-body);font-size:9px;border-radius:6px;
+  border:1px solid transparent;background:transparent;color:var(--text-muted);
+  cursor:pointer;text-transform:uppercase;letter-spacing:0.4px;font-weight:500;
+  transition:all var(--dur) var(--ease)}
+.dtab:hover{color:var(--text-secondary);background:var(--glass)}
+.dtab.act{color:var(--text-primary);background:var(--glass);border-color:var(--glass-border-hover)}
+
+/* === MISC === */
+.disclaimer{font-size:8px;color:var(--text-muted);text-align:center;padding:6px;border-top:1px solid var(--glass-border);margin-top:6px}
+
+/* === ZONE POPUP on canvas === */
+.zone-popup{position:fixed;z-index:20;width:260px;background:rgba(13,17,23,0.95);
+  backdrop-filter:blur(30px);border:1px solid var(--glass-border);border-radius:12px;
+  padding:14px;box-shadow:0 16px 48px rgba(0,0,0,0.5);pointer-events:auto;
+  transition:opacity 0.2s ease,transform 0.2s ease}
+.zone-popup.hidden{opacity:0;transform:scale(0.95);pointer-events:none}
+.zone-popup-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.zone-popup-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.zone-popup-title{font-family:var(--font-head);font-size:15px;font-weight:600;color:var(--text-primary);line-height:1.2}
+.zone-popup-subtitle{font-size:11px;color:var(--text-secondary);margin-top:2px}
+.zone-popup-close{background:none;border:none;color:var(--text-muted);font-size:16px;cursor:pointer;margin-left:auto;padding:0 4px}
+.zone-popup-close:hover{color:var(--text-primary)}
+.zone-popup-body{font-size:11px;color:var(--text-secondary);line-height:1.5}
+.popup-effect{display:flex;align-items:center;gap:6px;margin:3px 0;font-size:11px}
+.popup-effect-arrow{font-size:13px;flex-shrink:0}
+.popup-effect-arrow.up{color:#22c55e}.popup-effect-arrow.down{color:#ef4444}
+.popup-effect-name{color:var(--text-primary);font-weight:600;font-size:10px}
+.popup-effect-detail{color:var(--text-muted);font-size:10px}
+.zone-popup-more{display:block;width:100%;margin-top:10px;padding:6px;background:var(--glass);
+  border:1px solid var(--glass-border);border-radius:6px;color:var(--accent);font-size:11px;
+  cursor:pointer;text-align:center;font-family:var(--font-body);transition:all var(--dur) var(--ease)}
+.zone-popup-more:hover{background:var(--glass-hover)}
+
+/* === SIMPLIFIED RIGHT PANEL CONTENT === */
+.zone-header-card{border-radius:10px;padding:14px 16px;margin-bottom:16px}
+.zone-header-title{font-family:var(--font-head);font-size:18px;font-weight:600;color:var(--text-primary);margin-bottom:2px}
+.zone-header-subtitle{font-size:13px;color:var(--text-secondary)}
+.panel-section-title{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px;margin:12px 0 6px;font-family:var(--font-head)}
+.panel-effect{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:14px}
+.panel-effect:last-child{border-bottom:none}
+.panel-effect-icon{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.panel-effect-icon.up{background:rgba(34,197,94,0.15);color:#22c55e}
+.panel-effect-icon.down{background:rgba(239,68,68,0.15);color:#ef4444}
+.panel-effect-icon.neutral{background:rgba(100,116,139,0.15);color:#64748b}
+.panel-effect-drug{font-weight:600;color:var(--text-primary);min-width:45px;font-size:13px}
+.panel-effect-desc{color:var(--text-secondary);font-size:12px}
+.cvbtn{display:inline-flex;align-items:center;gap:4px;padding:6px 12px;font-size:10px;font-weight:500;
+  border-radius:var(--radius-sm);border:1px solid rgba(168,85,247,0.3);color:#c084fc;
+  background:rgba(168,85,247,0.08);cursor:pointer;margin-top:6px;transition:all var(--dur) var(--ease)}
+.cvbtn:hover{background:rgba(168,85,247,0.18);border-color:rgba(168,85,247,0.5);box-shadow:0 0 20px rgba(168,85,247,0.1)}
+
+/* === σ1 OVERLAY === */
+#s1overlay{position:fixed;inset:0;z-index:100;
+  background:rgba(8,11,18,0.92);display:none;flex-direction:column;align-items:center;justify-content:center;
+  backdrop-filter:blur(32px) saturate(1.1);-webkit-backdrop-filter:blur(32px) saturate(1.1)}
+#s1overlay.show{display:flex}
+.s1close{position:absolute;top:20px;right:28px;font-size:28px;color:var(--text-muted);cursor:pointer;z-index:101;
+  transition:color var(--dur) var(--ease),transform var(--dur) var(--ease)}
+.s1close:hover{color:var(--text-primary);transform:scale(1.1)}
+.s1title{font-family:var(--font-head);font-size:20px;font-weight:600;margin-bottom:4px;text-align:center;
+  background:linear-gradient(135deg,var(--accent),var(--accent-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.s1sub{font-family:var(--font-body);font-size:11px;color:var(--text-secondary);margin-bottom:16px;text-align:center}
+.s1legend{display:flex;gap:16px;justify-content:center;margin-top:12px;font-size:9px;color:var(--text-secondary)}
+.s1legend span{display:flex;align-items:center;gap:4px}
+.s1dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.s1info{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);max-width:560px;text-align:center;
+  font-size:10px;color:#fde68a;line-height:1.5;
+  background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:var(--radius-md);
+  padding:10px 18px;display:none;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.s1info.show{display:block}
+@keyframes s1flow{0%{offset-distance:0%}100%{offset-distance:100%}}
+@keyframes s1pulse{0%,100%{opacity:.3}50%{opacity:1}}
+.s1node{cursor:pointer;transition:filter var(--dur) var(--ease)}
+.s1node:hover{filter:brightness(1.5)}
+.s1tooltip{position:absolute;z-index:102;padding:8px 12px;
+  background:rgba(13,17,23,0.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(168,85,247,0.3);border-radius:var(--radius-sm);
+  font-size:10px;color:var(--text-primary);pointer-events:none;display:none;max-width:260px;box-shadow:var(--shadow-md)}
+
+/* === RANGE SLIDER CUSTOM === */
+input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:4px;background:rgba(255,255,255,0.08);border-radius:2px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+  background:var(--text-primary);border:2px solid var(--bg-base);margin-top:-5px;
+  box-shadow:0 0 6px rgba(0,0,0,0.4);transition:transform 0.15s var(--ease)}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
+input[type=range]::-moz-range-track{height:4px;background:rgba(255,255,255,0.08);border-radius:2px;border:none}
+input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--text-primary);border:2px solid var(--bg-base);
+  box-shadow:0 0 6px rgba(0,0,0,0.4)}
+
+/* Deficit card — collapsed */
+.dc{background:var(--glass);border:1px solid var(--glass-border);border-radius:10px;
+  padding:10px;margin-bottom:8px;cursor:pointer;transition:all var(--dur) var(--ease);position:relative}
+.dc:hover{border-color:var(--glass-border-hover);background:var(--glass-hover)}
+.dc.critical{border-left:3px solid var(--status-danger)}
+.dc.working{border-left:3px solid var(--status-warning)}
+.dc.compensated{border-left:3px solid var(--status-optimal)}
+.dc.sel{background:rgba(255,255,255,0.06);border-color:var(--glass-border-hover)}
+
+/* Deficit card header */
+.dc-head{display:flex;align-items:center;gap:6px}
+.dc-icon{font-size:14px;flex-shrink:0}
+.dc-name{font-family:var(--font-head);font-size:11px;font-weight:600;color:var(--text-primary);flex:1;line-height:1.3}
+.dc-status{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dc-status.critical{background:var(--status-danger);box-shadow:0 0 8px rgba(239,68,68,0.5);animation:dc-pulse 2s infinite}
+.dc-status.working{background:var(--status-warning);box-shadow:0 0 6px rgba(245,158,11,0.4)}
+.dc-status.compensated{background:var(--status-optimal);box-shadow:0 0 6px rgba(34,197,94,0.4)}
+@keyframes dc-pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+/* Zone chips row */
+.dc-zones{display:flex;flex-wrap:wrap;gap:3px;margin-top:6px}
+.zc{font-family:var(--font-mono);font-size:8px;padding:2px 6px;border-radius:4px;
+  background:rgba(255,255,255,0.05);border:1px solid var(--glass-border);color:var(--text-muted);
+  cursor:pointer;transition:all var(--dur) var(--ease);white-space:nowrap}
+.zc:hover{background:var(--accent-dim);color:var(--accent);border-color:rgba(110,231,183,0.3)}
+
+/* Coverage mini-bar */
+.dc-cov{margin-top:6px;display:flex;align-items:center;gap:6px}
+.dc-cbar{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.06);overflow:hidden}
+.dc-cfill{height:100%;border-radius:2px;transition:width 0.5s var(--ease)}
+.dc-cpct{font-family:var(--font-mono);font-size:9px;color:var(--text-muted);min-width:24px;text-align:right}
+.dc-block{font-size:8px;color:#f59e0b;padding:2px 6px;margin-top:3px;border-radius:4px;background:rgba(245,158,11,0.08);font-family:var(--font-mono)}
+.dc-cnts{font-size:8px;color:var(--text-muted);margin-left:2px}
+
+/* Deficit card — expanded */
+.dc-body{display:none;margin-top:10px;border-top:1px solid var(--glass-border);padding-top:10px}
+.dc.exp .dc-body{display:block}
+.dc-desc{font-size:10px;color:var(--text-secondary);line-height:1.5;margin-bottom:10px}
+
+/* Deficit sections inside expanded card */
+.dc-sec{font-family:var(--font-head);font-size:9px;font-weight:600;color:var(--text-muted);
+  text-transform:uppercase;letter-spacing:0.4px;margin:8px 0 4px}
+.dc-def{padding:6px;margin-bottom:4px;border-radius:6px;background:rgba(255,255,255,0.02);border-left:2px solid var(--status-danger)}
+.dc-def-title{font-family:var(--font-mono);font-size:9px;font-weight:500;color:var(--text-primary)}
+.dc-def-mech{font-size:9px;color:var(--text-secondary);line-height:1.4;margin-top:2px}
+.dc-def-src{font-size:8px;color:var(--text-muted);font-style:italic;margin-top:2px}
+
+/* Coverage rows in expanded */
+.dc-need{margin-bottom:6px}
+.dc-need-title{font-size:9px;font-weight:500;color:var(--text-primary);margin-bottom:2px}
+.dc-need-bar{display:flex;align-items:center;gap:6px}
+.dc-need-fill{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.06);overflow:hidden}
+.dc-need-fill>div{height:100%;border-radius:2px;transition:width 0.5s var(--ease)}
+.dc-need-pct{font-family:var(--font-mono);font-size:9px;color:var(--text-muted);min-width:28px;text-align:right}
+.dc-need-drugs{font-size:8px;color:var(--text-muted);margin-top:1px}
+.dc-need-block{font-size:8px;color:var(--status-danger);margin-top:1px}
+.dc-need-np{font-size:9px;color:var(--accent-blue);font-style:italic;padding:4px 6px;
+  background:var(--accent-blue-dim);border-radius:6px}
+
+/* AI placeholder */
+.dc-ai{margin-top:10px;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);
+  border:1px dashed var(--glass-border);text-align:center}
+.dc-ai-text{font-size:9px;color:var(--text-muted)}
+
+/* Footer actions */
+.dc-foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:8px;border-top:1px solid var(--glass-border)}
+.dc-stsel{background:var(--bg-surface);border:1px solid var(--glass-border);border-radius:6px;
+  color:var(--text-primary);font-size:10px;padding:3px 8px;font-family:var(--font-body);cursor:pointer}
+.dc-del{font-size:9px;color:var(--status-danger);cursor:pointer;opacity:0.6;transition:opacity var(--dur) var(--ease)}
+.dc-del:hover{opacity:1}
+</style>
+</head>
+<body>
+<div id="cv">
+<div style="position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden">
+  <div style="position:absolute;width:400px;height:400px;border-radius:50%;filter:blur(100px);opacity:0.07;background:radial-gradient(circle,#6ee7b7,transparent 70%);top:20%;left:40%;animation:blobD 20s ease-in-out infinite alternate"></div>
+  <div style="position:absolute;width:350px;height:350px;border-radius:50%;filter:blur(100px);opacity:0.07;background:radial-gradient(circle,#818cf8,transparent 70%);top:50%;left:60%;animation:blobD 25s ease-in-out infinite alternate;animation-delay:-7s"></div>
+  <div style="position:absolute;width:300px;height:300px;border-radius:50%;filter:blur(100px);opacity:0.07;background:radial-gradient(circle,#f472b6,transparent 70%);bottom:20%;left:30%;animation:blobD 30s ease-in-out infinite alternate;animation-delay:-13s"></div>
+</div>
+</div>
+<button id="defToggle" class="cv-btn" onclick="toggleDefView()">Дефициты</button>
+<div id="tooltip"></div>
+<div id="s1tooltip" class="s1tooltip"></div>
+<div id="s1overlay">
+  <span class="s1close" onclick="document.getElementById('s1overlay').classList.remove('show')">&times;</span>
+  <div class="s1title">Клеточный уровень: σ1-каскад нейропластичности</div>
+  <div class="s1sub" id="s1status">Нет активных σ1-лигандов</div>
+  <svg id="s1svg" viewBox="0 0 800 520" style="width:min(90vw,900px);height:auto;max-height:70vh"></svg>
+  <div class="s1legend">
+    <span><span class="s1dot" style="background:#22c55e"></span> σ1-агонист (каскад активен)</span>
+    <span><span class="s1dot" style="background:#ef4444"></span> σ1-инверсный агонист (подавлен)</span>
+    <span><span class="s1dot" style="background:#f59e0b"></span> σ1-антагонист (блокирован)</span>
+    <span><span class="s1dot" style="background:#475569"></span> Неактивен</span>
+  </div>
+  <div class="s1info" id="s1info"></div>
+</div>
+
+<div id="lp">
+  <div class="logo">CortexMD</div>
+  <div class="sub">Нейрофармакологическая карта v4</div>
+  <div class="section"><div class="sh" onclick="tSec(this)"><span class="st">Пресеты</span><span class="sa">&#9660;</span></div><div class="sb"><div class="pl" id="presets"></div><button class="pb" style="margin-top:4px;width:100%;color:#34d399;border-color:#064e3b" onclick="saveP()">Сохранить текущую</button></div></div>
+  <div class="section">
+    <div class="sh"><span class="st">Активная схема</span><span style="font-size:9px;color:var(--text-muted);margin-left:auto" id="scheme-count"></span></div>
+    <div class="sb open" style="display:block"><div id="active-scheme"></div></div>
+    <button class="catalog-toggle-btn" onclick="toggleCatalog()">Каталог препаратов <span id="catalog-toggle">&#9660;</span></button>
+    <div id="catalog-section"><input class="dsearch" id="dsearch" type="text" placeholder="Поиск препарата..." oninput="setDSQ(this.value)"><div class="dtabs" id="dtabs"></div><div id="dl"></div></div>
+  </div>
+  <div class="section"><div class="sh" onclick="tSec(this)"><span class="st">Мои дефициты</span><span class="sa">&#9660;</span></div><div class="sb"><div id="dfc"></div></div></div>
+  <div class="section"><div class="sh" onclick="tSec(this)"><span class="st">Визуализация</span><span class="sa">&#9660;</span></div><div class="sb"><div style="font-size:9px;color:#94a3b8;margin-bottom:3px">Прозрачность коры</div><input type="range" style="width:100%;accent-color:#64748b" id="opsl" min="0" max="100" value="18"></div></div>
+  <div style="margin-top:6px;font-size:7px;color:#1e293b;text-align:center">Meshy.ai CC BY 4.0</div>
+</div>
+
+<div id="zone-popup" class="zone-popup hidden">
+  <div class="zone-popup-header">
+    <div class="zone-popup-dot" id="zp-dot"></div>
+    <div style="flex:1"><div class="zone-popup-title" id="zp-title"></div><div class="zone-popup-subtitle" id="zp-sub"></div></div>
+    <button class="zone-popup-close" onclick="closeZonePopup()">&times;</button>
+  </div>
+  <div class="zone-popup-body" id="zp-body"></div>
+  <button class="zone-popup-more" onclick="openRightPanelForZone()">Подробнее &rarr;</button>
+</div>
+
+<div id="rp">
+  <button class="panel-close" onclick="toggleRightPanel()">&times;</button>
+  <div id="cfb"></div>
+  <div id="ri"></div>
+</div>
+<div id="panel-toggle" onclick="toggleRightPanel()"><span class="badge hidden" id="panel-badge"></span>Инфо</div>
+
+<div id="bb">
+  <div class="hb"><div class="hl">Дофамин (DA)</div><div class="hv" id="hv-da">-</div><div class="hbar"><div class="hfill" id="hf-da"></div></div><div class="hs" id="hs-da"></div></div>
+  <div class="hb"><div class="hl">Норадреналин (NA)</div><div class="hv" id="hv-na">-</div><div class="hbar"><div class="hfill" id="hf-na"></div></div><div class="hs" id="hs-na"></div></div>
+  <div class="hb"><div class="hl">Серотонин (5-HT)</div><div class="hv" id="hv-5ht">-</div><div class="hbar"><div class="hfill" id="hf-5ht"></div></div><div class="hs" id="hs-5ht"></div></div>
+  <div class="hb"><div class="hl">Пластичность (s1)</div><div class="hv" id="hv-s1">-</div><div class="hbar"><div class="hfill" id="hf-s1"></div></div><div class="hs" id="hs-s1"></div></div>
+  <div class="hb"><div class="hl">CYP2D6</div><div class="hv" id="hv-cyp">-</div><div class="hbar"><div class="hfill" id="hf-cyp"></div></div><div class="hs" id="hs-cyp"></div></div>
+</div>
+
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+var NTC = {'5-HT':'#60a5fa',DA:'#fbbf24',NA:'#34d399',ACh:'#c084fc','s1':'#f472b6',D3:'#f87171',Glu:'#e879f9'};
+
+var ZR = {
+  dlPFC:{SERT:2,NET:3,DAT:0,D1:3,D2:1,D3:0,'5HT1A':3,'5HT2A':3,'5HT2C':1,'5HT3':2,'5HT7':2,'a2A':3,s1:2,NMDA:3,'GABAA':2,note:'DAT отсутствует! NET убирает и NA и DA.'},
+  vmPFC:{SERT:2,NET:2,DAT:0,D1:2,D2:1,'5HT1A':3,'5HT2A':2,'a2A':2,s1:2,NMDA:2,'GABAA':2,note:'Самореференция и эмоциональная регуляция'},
+  ofc:{SERT:2,NET:2,DAT:0,D1:2,D2:2,'5HT2A':2,'5HT2C':2,'a2A':1,s1:1,'GABAA':2,note:'D2 выше чем в длПФК'},
+  acc:{SERT:2,NET:2,DAT:1,D1:2,D2:2,'5HT1A':2,'5HT2A':2,'5HT7':3,'a2A':2,NMDA:3,'GABAA':2,note:'5-HT7 высокая - вортиоксетин ключевой'},
+  insula:{SERT:1,NET:3,'a2A':2,'5HT1A':2,s1:1,NMDA:2,'GABAA':2,note:'NET высокая - NA критичен для интероцепции'},
+  nac:{SERT:2,DAT:3,NET:1,D1:3,D2:3,D3:3,'5HT2C':2,'5HT1B':2,'GABAA':2,NMDA:2,note:'Core=D1 Shell=D3. DAT основной клиренс DA'},
+  vta:{D2:3,D3:3,'5HT2C':3,'5HT1A':2,'GABAA':3,note:'D2/D3 АУТО. 5HT2C на ГАМК = серотониновый потолок DA'},
+  lc:{'a2A':3,NET:2,'5HT1A':1,'GABAA':2,note:'a2A ауторецепторы контролируют NA-выброс'},
+  amygdala:{SERT:3,NET:2,'5HT1A':3,'5HT2C':2,D1:1,D2:2,'a2A':2,s1:2,NMDA:3,'GABAA':3,note:'SERT высокая - SSRI эффективны. NMDA - реконсолидация (EMDR)'},
+  hippo:{SERT:3,NET:2,'5HT1A':3,'5HT3':2,'5HT4':2,s1:3,NMDA:3,'a2A':2,'GABAA':2,note:'s1 ВЫСОКАЯ! s1->BDNF->LTP. NMDA->обучение'},
+  parietal:{NET:2,'a2A':3,D1:1,'5HT2A':2,NMDA:2,note:'a2A - пространственное внимание'},
+  cerebellum:{NET:2,D2:1,'GABAA':3,NMDA:2,note:'Пуркинье ГАМК. Тайминг'},
+  brainstem:{NET:2,SERT:2,'5HT1A':2,'a2A':2,'GABAA':2,note:'Вегетативка'},
+  raphe:{SERT:3,'5HT1A':3,'5HT1B':2,note:'Источник 5-HT. SERT на соме'},
+  spinal:{SERT:2,NET:3,'5HT1A':2,'a2A':2,NMDA:2,note:'Нисходящее торможение боли NA+5-HT'}
+};
+
+var DRUGS = {
+  sertraline:{n:'Золофт',c:'#60a5fa',s:'СЕРТ',doses:[25,50,75,100,150,200],def:100,u:'мг',warnDose:150,maxDose:200,warnText:'Серотониновый синдром при комбинации',ki:{SERT:0.29,DAT:25,NET:420,s1:35},s1t:'inv',
+    z:{dlPFC:{nt:['5-HT'],fx:['SERT->5-HT','s1 ИНВЕРС->пластичность вниз'],i:3},amygdala:{nt:['5-HT'],fx:['SERT->5-HT->реактивность вниз вниз'],i:4},hippo:{nt:['5-HT','s1'],fx:['5HT1A->нейрогенез','s1 ИНВЕРС->LTP вниз!'],i:3,bad:1},vta:{nt:['5-HT'],fx:['5HT2C->ТОРМОЗ DA до 42%!'],i:4,bad:1},nac:{nt:['5-HT','DA'],fx:['5HT2C->DA вниз','DAT Ki=25->слабый DA вверх'],i:2,bad:1},vmPFC:{nt:['5-HT'],fx:['5-HT->эмоц.рег.'],i:2},acc:{nt:['5-HT'],fx:['руминация вниз'],i:2},raphe:{nt:['5-HT'],fx:['SERT->ауторег.'],i:3},brainstem:{nt:['5-HT'],fx:['вегетативка'],i:2},spinal:{nt:['5-HT'],fx:['боль вниз'],i:2}}},
+  bupropion:{n:'Бупропион',c:'#fbbf24',s:'БУПРО',doses:[75,150,225,300,450],def:225,u:'мг',warnDose:300,maxDose:450,warnText:'Судорожный риск дозозависим',ki:{DAT:526,NET:2170},cyp:1,
+    z:{dlPFC:{nt:['DA'],fx:['Слабый DA метаболит'],i:1},nac:{nt:['DA'],fx:['DAT 14-26% ПЭТ->D1'],i:2},lc:{nt:['NA'],fx:['NET метаболит'],i:2},brainstem:{nt:['NA'],fx:['NA->тонус'],i:3}}},
+  atomoxetine:{n:'Атомоксетин',c:'#34d399',s:'АТОМ',doses:[5,10,18,25,40,60,80],def:10,u:'мг',warnDose:60,maxDose:80,warnText:'Гепатотоксичность — контроль печени',ki:{NET:5,SERT:77,DAT:1451},
+    z:{dlPFC:{nt:['NA','DA'],fx:['NET->NA x3+DA x2.5 (нет DAT!)','a2A->HCN->рабочая память'],i:5},vmPFC:{nt:['NA'],fx:['NA->контроль эмоций'],i:2},acc:{nt:['NA'],fx:['NA->мониторинг ошибок'],i:3},insula:{nt:['NA'],fx:['NET->NA->интероцепция!','КЛЮЧЕВОЙ при диссоциации'],i:4},parietal:{nt:['NA'],fx:['a2A->я здесь'],i:4},lc:{nt:['NA'],fx:['NA->ауторег.'],i:2},cerebellum:{nt:['NA'],fx:['тайминг'],i:2},brainstem:{nt:['NA'],fx:['вегетативка'],i:2},spinal:{nt:['NA'],fx:['боль вниз'],i:1}}},
+  vortioxetine:{n:'Вортиоксетин',c:'#a78bfa',s:'ВОРТ',doses:[5,10,15,20],def:10,u:'мг',ki:{SERT:1.6,'5HT3':3.7,'5HT1A':15,'5HT7':19,'5HT1B':33},
+    z:{dlPFC:{nt:['DA','ACh','5-HT'],fx:['5HT3->DA+ACh','5HT1A->умный 5-HT','5HT7->гибкость'],i:4},acc:{nt:['5-HT'],fx:['5HT7->переключение'],i:3},amygdala:{nt:['5-HT'],fx:['5HT1A->страх вниз'],i:2},hippo:{nt:['5-HT','ACh'],fx:['5HT1A->нейрогенез','5HT3->ACh->память'],i:4},vta:{nt:['5-HT'],fx:['5HT1A->снятие потолка DA'],i:2},raphe:{nt:['5-HT'],fx:['мультимодальная модуляция'],i:3}}},
+  pramipexole:{n:'Прамипексол',c:'#f87171',s:'ПРАМ',doses:[0.0625,0.125,0.25,0.5,0.75,1.0,1.5],def:0.125,u:'мг',warnDose:1.0,maxDose:1.5,warnText:'Импульсный контроль — мониторинг',ki:{D3:0.5,D2:3.9},
+    z:{nac:{nt:['D3'],fx:['D3 ПОЛНЫЙ агонист->shell хочу','Обходит серот. потолок'],i:4},vta:{nt:['DA'],fx:['D2/D3 ауто->свой DA вниз','Адаптация 5-7дн'],i:3,bad:1}}},
+  duloxetine:{n:'Дулоксетин',c:'#22d3ee',s:'ДУЛО',doses:[20,30,60,90,120],def:30,u:'мг',ki:{SERT:0.8,NET:7.5,DAT:240},
+    z:{dlPFC:{nt:['5-HT','NA'],fx:['SERT+NET->двойная'],i:2},insula:{nt:['NA'],fx:['NET->интероцепция'],i:3},brainstem:{nt:['NA','5-HT'],fx:['NET+SERT->тонус'],i:3},spinal:{nt:['NA','5-HT'],fx:['NET+SERT->боль вниз вниз (ОСНОВНОЙ)'],i:4},lc:{nt:['NA'],fx:['NET->NA'],i:2},amygdala:{nt:['5-HT'],fx:['SERT->страх вниз'],i:2},vta:{nt:['5-HT'],fx:['5HT2C->DA вниз слабее серт'],i:2,bad:1}}},
+  cariprazine:{n:'Карипразин',c:'#fb923c',s:'КАРИ',doses:[0.5,1.0,1.5,3.0,4.5,6.0],def:1.5,u:'мг',ki:{D3:0.085,D2:0.49,'5HT1A':2.6},
+    z:{nac:{nt:['D3'],fx:['D3 парц. Ki=0.085->70%','85x > арипипразол','Нет риска РИК'],i:4},vta:{nt:['DA'],fx:['D3 ауто->ДЕЗИНГИБИРОВАНИЕ DA!','Противоп. прамипексолу'],i:4}}},
+  dhea:{n:'DHEA',c:'#f472b6',s:'DHEA',doses:[25,50,100],def:50,u:'мг',ki:{s1:706},s1t:'ag',
+    z:{hippo:{nt:['s1'],fx:['s1 АГОНИСТ->BiP->Ca->CaMKII->ERK->CREB->BDNF','LTP вверх->EMDR вверх'],i:3},dlPFC:{nt:['s1'],fx:['s1->нейропластичность'],i:2},amygdala:{nt:['s1'],fx:['миндалина вниз (fMRI)','DHEA-S/кортизол вверх'],i:2}}},
+  escitalopram:{n:'Эсциталопрам',c:'#38bdf8',s:'ЭСЦИ',doses:[5,10,15,20],def:10,u:'мг',ki:{SERT:1.1,s1:288},s1t:'ag',
+    z:{dlPFC:{nt:['5-HT','s1'],fx:['SERT Ki=1.1','s1 АГОНИСТ (не инверсный!)'],i:3},amygdala:{nt:['5-HT'],fx:['реактивность вниз вниз (лучший при ГТР)'],i:4},hippo:{nt:['5-HT','s1'],fx:['s1->LTP вверх (не как серт!)'],i:3},raphe:{nt:['5-HT'],fx:['Аллостерическое SERT'],i:3},vta:{nt:['5-HT'],fx:['5HT2C->DA вниз (все SSRI)'],i:3,bad:1}}},
+  fluvoxamine:{n:'Флувоксамин',c:'#4ade80',s:'ФЛУВ',doses:[25,50,100,200,300],def:50,u:'мг',ki:{SERT:2,s1:17},s1t:'ag',
+    z:{dlPFC:{nt:['5-HT','s1'],fx:['s1 МОЩНЕЙШИЙ Ki=17','ПЭТ: 80%+ s1-окупация'],i:4},hippo:{nt:['5-HT','s1'],fx:['s1->IRE1->XBP1->BDNF','NGF->рост нейритов','LTP через GluN2B'],i:5},amygdala:{nt:['5-HT'],fx:['SERT->реактивность вниз'],i:3}}},
+  guanfacine:{n:'Гуанфацин',c:'#2dd4bf',s:'ГУАН',doses:[0.5,1,2,3,4],def:1,u:'мг',ki:{a2A:1.9},
+    z:{dlPFC:{nt:['NA'],fx:['a2A ПРЯМОЙ агонист->HCN->рабочая память','Arnsten: тот же путь что атомокс НАПРЯМУЮ'],i:4},parietal:{nt:['NA'],fx:['a2A->пространственное внимание'],i:3},lc:{nt:['NA'],fx:['a2A->NA вниз->гиперароузал КПТСР вниз'],i:3},amygdala:{nt:['NA'],fx:['NA вниз->кошмары вниз'],i:3}}},
+  lamotrigine:{n:'Ламотриджин',c:'#e879f9',s:'ЛАМО',doses:[12.5,25,50,100,200,400],def:25,u:'мг',warnDose:200,maxDose:400,warnText:'SJS-риск при быстрой титрации',ki:{},
+    z:{dlPFC:{nt:['Glu'],fx:['Na-каналы->глутамат вниз'],i:2},hippo:{nt:['Glu'],fx:['глутаматный шум вниз'],i:2},amygdala:{nt:['Glu'],fx:['глутамат->реактивность вниз'],i:2}}},
+  nac_supp:{n:'NAC',c:'#a3e635',s:'NAC',doses:[300,600,1200,1800,2400],def:600,u:'мг',ki:{},
+    z:{dlPFC:{nt:['Glu'],fx:['xCT->mGluR2/3->синапт.Glu вниз'],i:1},nac:{nt:['DA'],fx:['Glu->модуляция DA'],i:1},hippo:{nt:[],fx:['глутатион->нейропротекция'],i:1}}},
+  desipramine:{n:'Дезипрамин',c:'#f97316',s:'ДЕЗИ',doses:[10,25,50,75,100,150,200,300],def:50,u:'мг',warnDose:150,maxDose:300,warnText:'Кардиотоксичность — ЭКГ обязательно',ki:{NET:0.83,SERT:17.6,H1:60,alpha1:100},cyp2d6s:3,
+    z:{dlPFC:{nt:['NA','DA'],fx:['NET Ki=0.83 — СИЛЬНЕЙШИЙ NRI','DA через NET (нет DAT в ПФК)'],i:5},insula:{nt:['NA'],fx:['NET->NA->интероцепция'],i:5},acc:{nt:['NA'],fx:['NET->мониторинг'],i:3},vmPFC:{nt:['NA'],fx:['NA->эмоц.рег.'],i:2},lc:{nt:['NA'],fx:['NA ауторег.'],i:3},brainstem:{nt:['NA'],fx:['NA->вегетативка'],i:3},spinal:{nt:['NA'],fx:['NET->боль вниз'],i:4}}},
+  nortriptyline:{n:'Нортриптилин',c:'#fb923c',s:'НОРТ',doses:[10,25,50,75,100,150],def:25,u:'мг',ki:{NET:1.49,SERT:16.5,H1:10,alpha1:55},cyp2d6s:3,
+    z:{dlPFC:{nt:['NA','DA'],fx:['NET Ki=1.49->NA+DA в ПФК'],i:4},insula:{nt:['NA'],fx:['NET->интероцепция'],i:4},amygdala:{nt:['NA'],fx:['NA модуляция'],i:2},lc:{nt:['NA'],fx:['NA ауторег.'],i:2},brainstem:{nt:['NA'],fx:['NA->тонус'],i:2},spinal:{nt:['NA'],fx:['NET->боль вниз'],i:3}}},
+  protriptyline:{n:'Протриптилин',c:'#d97706',s:'ПРОТ',doses:[5,10,15,20,30,40,60],def:10,u:'мг',ki:{NET:1.4,SERT:19.6},cyp2d6s:3,
+    z:{dlPFC:{nt:['NA','DA'],fx:['NET Ki=1.4->NA+DA','Самый активирующий ТЦА'],i:5},insula:{nt:['NA'],fx:['NET->NA'],i:4},lc:{nt:['NA'],fx:['NA'],i:3},brainstem:{nt:['NA'],fx:['NA->тонус'],i:3}}},
+  reboxetine:{n:'Ребоксетин',c:'#06b6d4',s:'РЕБО',doses:[2,4,6,8,10,12],def:4,u:'мг',ki:{NET:3,SERT:242},
+    z:{dlPFC:{nt:['NA','DA'],fx:['NET-селективный Ki=3','Минимальные CYP'],i:4},insula:{nt:['NA'],fx:['NET->NA->интероцепция'],i:4},vmPFC:{nt:['NA'],fx:['NA->контроль эмоций'],i:2},acc:{nt:['NA'],fx:['NA->мониторинг'],i:2},lc:{nt:['NA'],fx:['NA ауторег.'],i:2}}},
+  amitriptyline:{n:'Амитриптилин',c:'#eab308',s:'АМИТ',doses:[10,25,50,75,100,150,200,300],def:25,u:'мг',ki:{NET:13.3,SERT:3.13,H1:1,alpha1:24,s1:196},s1t:'ag',cyp2d6s:2,
+    z:{amygdala:{nt:['5-HT'],fx:['SERT Ki=3.13->реактивность вниз'],i:3},hippo:{nt:['5-HT','s1'],fx:['5-HT+s1->нейрогенез','Метаболит=нортриптилин(NRI)'],i:3},dlPFC:{nt:['5-HT','NA'],fx:['SERT+NET(через нортриптилин)'],i:2},brainstem:{nt:['5-HT','NA'],fx:['двойной моноамин'],i:2},spinal:{nt:['5-HT','NA'],fx:['SERT+NET->боль вниз'],i:3},raphe:{nt:['5-HT'],fx:['SERT'],i:2}}},
+  milnacipran:{n:'Милнаципран',c:'#0891b2',s:'МИЛН',doses:[12.5,25,50,100,200],def:50,u:'мг',ki:{NET:22,SERT:8.4},
+    z:{dlPFC:{nt:['NA','5-HT'],fx:['Самый сбалансированный SNRI','NET:SERT ~1.6:1'],i:3},spinal:{nt:['NA','5-HT'],fx:['FDA фибромиалгия','NET+SERT->боль вниз вниз'],i:4},insula:{nt:['NA'],fx:['NET->интероцепция'],i:3},brainstem:{nt:['NA','5-HT'],fx:['двойной->тонус'],i:3},lc:{nt:['NA'],fx:['NET->NA'],i:2}}},
+  levomilnacipran:{n:'Левомилнаципран',c:'#0284c7',s:'ЛЕВО',doses:[20,40,80,120],def:40,u:'мг',ki:{NET:92.2,SERT:11.2},
+    z:{dlPFC:{nt:['NA','5-HT'],fx:['Больше функц.NA чем 5-HT','Единственный SNRI с NA>5-HT'],i:3},insula:{nt:['NA'],fx:['NET->NA'],i:3},spinal:{nt:['NA','5-HT'],fx:['боль вниз'],i:3},brainstem:{nt:['NA','5-HT'],fx:['тонус'],i:2},lc:{nt:['NA'],fx:['NA'],i:2}}},
+  venlafaxine:{n:'Венлафаксин',c:'#0369a1',s:'ВЕНЛ',doses:[37.5,75,150,225,300,375],def:75,u:'мг',ki:{NET:538,SERT:7.8},cyp2d6s:1.5,
+    z:{amygdala:{nt:['5-HT'],fx:['SERT->реактивность вниз','VA/DoD 2023: рекомендован ПТСР'],i:3},dlPFC:{nt:['5-HT','NA'],fx:['SERT всегда; NET только ≥225мг'],i:3},hippo:{nt:['5-HT'],fx:['5-HT->нейрогенез'],i:2},raphe:{nt:['5-HT'],fx:['SERT'],i:3},brainstem:{nt:['5-HT','NA'],fx:['5-HT+NA(высокие дозы)'],i:2},spinal:{nt:['5-HT','NA'],fx:['боль вниз при ≥150мг'],i:3},vta:{nt:['5-HT'],fx:['5HT2C->DA вниз'],i:2,bad:1}}},
+  desvenlafaxine:{n:'Десвенлафаксин',c:'#1d4ed8',s:'ДЕСВ',doses:[25,50,100],def:50,u:'мг',ki:{NET:558.4,SERT:40.2},
+    z:{amygdala:{nt:['5-HT'],fx:['SERT->реактивность вниз'],i:2},dlPFC:{nt:['5-HT','NA'],fx:['Предсказуемее венлафаксина','Минимальные CYP'],i:2},raphe:{nt:['5-HT'],fx:['SERT'],i:2},brainstem:{nt:['5-HT','NA'],fx:['тонус'],i:2},spinal:{nt:['5-HT','NA'],fx:['боль вниз'],i:2}}},
+  quetiapine:{n:'Кветиапин',c:'#7c3aed',s:'КВЕТ',doses:[25,50,100,200,300,400,600,800],def:50,u:'мг',ki:{H1:11,alpha1:7,D2:770,'5HT2C':615},
+    z:{dlPFC:{nt:['NA'],fx:['Норкветиапин(метаболит)->NET','NET-эффект только метаболит'],i:2},amygdala:{nt:['NA'],fx:['NA модуляция->анксиолитик'],i:2},lc:{nt:['NA'],fx:['NA регуляция'],i:2},brainstem:{nt:['NA'],fx:['H1->седация, α1->гипотензия'],i:2}}},
+  opipramol:{n:'Опипрамол',c:'#d946ef',s:'ОПИП',doses:[50,100,150,200],def:100,u:'мг',ki:{s1:0.2,H1:6,D2:120},s1t:'ag',
+    z:{hippo:{nt:['s1'],fx:['СИЛЬНЕЙШИЙ σ1 Ki=0.2!','BiP→IP3R3→Ca→CaMKII→BDNF','IRE1→XBP1→BDNF','SK→NMDA потенциация→LTP'],i:5},dlPFC:{nt:['s1'],fx:['σ1→нейропластичность макс'],i:4},amygdala:{nt:['s1'],fx:['σ1→анксиолитик','РКИ при ГТР'],i:3}}},
+  donepezil:{n:'Донепезил',c:'#ec4899',s:'ДОНЕ',doses:[5,10,23],def:5,u:'мг',ki:{s1:14.6,AChE:6.7},s1t:'ag',
+    z:{hippo:{nt:['ACh','s1'],fx:['AChE→ACh вверх→память','σ1 ПЭТ: 60-75% окупация','НОЛЬ серотонинергических эффектов'],i:5},dlPFC:{nt:['ACh','s1'],fx:['ACh→когниция','σ1→пластичность'],i:4},nac:{nt:['ACh'],fx:['ACh модуляция'],i:2}}},
+  dextromethorphan:{n:'Декстрометорфан',c:'#a855f7',s:'DXM',doses:[15,30,45,60],def:30,u:'мг',ki:{s1:142,SERT:23,NET:240,NMDA:500},s1t:'ag',
+    z:{hippo:{nt:['s1','5-HT','Glu'],fx:['σ1+NMDA двойной механизм','НЕЛЬЗЯ с SSRI/SNRI!'],i:3},dlPFC:{nt:['s1','5-HT'],fx:['σ1→пластичность','SERT Ki=23→5-HT'],i:3},raphe:{nt:['5-HT'],fx:['SERT→5-HT'],i:2}}},
+  auvelity:{n:'Auvelity (DXM/бупро)',c:'#8b5cf6',s:'АУВЛ',doses:[1],def:1,u:'таб',ki:{s1:142,NMDA:500,DAT:500},s1t:'ag',
+    z:{hippo:{nt:['s1','Glu'],fx:['DXM: σ1+NMDA','FDA при ТДР'],i:3},dlPFC:{nt:['s1','DA'],fx:['σ1→пластичность','BUP→слабый DA'],i:3},nac:{nt:['DA'],fx:['BUP компонент→DAT'],i:2}}},
+  fluoxetine:{n:'Флуоксетин',c:'#0ea5e9',s:'ФЛУО',doses:[10,20,40,60,80],def:20,u:'мг',ki:{SERT:0.8,s1:191},s1t:'ag',cyp2d6i:75,
+    z:{amygdala:{nt:['5-HT'],fx:['SERT Ki=0.8→реактивность вниз','РКИ по ПТСР'],i:4},hippo:{nt:['5-HT','s1'],fx:['5-HT→нейрогенез','σ1 слабее флувоксамина'],i:3},dlPFC:{nt:['5-HT','s1'],fx:['SERT+σ1→когниция'],i:3},raphe:{nt:['5-HT'],fx:['SERT ауторег.'],i:3},vta:{nt:['5-HT'],fx:['5HT2C→DA вниз'],i:3,bad:1},nac:{nt:['5-HT'],fx:['5HT2C→DA вниз'],i:2,bad:1}}},
+  pregnenolone:{n:'Прегненолон',c:'#f9a8d4',s:'ПРЕГ',doses:[10,25,50,100,200,400,500],def:50,u:'мг',ki:{s1:3196},s1t:'ag',isOTC:1,
+    z:{hippo:{nt:['s1'],fx:['σ1 ОЧЕНЬ слабый Ki=3196','Phase 2 ПТСР/ЧМТ (VA)','Предшественник аллопрегнанолона'],i:1},dlPFC:{nt:['s1'],fx:['σ1 минимальный'],i:1}}},
+  ifenprodil:{n:'Ифенпродил',c:'#c084fc',s:'ИФЕН',doses:[20,40,60],def:40,u:'мг',ki:{s1:2,NMDA:50},s1t:'ag',
+    z:{hippo:{nt:['s1','Glu'],fx:['GluN2B/σ1 двойной','σ1 Ki=2→мощный'],i:4},dlPFC:{nt:['s1'],fx:['σ1→нейропластичность'],i:3},amygdala:{nt:['s1'],fx:['Снижение флешбэков','Case reports при ПТСР'],i:3}}},
+  ketamine:{n:'Кетамин',c:'#f43f5e',s:'КЕТА',doses:[0.5],def:0.5,u:'мг/кг',ki:{NMDA:10},
+    z:{hippo:{nt:['Glu'],fx:['NMDA-антагонизм→быстрый BDNF','Всплеск глутамата→AMPA→mTOR'],i:4},dlPFC:{nt:['Glu'],fx:['Быстрая синаптическая пластичность'],i:3},amygdala:{nt:['Glu'],fx:['NMDA→реконсолидация','VA/DoD: ПРОТИВ при ПТСР'],i:3}}},
+  progesterone:{n:'Прогестерон',c:'#be185d',s:'ПРОГ',doses:[100,200,300],def:100,u:'мг',ki:{s1:36},s1t:'ant',
+    z:{hippo:{nt:['s1'],fx:['σ1-АНТАГОНИСТ Ki=36!','БЛОКИРУЕТ σ1-каскад','Может ухудшать ответ на EMDR'],i:3,bad:1},dlPFC:{nt:['s1'],fx:['σ1-блокада→пластичность вниз'],i:2,bad:1}}},
+  aripiprazole:{n:'Арипипразол',c:'#dc2626',s:'АРИП',doses:[2,5,10,15,20,30],def:5,u:'мг',ki:{D2:0.34,D3:0.8,'5HT1A':1.7,'5HT2C':15},cyp2d6s:2,
+    z:{nac:{nt:['D3'],fx:['D3 парц. Ki=0.8','Внутр.активность 30%','Акатизия > карипразин'],i:3},vta:{nt:['DA'],fx:['D2 парц.→стабилизация DA'],i:3},dlPFC:{nt:['5-HT'],fx:['5HT1A парц.→когниция'],i:2},amygdala:{nt:['5-HT'],fx:['5HT1A→страх вниз'],i:2}}},
+  brexpiprazole:{n:'Брексипразол',c:'#e11d48',s:'БРЕК',doses:[0.25,0.5,1,2,3,4],def:1,u:'мг',ki:{D2:0.30,D3:1.1,alpha1:3.8},cyp2d6s:2,
+    z:{nac:{nt:['D3'],fx:['D3 парц. Ki=1.1','Внутр.активность 10% (наименьшая)'],i:3},vta:{nt:['DA'],fx:['D2 парц.→стабилизация'],i:3},amygdala:{nt:['NA'],fx:['α1 Ki=3.8→как празозин','Кошмары ПТСР вниз'],i:3},lc:{nt:['NA'],fx:['α1→мягкая седация'],i:2}}},
+  methylphenidate:{n:'Метилфенидат',c:'#b45309',s:'МФД',doses:[5,10,18,20,27,36,54],def:10,u:'мг',ki:{DAT:34,NET:339},
+    z:{nac:{nt:['DA'],fx:['DAT Ki=34→прямой DA','Schedule II'],i:5},dlPFC:{nt:['DA','NA'],fx:['В ПФК нет DAT→через NET','NET Ki=339→NA+DA'],i:4},vta:{nt:['DA'],fx:['DAT→DA'],i:2}}},
+  lisdexamfetamine:{n:'Лисдексамфетамин',c:'#ca8a04',s:'ЛИСД',doses:[20,30,40,50,60,70],def:30,u:'мг',ki:{DAT:1,NET:1},
+    z:{nac:{nt:['DA'],fx:['DA РИЛИЗЕР (не блокатор!)','Наиболее мощное DA-усиление','Schedule II, пролекарство'],i:5},dlPFC:{nt:['DA','NA'],fx:['DA+NA релиз','Безопасен с SSRI'],i:5},vta:{nt:['DA'],fx:['DA релиз'],i:3},lc:{nt:['NA'],fx:['NA релиз'],i:3}}},
+  modafinil:{n:'Модафинил',c:'#84cc16',s:'МОДА',doses:[100,200,400],def:200,u:'мг',ki:{DAT:2000},
+    z:{dlPFC:{nt:['DA'],fx:['DAT Ki=2000 очень слабый','Полезен при усталости','CYP3A4 ИНДУКТОР!'],i:1},nac:{nt:['DA'],fx:['Слабый DAT'],i:1}}},
+  selegiline_oral:{n:'Селегилин',c:'#65a30d',s:'СЕЛЕ',doses:[2.5,5,10],def:5,u:'мг',ki:{},
+    z:{nac:{nt:['DA'],fx:['MAO-B→DA вверх БЕЗ толерантности','Метаболит: L-амфетамин'],i:3},dlPFC:{nt:['DA'],fx:['MAO-B→DA в ПФК'],i:2},vta:{nt:['DA'],fx:['DA модуляция'],i:2}}},
+  amisulpride_low:{n:'Амисульприд',c:'#fb7185',s:'АМИС',doses:[12.5,25,50,100],def:50,u:'мг',ki:{D2:2.8,D3:3.2},
+    z:{nac:{nt:['D3','DA'],fx:['Низкие дозы→пресинаптический блок','ПАРАДОКСАЛЬНО повышает DA','Нет в США, QTc-риск'],i:3},vta:{nt:['DA'],fx:['Пресин. D2/D3 блок→DA вверх'],i:3}}},
+  levodopa:{n:'L-DOPA',c:'#16a34a',s:'ЛДОП',doses:[50,100,250,500],def:100,u:'мг',ki:{},
+    z:{nac:{nt:['DA'],fx:['Прямой предшественник DA','D1→мотивация (CRP>2)','Короткий T½, толерантность'],i:4},dlPFC:{nt:['DA'],fx:['DA предшественник'],i:3},vta:{nt:['DA'],fx:['DA синтез'],i:2}}},
+  same:{n:'SAMe',c:'#86efac',s:'SAMe',doses:[200,400,800,1200,1600],def:400,u:'мг',ki:{},isOTC:1,
+    z:{dlPFC:{nt:['DA'],fx:['Усиливает синтез DA','8+ РКИ по депрессии'],i:2},hippo:{nt:['5-HT'],fx:['Метилирование→нейрогенез'],i:1}}},
+  omega3:{n:'Омега-3 EPA/DHA',c:'#a7f3d0',s:'ОМ3',doses:[500,1000,2000,3000,4000],def:2000,u:'мг',ki:{},isOTC:1,
+    z:{hippo:{nt:['5-HT'],fx:['DHA→мембрана D2','BDNF вверх'],i:1},dlPFC:{nt:['DA'],fx:['Мембранная функция'],i:1}}},
+  rhodiola:{n:'Родиола',c:'#d8b4fe',s:'РОДО',doses:[100,200,400,600],def:200,u:'мг',ki:{},isOTC:1,
+    z:{dlPFC:{nt:['DA','NA'],fx:['Непрямой MAO/COMT-ингиб.','РКИ усталость/депрессия'],i:1}}},
+  curcumin:{n:'Куркумин',c:'#c4b5fd',s:'КУРК',doses:[250,500,1000],def:500,u:'мг',ki:{},isOTC:1,
+    z:{hippo:{nt:['5-HT'],fx:['Слабый MAO-ингиб.','BDNF вверх (мета-анализ)'],i:1}}},
+  b_vitamins:{n:'B-вит/L-метилфолат',c:'#bef264',s:'BВИТ',doses:[1],def:1,u:'комп',ki:{},isOTC:1,
+    z:{dlPFC:{nt:['NA','DA'],fx:['Кофакторы синтеза NA и DA','L-метилфолат 15мг: РКИ+SSRI'],i:1}}},
+  l_tyrosine:{n:'L-тирозин',c:'#d9f99d',s:'ТИРО',doses:[250,500,1000,2000],def:500,u:'мг',ki:{},isOTC:1,
+    z:{dlPFC:{nt:['DA'],fx:['Предшественник DA/NA','Лимитирован TH'],i:1}}},
+  lions_mane:{n:'Ежовик гребенчатый',c:'#fde68a',s:'ЕЖОВ',doses:[250,500,1000,2000,3000],def:1000,u:'мг',ki:{},isOTC:1,
+    z:{hippo:{nt:[],fx:['NGF-стимуляция','Рост нейритов','Малые РКИ когниция'],i:2}}},
+  magnesium_threonate:{n:'Магний L-треонат',c:'#99f6e4',s:'MgTr',doses:[500,1000,1500,2000],def:1000,u:'мг',ki:{},isOTC:1,
+    z:{hippo:{nt:['Glu'],fx:['Проникает через ГЭБ','NMDA модуляция'],i:1}}},
+  pea_um:{n:'PEA ультрамикрониз.',c:'#fecaca',s:'PEA',doses:[300,600,900,1200],def:600,u:'мг',ki:{},isOTC:1,
+    z:{vta:{nt:['DA'],fx:['PPARα→DA в VTA','Антинейровоспаление'],i:2}}},
+  mucuna:{n:'Мукуна жгучая',c:'#bbf7d0',s:'МУКУ',doses:[2500,5000],def:2500,u:'мг',ki:{},isOTC:1,
+    z:{nac:{nt:['DA'],fx:['Содержит L-DOPA 3.6-4.2%','Вариабельное содержание','ОПАСНА с ИМАО'],i:2}}},
+  vitamin_d:{n:'Витамин D3',c:'#fef08a',s:'ВитD',doses:[1000,2000,4000,5000,10000],def:2000,u:'МЕ',ki:{},isOTC:1,
+    z:{}}
+};
+
+var PRESETS = {
+  golden:{l:'Золотая ($2k)',d:{sertraline:100,bupropion:225,atomoxetine:10,vortioxetine:10}},
+  current:{l:'Текущая (6шт)',d:{sertraline:100,bupropion:225,atomoxetine:10,vortioxetine:10,pramipexole:0.125,duloxetine:30}},
+  clean:{l:'Чистая CYP',d:{vortioxetine:10,atomoxetine:10,cariprazine:1.5,dhea:50}},
+  optimal:{l:'Оптимальная',d:{vortioxetine:15,atomoxetine:10,bupropion:225,cariprazine:1.5,dhea:50}},
+  esci:{l:'σ1-агонист',d:{escitalopram:10,vortioxetine:10,atomoxetine:10,cariprazine:1.5,dhea:50}},
+  sigma1max:{l:'σ1 макс',d:{fluvoxamine:100,donepezil:5,dhea:50,atomoxetine:10,cariprazine:1.5}},
+  auvelity_combo:{l:'Auvelity+',d:{auvelity:1,atomoxetine:10,cariprazine:1.5,dhea:50}},
+  tca_combo:{l:'ТЦА+SSRI',d:{sertraline:100,nortriptyline:25,vortioxetine:10,cariprazine:1.5}}
+};
+
+var DCAT={
+  all:{l:'Все'},
+  ssri:{l:'SSRI',d:['sertraline','escitalopram','fluoxetine','fluvoxamine']},
+  snri:{l:'SNRI',d:['duloxetine','venlafaxine','desvenlafaxine','milnacipran','levomilnacipran']},
+  nri:{l:'NRI/NDRI',d:['atomoxetine','reboxetine','bupropion']},
+  tca:{l:'ТЦА',d:['desipramine','nortriptyline','protriptyline','amitriptyline','opipramol']},
+  drpa:{l:'D2/D3',d:['cariprazine','aripiprazole','brexpiprazole','pramipexole','amisulpride_low']},
+  stim:{l:'Стимул.',d:['methylphenidate','lisdexamfetamine','modafinil','selegiline_oral','levodopa']},
+  other:{l:'Другие Rx',d:['quetiapine','lamotrigine','guanfacine','ketamine','dextromethorphan','auvelity','ifenprodil','progesterone']},
+  sigma:{l:'σ1',d:['donepezil','opipramol','fluvoxamine','escitalopram','fluoxetine','dhea','pregnenolone','ifenprodil','dextromethorphan','auvelity']},
+  suppl:{l:'Добавки',d:['dhea','nac_supp','pregnenolone','same','omega3','rhodiola','curcumin','b_vitamins','l_tyrosine','lions_mane','magnesium_threonate','pea_um','mucuna','vitamin_d']}
+};
+var CCAT='all';
+
+var DEFICITS=[
+{id:'working_memory',title:'Не удерживаю контекст',st:'Рабочая память',icon:'\u{1F9E9}',status:'critical',
+  desc:'Читаю абзац — к концу страницы первый стёрся. Не могу удержать несколько параметров задачи одновременно.',
+  zones:['dlPFC','hippo','acc'],
+  defs:[
+    {zone:'dlPFC',nt:'NA',mech:'α2A-рецепторы на дендритных шипиках: NA через α2A закрывает HCN-каналы → шипик удерживает информацию. Без NA — информация входит, но не удерживается.',src:'Arnsten 2009, 2011'},
+    {zone:'dlPFC',nt:'DA',mech:'DA через D1 фильтрует сигнал от шума. Серотониновый потолок (5-HT2C→↓DA в VTA на 30-42%) снижает DA в ПФК.',src:'Vijayraghavan 2007'},
+    {zone:'hippo',nt:'s1',mech:'LTP через NMDA нужен для консолидации. Сертралин как σ1 инверсный агонист ПОДАВЛЯЕТ LTP.',src:'Ishima 2014, Izumi 2023'}
+  ],
+  needs:[
+    {target:'NET в ПФК',coveredBy:['atomoxetine'],blockedBy:[],desc:'NET-блокада → ↑NA+DA в ПФК (нет DAT в ПФК, NET убирает оба)'},
+    {target:'σ1 агонизм',coveredBy:['fluvoxamine','dhea','donepezil'],blockedBy:['sertraline'],desc:'σ1 агонист → BiP→IP3R3→Ca²⁺→CaMKII→CREB→BDNF→LTP'},
+    {target:'DA в ПФК',coveredBy:['atomoxetine','vortioxetine','bupropion'],blockedBy:[],desc:'Три независимых источника DA в ПФК'}
+  ]},
+{id:'priority_sense',title:'Не чувствую что важно',st:'Приоритизация',icon:'\u{1F3AF}',status:'critical',
+  desc:'Все варианты одинаково серые. Каждый день переобдумываю из пустоты. Нет эмоциональной метки «это важно».',
+  zones:['vmPFC','insula','ofc'],
+  defs:[
+    {zone:'vmPFC',nt:'DA',mech:'вмПФК присваивает эмоциональную метку каждому варианту. Без DA — нет критерия выбора.',src:'Damasio somatic marker'},
+    {zone:'insula',nt:'NA',mech:'Инсула поставляет вмПФК данные от тела. При диссоциации — вмПФК не получает сырьё для маркировки.',src:'Craig 2009'},
+    {zone:'ofc',nt:'DA',mech:'OFC считает выгоду/стоимость. Серотониновый потолок давит DA-сигнал в OFC.',src:''}
+  ],
+  needs:[
+    {target:'DA в вмПФК/OFC',coveredBy:['cariprazine','vortioxetine'],blockedBy:['sertraline'],desc:'Снятие серотонинового потолка + D3 дезингибирование VTA'},
+    {target:'NA в инсуле',coveredBy:['atomoxetine','duloxetine'],blockedBy:[],desc:'NET в инсуле → интероцепция'},
+    {target:'Инсула→вмПФК контур',coveredBy:[],blockedBy:[],desc:'EMDR с соматическим фокусом (не фарма)'}
+  ]},
+{id:'time_perception',title:'Время плоское',st:'Восприятие времени',icon:'\u23F3',status:'working',
+  desc:'Дни сливаются. Нет ощущения «вчера было давно» или «дедлайн через три дня = скоро». Время сжатое.',
+  zones:['insula','acc','hippo'],
+  defs:[
+    {zone:'insula',nt:'5-HT',mech:'Инсула генерирует «моменты осознания» из которых складывается субъективное время.',src:'Craig 2009'},
+    {zone:'acc',nt:'DA',mech:'ACC помечает события как значимые. Без DA — не чувствуешь что событие важное.',src:''}
+  ],
+  needs:[
+    {target:'SERT в инсуле',coveredBy:['sertraline','duloxetine','escitalopram'],blockedBy:[],desc:'Мощная SERT-блокада в инсуле → «густое» время'},
+    {target:'DA в ACC',coveredBy:['vortioxetine','atomoxetine'],blockedBy:['sertraline'],desc:'Вортиоксетин 5-HT7→когнитивная гибкость в ACC'}
+  ]},
+{id:'boundaries',title:'Не чувствую границы',st:'Границы/агрессия',icon:'\u{1F6E1}\uFE0F',status:'critical',
+  desc:'Freeze блокирует контур злость→действие. Либо молчу (недобор), либо взрываю (перебор). Нет среднего.',
+  zones:['vmPFC','amygdala','ofc','insula'],
+  defs:[
+    {zone:'amygdala',nt:'NA',mech:'Миндалина генерирует «вторжение→злость», но freeze перехватывает: злость→freeze→подавление.',src:''},
+    {zone:'ofc',nt:'DA',mech:'OFC калибрует «сколько агрессии уместно». Без DA = плохая калибровка.',src:''},
+    {zone:'insula',nt:'NA',mech:'Не чувствуешь нарастание злости до момента взрыва (интероцепция отключена).',src:''}
+  ],
+  needs:[
+    {target:'Разморозка freeze',coveredBy:[],blockedBy:[],desc:'EMDR + TFP: миндалина должна научиться что злость ≠ смерть. Не фарма.'},
+    {target:'D3 в NAc shell',coveredBy:['cariprazine','pramipexole'],blockedBy:[],desc:'D3→«хочу»→энергия на действие вместо freeze'},
+    {target:'α2A снижение гиперароузала',coveredBy:['guanfacine'],blockedBy:[],desc:'Миндалина не прыгает в freeze при каждом конфликте'}
+  ]},
+{id:'emotional_range',title:'Эмоции сжаты',st:'Амплитуда эмоций',icon:'\u{1F4AB}',status:'critical',
+  desc:'Снизу: не замечаю слабые эмоции (алекситимия). Сверху: сильные запускают freeze. Диапазон узкий.',
+  zones:['nac','vta','insula','amygdala'],
+  defs:[
+    {zone:'nac',nt:'DA',mech:'DA в NAc shell = «это интересно». Серотониновый потолок давит shell через 5-HT2C. D3-рецепторы не покрыты.',src:''},
+    {zone:'vta',nt:'DA',mech:'VTA заторможена 5-HT2C от сертралина. DA-выброс ↓30-42%.',src:''},
+    {zone:'insula',nt:'NA',mech:'Инсула отключена → не замечаешь эмоции в теле.',src:''}
+  ],
+  needs:[
+    {target:'D3 в NAc shell',coveredBy:['cariprazine','pramipexole'],blockedBy:[],desc:'D3 обходит серотониновый потолок → shell оживает'},
+    {target:'Снятие 5-HT2C потолка',coveredBy:[],blockedBy:['sertraline','escitalopram','fluoxetine'],desc:'Убрать/заменить SSRI → VTA разблокируется'},
+    {target:'Расширение окна толерантности',coveredBy:[],blockedBy:[],desc:'EMDR: разморозка freeze → можно выдерживать сильные эмоции. Не фарма.'}
+  ]},
+{id:'psychomotor',title:'Тело медленное',st:'Моторика',icon:'\u{1F422}',status:'working',
+  desc:'Психомоторная ретардация. Иду физически медленно. Хочу ускориться — тело не выполняет.',
+  zones:['brainstem','cerebellum'],
+  defs:[
+    {zone:'brainstem',nt:'5-HT',mech:'Серотонин в стволе → нисходящий моторный тонус через ядра шва → спинной мозг.',src:''},
+    {zone:'brainstem',nt:'NA',mech:'NA тонус бодрствования. Бупро NET метаболит обеспечивает.',src:''},
+    {zone:'cerebellum',nt:'DA',mech:'DA в стриатуме → скорость инициации движения.',src:''}
+  ],
+  needs:[
+    {target:'5-HT в стволе',coveredBy:['sertraline','duloxetine','vortioxetine'],blockedBy:[],desc:'SERT-блокада в стволе → моторный тонус'},
+    {target:'NA тонус',coveredBy:['bupropion','atomoxetine'],blockedBy:[],desc:'NET → бодрость'},
+    {target:'DA в стриатуме',coveredBy:['bupropion','methylphenidate'],blockedBy:[],desc:'DAT-блокада для моторной инициации'}
+  ]}
+];
+var DSEL=null; // selected deficit id
+
+var RG = {
+  dlPFC:{n:'длПФК',f:'Дорсолатеральная ПФК',fn:'Рабочая память, фокус, планирование',p:[0.15,0.45,0.35],c:'#60a5fa'},
+  vmPFC:{n:'вмПФК',f:'Вентромедиальная ПФК',fn:'Эмоц. регуляция, самореференция',p:[0,0.15,0.4],c:'#818cf8'},
+  ofc:{n:'оПФК',f:'Орбитофронтальная кора',fn:'Вознаграждение, импульсы',p:[0,-0.05,0.4],c:'#a78bfa'},
+  acc:{n:'ACC',f:'Передняя поясная кора',fn:'Мониторинг ошибок, гибкость',p:[0,0.28,0.15],c:'#c084fc'},
+  insula:{n:'Инсула',f:'Островковая кора',fn:'Интероцепция, ощущение тела',p:[0.3,0.08,0.08],c:'#22d3ee'},
+  nac:{n:'NAc',f:'Nucleus Accumbens',fn:'Core=D1 делаю | Shell=D3 хочу',p:[0.08,-0.05,0.2],c:'#fbbf24'},
+  vta:{n:'VTA',f:'Вентральная тегментальная обл.',fn:'Источник DA для NAc и ПФК',p:[0,-0.2,-0.1],c:'#f59e0b'},
+  lc:{n:'LC',f:'Locus Coeruleus',fn:'Источник NA для всего мозга',p:[0.05,-0.25,-0.2],c:'#34d399'},
+  amygdala:{n:'Амигдала',f:'Миндалевидное тело',fn:'Страх, угроза, эмоц. память',p:[0.2,-0.1,0.05],c:'#f87171'},
+  hippo:{n:'Гиппокамп',f:'Гиппокамп',fn:'Память, нейрогенез, BDNF, LTP',p:[0.22,-0.08,-0.12],c:'#fb923c'},
+  parietal:{n:'Теменная',f:'Теменная кора',fn:'Простр. внимание, координация',p:[0.2,0.5,-0.15],c:'#2dd4bf'},
+  cerebellum:{n:'Мозжечок',f:'Мозжечок',fn:'Тайминг, точность',p:[0,-0.3,-0.42],c:'#a3e635'},
+  brainstem:{n:'Ствол',f:'Ствол мозга',fn:'Вегетативка: дыхание, сердце',p:[0,-0.45,-0.25],c:'#64748b'},
+  raphe:{n:'Шов',f:'Ядра шва',fn:'Источник 5-HT',p:[0,-0.32,-0.18],c:'#60a5fa'},
+  spinal:{n:'Спин.',f:'Спинной мозг',fn:'Нисходящее торможение боли',p:[0,-0.65,-0.28],c:'#94a3b8'}
+};
+
+var TR=[{f:'vta',t:'nac',nt:'DA'},{f:'vta',t:'dlPFC',nt:'DA'},{f:'lc',t:'dlPFC',nt:'NA'},{f:'lc',t:'amygdala',nt:'NA'},{f:'lc',t:'insula',nt:'NA'},{f:'lc',t:'parietal',nt:'NA'},{f:'raphe',t:'dlPFC',nt:'5-HT'},{f:'raphe',t:'amygdala',nt:'5-HT'},{f:'raphe',t:'hippo',nt:'5-HT'},{f:'raphe',t:'vta',nt:'5-HT'},{f:'dlPFC',t:'amygdala',nt:'NA'}];
+
+var AD = {};
+// Session persistence
+function saveSession(){try{localStorage.setItem('cortexmd_scheme',JSON.stringify(AD))}catch(e){}}
+function loadSession(){try{var s=localStorage.getItem('cortexmd_scheme');if(s){var p=JSON.parse(s);Object.keys(p).forEach(function(id){if(DRUGS[id])AD[id]=p[id]})}}catch(e){}}
+loadSession();
+var SR = null, BM = null, MK = {}, TL = [], CP = {};
+
+var scene = new THREE.Scene();
+var cam = new THREE.PerspectiveCamera(45,1,0.1,100);
+cam.position.set(0,0.5,3.5);
+var ren = new THREE.WebGLRenderer({antialias:true,alpha:true});
+ren.setClearColor(0x000000,0);
+ren.setPixelRatio(Math.min(devicePixelRatio,2));
+ren.outputColorSpace = THREE.SRGBColorSpace;
+ren.toneMapping = THREE.ACESFilmicToneMapping;
+ren.toneMappingExposure = 1.5;
+document.getElementById('cv').appendChild(ren.domElement);
+var composer=new EffectComposer(ren);
+composer.addPass(new RenderPass(scene,cam));
+var bloomPass=new UnrealBloomPass(new THREE.Vector2(window.innerWidth,window.innerHeight),0.5,0.8,0.75);
+composer.addPass(bloomPass);
+composer.addPass(new OutputPass());
+var ctrl = new OrbitControls(cam,ren.domElement);
+ctrl.enableDamping = true; ctrl.dampingFactor = 0.05; ctrl.minDistance = 1.5; ctrl.maxDistance = 8;
+
+scene.add(new THREE.AmbientLight(0x334455,0.4));
+var dirL=new THREE.DirectionalLight(0x6e8caa,0.8);dirL.position.set(0,2,3);scene.add(dirL);
+var warmL=new THREE.PointLight(0xff6633,0.3,5);warmL.position.set(0,-1,1);scene.add(warmL);
+var rimL=new THREE.PointLight(0x8844ff,0.4,6);rimL.position.set(0,0.5,-2);scene.add(rimL);
+
+function rsz(){var rp=document.getElementById('rp');var rpW=rp&&rp.classList.contains('open')?340:0;var w=innerWidth-280-rpW,h=innerHeight-48;cam.aspect=w/h;cam.updateProjectionMatrix();ren.setSize(w,h);composer.setSize(w,h);ren.domElement.style.marginLeft='280px'}
+addEventListener('resize',rsz); rsz();
+
+var mg = new THREE.Group(); scene.add(mg);
+
+new GLTFLoader().load('brain.glb', function(g){
+  BM=g.scene;var b=new THREE.Box3().setFromObject(BM);var c=b.getCenter(new THREE.Vector3());var s=b.getSize(new THREE.Vector3());var sc=2/Math.max(s.x,s.y,s.z);
+  BM.position.sub(c);BM.scale.setScalar(sc);BM.position.y+=0.1;
+  var _brainMesh=null;
+  BM.traverse(function(ch){if(ch.isMesh){
+    ch.material=new THREE.MeshPhysicalMaterial({color:0x8899aa,transparent:true,opacity:0.15,roughness:0.6,metalness:0.15,clearcoat:0.3,clearcoatRoughness:0.4,side:THREE.DoubleSide,depthWrite:false});
+    if(!_brainMesh||ch.geometry.attributes.position.count>_brainMesh.geometry.attributes.position.count)_brainMesh=ch;
+    var wireMat=new THREE.MeshBasicMaterial({color:0x6ee7b7,wireframe:true,transparent:true,opacity:0.06,depthWrite:false});
+    var wireClone=ch.clone();wireClone.material=wireMat;wireClone.scale.multiplyScalar(1.002);BM.add(wireClone);
+  }});
+  scene.add(BM);
+  if(_brainMesh){
+    var positions=_brainMesh.geometry.attributes.position;
+    var particleCount=Math.min(positions.count,5000);
+    var step=Math.max(1,Math.floor(positions.count/particleCount));
+    var particleGeo=new THREE.BufferGeometry();
+    var particlePositions=new Float32Array(particleCount*3);
+    for(var i=0,j=0;i<positions.count&&j<particleCount;i+=step,j++){
+      particlePositions[j*3]=positions.getX(i);particlePositions[j*3+1]=positions.getY(i);particlePositions[j*3+2]=positions.getZ(i);
+    }
+    particleGeo.setAttribute('position',new THREE.BufferAttribute(particlePositions,3));
+    var particleMat=new THREE.PointsMaterial({color:0xaabbcc,size:0.008,transparent:true,opacity:0.4,depthWrite:false,sizeAttenuation:true,blending:THREE.AdditiveBlending});
+    var particleSystem=new THREE.Points(particleGeo,particleMat);
+    particleSystem.position.copy(BM.position);particleSystem.rotation.copy(BM.rotation);particleSystem.scale.copy(BM.scale);
+    scene.add(particleSystem);window._brainParticles=particleSystem;
+  }
+  initScene();
+}, null, function(){
+  var g=new THREE.SphereGeometry(1,64,48);var p=g.attributes.position;
+  for(var i=0;i<p.count;i++){var x=p.getX(i)*0.75,y=p.getY(i),z=p.getZ(i)*0.9;if(y<-0.3)y*=0.5;var n=Math.sin(x*8)*Math.cos(z*6)*0.03;var r=Math.sqrt(x*x+y*y+z*z);p.setXYZ(i,x+x/r*n,y+y/r*n,z+z/r*n)}
+  g.computeVertexNormals();
+  BM=new THREE.Mesh(g,new THREE.MeshPhysicalMaterial({color:0x8899aa,transparent:true,opacity:0.15,roughness:0.6,metalness:0.15,clearcoat:0.3,clearcoatRoughness:0.4,side:THREE.DoubleSide,depthWrite:false}));
+  var wireMat2=new THREE.MeshBasicMaterial({color:0x6ee7b7,wireframe:true,transparent:true,opacity:0.06,depthWrite:false});
+  var wireClone2=BM.clone();wireClone2.material=wireMat2;wireClone2.scale.multiplyScalar(1.002);scene.add(wireClone2);
+  scene.add(BM);
+  var positions2=g.attributes.position;var pc2=Math.min(positions2.count,5000);var step2=Math.max(1,Math.floor(positions2.count/pc2));
+  var pGeo2=new THREE.BufferGeometry();var pPos2=new Float32Array(pc2*3);
+  for(var i2=0,j2=0;i2<positions2.count&&j2<pc2;i2+=step2,j2++){pPos2[j2*3]=positions2.getX(i2);pPos2[j2*3+1]=positions2.getY(i2);pPos2[j2*3+2]=positions2.getZ(i2)}
+  pGeo2.setAttribute('position',new THREE.BufferAttribute(pPos2,3));
+  var pMat2=new THREE.PointsMaterial({color:0xaabbcc,size:0.008,transparent:true,opacity:0.4,depthWrite:false,sizeAttenuation:true,blending:THREE.AdditiveBlending});
+  var pSys2=new THREE.Points(pGeo2,pMat2);scene.add(pSys2);window._brainParticles=pSys2;
+  initScene();
+});
+
+function initScene(){
+  Object.entries(RG).forEach(function(e){var id=e[0],r=e[1];
+    var m=new THREE.Mesh(new THREE.SphereGeometry(0.035,16,16),new THREE.MeshPhysicalMaterial({color:new THREE.Color(r.c),emissive:new THREE.Color(r.c),emissiveIntensity:0.8,transparent:true,opacity:0.95,roughness:0.2}));
+    m.position.set(r.p[0],r.p[1],r.p[2]);m.userData={rid:id};mg.add(m);MK[id]=m;
+    var ring=new THREE.Mesh(new THREE.RingGeometry(0.045,0.065,32),new THREE.MeshBasicMaterial({color:new THREE.Color(r.c),transparent:true,opacity:0.25,side:THREE.DoubleSide}));
+    ring.position.copy(m.position);ring.userData={rid:id,isR:true};mg.add(ring);
+  });
+  TR.forEach(function(t){var a=RG[t.f],b=RG[t.t];
+    var cv=new THREE.QuadraticBezierCurve3(new THREE.Vector3(a.p[0],a.p[1],a.p[2]),new THREE.Vector3((a.p[0]+b.p[0])/2,(a.p[1]+b.p[1])/2+0.12,(a.p[2]+b.p[2])/2),new THREE.Vector3(b.p[0],b.p[1],b.p[2]));
+    var geo=new THREE.BufferGeometry().setFromPoints(cv.getPoints(40));
+    var mat=new THREE.LineBasicMaterial({color:new THREE.Color(NTC[t.nt]||'#666'),transparent:true,opacity:0});
+    var ln=new THREE.Line(geo,mat);ln.userData={tr:t};scene.add(ln);TL.push(ln);
+  });
+  buildUI(); uAll();
+}
+
+var rc=new THREE.Raycaster(), ms=new THREE.Vector2();
+ren.domElement.addEventListener('click',function(ev){
+  var r=ren.domElement.getBoundingClientRect();
+  ms.x=((ev.clientX-r.left)/r.width)*2-1; ms.y=-((ev.clientY-r.top)/r.height)*2+1;
+  rc.setFromCamera(ms,cam);var h=rc.intersectObjects(mg.children);
+  if(h.length>0&&h[0].object.userData.rid){
+    var id=h[0].object.userData.rid;
+    if(SR===id){SR=null;closeZonePopup();uAll();return}
+    SR=id;uAll();
+    // Show popup at screen position of marker
+    var obj=h[0].object;var vec=new THREE.Vector3();obj.getWorldPosition(vec);vec.project(cam);
+    var cx=(vec.x*0.5+0.5)*r.width+r.left;var cy=(-vec.y*0.5+0.5)*r.height+r.top;
+    showZonePopup(id,{x:cx,y:cy});
+  }else{SR=null;closeZonePopup();uAll()}
+});
+ren.domElement.addEventListener('mousemove',function(ev){
+  var r=ren.domElement.getBoundingClientRect();ms.x=((ev.clientX-r.left)/r.width)*2-1;ms.y=-((ev.clientY-r.top)/r.height)*2+1;
+  rc.setFromCamera(ms,cam);var h=rc.intersectObjects(mg.children);var tt=document.getElementById('tooltip');
+  if(h.length>0&&h[0].object.userData.rid){var id=h[0].object.userData.rid,rg=RG[id];
+    tt.style.display='block';tt.style.left=(ev.clientX+15)+'px';tt.style.top=(ev.clientY-10)+'px';
+    tt.innerHTML='<b>'+rg.f+'</b><br><span style="color:#94a3b8">'+rg.fn+'</span>';ren.domElement.style.cursor='pointer';
+  }else{tt.style.display='none';ren.domElement.style.cursor='grab'}
+});
+
+function cypVal(){var t=0;var d=AD.bupropion||0;t+=d>=300?80:d>=225?70:d>=150?45:d>=75?20:0;
+  if(AD.fluoxetine)t+=75;return Math.min(95,t)}
+function realD(id){var b=AD[id];if(!b)return 0;var c=cypVal();var d=DRUGS[id];
+  if(id==='atomoxetine')return b*(1+c/100*4);if(id==='vortioxetine')return b*(1+c/100*1.1);
+  if(d&&d.cyp2d6s)return b*(1+c/100*d.cyp2d6s);return b}
+function occ(id,rec){var d=DRUGS[id];if(!d||!d.ki||!d.ki[rec])return 0;var dose=realD(id);var ki=d.ki[rec];var f=id==='pramipexole'?0.5:id==='cariprazine'?0.3:id==='guanfacine'?2:1;return(dose/(dose+ki*f))*100}
+
+var NT_REC={'DA':['DAT','D3','D2'],'NA':['NET','a2A','alpha1'],'5-HT':['SERT','5HT3','5HT1A','5HT7','5HT1B'],'s1':['s1'],'D3':['D3','D2'],'Glu':['NMDA'],'ACh':['AChE','5HT3']};
+function drugOcc(did,nt){var d=DRUGS[did];if(!d)return 0;var recs=NT_REC[nt]||[];var best=0;for(var r=0;r<recs.length;r++){if(d.ki&&d.ki[recs[r]]!==undefined){var o=occ(did,recs[r]);if(o>best)best=o}}if(best>0)return best;return Math.min(100,(realD(did)/(d.def||1))*50)}
+function zH(zid,nt){var t=65;Object.keys(AD).forEach(function(did){var d=DRUGS[did];if(!d)return;var zf=d.z?d.z[zid]:null;if(!zf)return;if(zf.nt.indexOf(nt)<0&&nt!=='s1')return;if(nt==='s1'&&zf.nt.indexOf('s1')<0)return;var occupancy=drugOcc(did,nt);var maxEff=zf.i*8;var delta=(occupancy/100)*maxEff;if(zf.bad)delta=-delta*0.7;t+=delta});return Math.max(0,Math.min(250,t))}
+function gH(nt){var zs=Object.keys(RG);var s=0,c=0;var m={DA:['DA','D3'],NA:['NA'],'5-HT':['5-HT'],s1:['s1']};var nts=m[nt]||[nt];
+nts.forEach(function(n){zs.forEach(function(z){var h=zH(z,n);if(h!==65||Object.keys(AD).some(function(d){var dr=DRUGS[d];return dr&&dr.z&&dr.z[z]&&dr.z[z].nt.indexOf(n)>=0})){s+=h;c++}})});return c>0?s/c:65}
+function hCol(v){return v<60?'#ef4444':v<80?'#f59e0b':v<=160?'#22c55e':v<=200?'#f59e0b':'#ef4444'}
+function hSt(v){return v<60?'Дефицит':v<80?'Ниже нормы':v<=160?'Оптимум':v<=200?'Повышен':'Перегруз'}
+
+function uAll(){uVis();uInfo();uConf();uHP();uAS();buildDC();updatePanelBadge();
+  if(DSEL)uDefInfo();
+  if(document.getElementById('s1overlay').classList.contains('show'))buildS1SVG()}
+
+function uVis(){Object.entries(MK).forEach(function(e){var id=e[0],m=e[1];
+  var fx=[];Object.keys(AD).forEach(function(d){var dr=DRUGS[d];if(dr&&dr.z&&dr.z[id])fx.push({d:d,bad:dr.z[id].bad,i:dr.z[id].i})});
+  var it=fx.reduce(function(s,x){return s+x.i},0);var bd=fx.some(function(x){return x.bad});var sl=SR===id;
+  m.scale.setScalar(it>0?1+it*0.06:0.5);
+  if(it>0){var avg=zH(id,'DA')*0.3+zH(id,'5-HT')*0.3+zH(id,'NA')*0.3+zH(id,'s1')*0.1;m.material.emissive.set(bd?'#ff4444':hCol(avg));m.material.emissiveIntensity=sl?2:0.5+it*0.1;m.material.opacity=sl?1:0.85}
+  else{m.material.emissive.set(RG[id].c);m.material.emissiveIntensity=0.1;m.material.opacity=0.3}
+  // Deficit zone highlighting
+  if(DSEL){var df=DEFICITS.find(function(x){return x.id===DSEL});if(df){var isDZ=df.zones.indexOf(id)>=0;
+    if(isDZ){m.material.emissiveIntensity=sl?2.5:1.8;m.scale.setScalar(Math.max(m.scale.x,1.5));
+      if(df.status==='critical'){m.material.emissive.set('#ff4444');m.material.opacity=0.7+0.3*Math.sin(Date.now()*0.005)}}
+    else{m.material.opacity*=0.4;m.material.emissiveIntensity*=0.3}}}});
+  TL.forEach(function(l){var t=l.userData.tr;var a=false;
+    if(t.nt==='DA')a=Object.keys(AD).some(function(d){return['bupropion','pramipexole','cariprazine','aripiprazole','brexpiprazole','methylphenidate','lisdexamfetamine','modafinil','selegiline_oral','amisulpride_low','levodopa','auvelity'].indexOf(d)>=0});
+    if(t.nt==='NA')a=Object.keys(AD).some(function(d){return['atomoxetine','bupropion','duloxetine','guanfacine','desipramine','nortriptyline','protriptyline','reboxetine','milnacipran','levomilnacipran','venlafaxine','desvenlafaxine','quetiapine','lisdexamfetamine','brexpiprazole'].indexOf(d)>=0});
+    if(t.nt==='5-HT')a=Object.keys(AD).some(function(d){return['sertraline','vortioxetine','duloxetine','escitalopram','fluvoxamine','fluoxetine','venlafaxine','desvenlafaxine','milnacipran','levomilnacipran','amitriptyline','dextromethorphan'].indexOf(d)>=0});
+    l.material.opacity=a?0.4:0})}
+
+function uInfo(){var el=document.getElementById('ri');
+  if(!SR){el.innerHTML='';return}
+  var r=RG[SR];
+  // Zone header with colored background
+  var h='<div class="zone-header-card" style="background:'+r.c+'18"><div class="zone-header-title">'+r.f+'</div><div class="zone-header-subtitle">'+r.fn+'</div></div>';
+  // Active drug effects — simplified, large
+  var fx=[];Object.keys(AD).forEach(function(d){var dr=DRUGS[d];if(dr&&dr.z&&dr.z[SR])fx.push({drug:d,data:dr.z[SR]})});
+  if(fx.length>0){h+='<div class="panel-section-title">Активные эффекты</div>';
+    fx.forEach(function(e){var d=DRUGS[e.drug];var isBad=e.data.bad;
+      var arrow=isBad?'\u2193':'\u2191';var cls=isBad?'down':'up';
+      if(e.data.i<=1){arrow='\u2192';cls='neutral'}
+      h+='<div class="panel-effect"><div class="panel-effect-icon '+cls+'">'+arrow+'</div>';
+      h+='<span class="panel-effect-drug" style="color:'+d.c+'">'+d.s+'</span>';
+      h+='<span class="panel-effect-desc">'+e.data.fx[0]+'</span></div>'});
+  }else{h+='<div style="font-size:12px;color:var(--text-muted);margin-top:8px;font-style:italic">Нет активных препаратов для этой зоны</div>'}
+  // σ1 button
+  var hasS1=Object.keys(AD).some(function(d){var dr=DRUGS[d];return dr&&dr.s1t});
+  if(hasS1)h+='<div class="cvbtn" onclick="showS1()">\u03C31 Клеточный уровень \u2192</div>';
+  // Related deficits
+  var rd=DEFICITS.filter(function(d){return d.zones.indexOf(SR)>=0});
+  if(rd.length>0){h+='<div class="panel-section-title">Связанные дефициты</div>';
+    rd.forEach(function(d){var sc=d.status==='critical'?'var(--status-danger)':d.status==='working'?'var(--status-warning)':'var(--status-optimal)';
+      var tc=defTotalCov(d);var cc=covCol(tc);
+      h+='<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;margin-bottom:4px;border-radius:8px;cursor:pointer;background:rgba(255,255,255,0.02);transition:background 0.2s" onclick="selDef(\''+d.id+'\')">';
+      h+='<span style="font-size:16px">'+d.icon+'</span><span style="font-size:12px;color:var(--text-primary);flex:1;font-weight:500">'+d.st+'</span>';
+      h+='<span style="font-family:var(--font-mono);font-size:11px;color:'+cc+'">'+tc+'%</span>';
+      h+='<span style="width:8px;height:8px;border-radius:50%;background:'+sc+'"></span></div>'})
+  }
+  el.innerHTML=h}
+
+function uConf(){var el=document.getElementById('cfb');var c=[],cr=[];
+  var ssris=['sertraline','escitalopram','fluoxetine','fluvoxamine'];
+  var snris=['duloxetine','venlafaxine','desvenlafaxine','milnacipran','levomilnacipran'];
+  var seroAll=ssris.concat(snris);
+  var hasSSRI=ssris.some(function(d){return AD[d]!==undefined});
+  var hasSNRI=snris.some(function(d){return AD[d]!==undefined});
+  // CRITICAL: DXM + SSRI/SNRI
+  if((AD.dextromethorphan!==undefined||AD.auvelity!==undefined)&&seroAll.some(function(d){return AD[d]!==undefined}))
+    cr.push('<span style="color:#ef4444">⛔ DXM НЕЛЬЗЯ с SSRI/SNRI — серотониновый синдром!</span>');
+  // CRITICAL: Selegiline + DXM
+  if(AD.selegiline_oral!==undefined&&(AD.dextromethorphan!==undefined||AD.auvelity!==undefined))
+    cr.push('<span style="color:#ef4444">⛔ Селегилин ПРОТИВОПОКАЗАН с DXM</span>');
+  // CRITICAL: Mucuna + MAOI
+  if(AD.mucuna!==undefined&&AD.selegiline_oral!==undefined)
+    cr.push('<span style="color:#ef4444">⛔ Мукуна (L-DOPA) + ИМАО = опасно</span>');
+  // Selegiline + SSRI caution
+  if(AD.selegiline_oral!==undefined&&hasSSRI)c.push('⚠️ Селегилин: осторожность с SSRI');
+  // Existing conflicts
+  if(AD.sertraline&&AD.bupropion)c.push('Серт 5HT2C → DA VTA вниз 30-42%');
+  // σ1 competition: inverse agonist + agonists
+  var s1inv=Object.keys(AD).some(function(d){return DRUGS[d]&&DRUGS[d].s1t==='inv'});
+  var s1ag=Object.keys(AD).filter(function(d){return DRUGS[d]&&DRUGS[d].s1t==='ag'});
+  if(s1inv&&s1ag.length>0)c.push('⚡ σ1-конфликт: инверсный агонист подавляет каскад пластичности');
+  // Progesterone blocks σ1
+  if(AD.progesterone!==undefined&&s1ag.length>0)c.push('⚠️ Прогестерон — σ1-АНТАГОНИСТ. Блокирует σ1-агонисты');
+  // Triple NET overload
+  var netDrugs=['bupropion','duloxetine','atomoxetine','desipramine','nortriptyline','protriptyline','reboxetine','milnacipran','levomilnacipran','venlafaxine'].filter(function(d){return AD[d]!==undefined});
+  if(netDrugs.length>=3)c.push('⚠️ Тройной+ NET ('+netDrugs.length+' препаратов) → NA-перегруз');
+  // CYP2D6 cascade
+  var cy=cypVal();if(cy>0){var cs='CYP2D6 ингиб. '+cy+'%: ';var cyps=[];
+    Object.keys(AD).forEach(function(id){var d=DRUGS[id];if(d&&d.cyp2d6s){var r=realD(id);if(r!==AD[id])cyps.push(d.s+'→'+r.toFixed(0)+d.u)}});
+    if(AD.atomoxetine)cyps.push('АТОМ→'+realD('atomoxetine').toFixed(0)+'мг');
+    if(AD.vortioxetine)cyps.push('ВОРТ→'+realD('vortioxetine').toFixed(0)+'мг');
+    if(cyps.length)c.push(cs+cyps.join(', '))}
+  // Bupropion + DRPA dosing
+  if(AD.bupropion&&(AD.aripiprazole||AD.brexpiprazole))c.push('⚠️ С бупропионом: ПОЛОВИННАЯ доза арипипразола/брексипразола');
+  // Modafinil CYP3A4 induction
+  if(AD.modafinil&&AD.cariprazine)c.push('⚠️ Модафинил CYP3A4 индуктор → снижает карипразин');
+  // Fluvoxamine CYP1A2/2C19
+  if(AD.fluvoxamine&&(AD.lamotrigine||AD.duloxetine))c.push('⚠️ Флувоксамин CYP1A2/2C19 → повышает ламотриджин/дулоксетин');
+  // SAMe + SSRI
+  if(AD.same&&hasSSRI)c.push('SAMe+SSRI: редкий риск серотонинового синдрома');
+  // Pramipexole + cariprazine
+  if(AD.pramipexole!==undefined&&AD.cariprazine!==undefined)c.push('Прам+карипразин: конкуренция D3');
+  // Fluoxetine long half-life
+  if(AD.fluoxetine&&Object.keys(AD).length>2)c.push('Флуоксетин: Т½ очень длинный, мощный CYP2D6 ингибитор');
+  var html='';
+  if(cr.length)html+='<div class="cb" style="border-color:#7f1d1d;background:rgba(127,29,29,.2)"><div class="cbt" style="color:#ef4444">КРИТИЧЕСКИЕ ('+cr.length+')</div>'+cr.map(function(x){return'<div class="ci">'+x+'</div>'}).join('')+'</div>';
+  if(c.length)html+='<div class="cb"><div class="cbt">Предупреждения ('+c.length+')</div>'+c.map(function(x){return'<div class="ci">'+x+'</div>'}).join('')+'</div>';
+  el.innerHTML=html}
+
+function uHP(){['DA','NA','5-HT','s1'].forEach(function(nt){var k=nt==='5-HT'?'5ht':nt==='s1'?'s1':nt.toLowerCase();var v=Object.keys(AD).length>0?gH(nt):65;var c=hCol(v);
+  document.getElementById('hv-'+k).textContent=v.toFixed(0)+'%';document.getElementById('hv-'+k).style.color=c;
+  document.getElementById('hf-'+k).style.width=Math.min(100,v/2)+'%';document.getElementById('hf-'+k).style.background=c;
+  document.getElementById('hs-'+k).textContent=hSt(v);document.getElementById('hs-'+k).style.color=c});
+  var cy=cypVal();var cc=cy>60?'#ef4444':cy>30?'#f59e0b':'#22c55e';
+  document.getElementById('hv-cyp').textContent=cy+'%';document.getElementById('hv-cyp').style.color=cc;
+  document.getElementById('hf-cyp').style.width=cy+'%';document.getElementById('hf-cyp').style.background=cc;
+  document.getElementById('hs-cyp').textContent=cy>60?'Сильное':cy>30?'Среднее':cy>0?'Слабое':'Нет';document.getElementById('hs-cyp').style.color=cc}
+
+function uAS(){}
+
+function buildUI(){buildP();buildD();buildDC();uAll()}
+function buildP(){var el=document.getElementById('presets');var h='';Object.keys(PRESETS).forEach(function(id){h+='<button class="pb" onclick="aP(\''+id+'\')">'+PRESETS[id].l+'</button>'});
+  Object.keys(CP).forEach(function(n){h+='<button class="pb" style="border-color:#064e3b;color:#34d399" onclick="aCP(\''+n+'\')">'+n+'</button>'});el.innerHTML=h}
+
+function filteredDrugs(){var sq=window._dsq||'';var ids=Object.keys(DRUGS);
+  if(CCAT!=='all'){var cd=DCAT[CCAT];if(cd&&cd.d)ids=ids.filter(function(id){return cd.d.indexOf(id)>=0})}
+  if(sq){sq=sq.toLowerCase();ids=ids.filter(function(id){var d=DRUGS[id];return d.n.toLowerCase().indexOf(sq)>=0||d.s.toLowerCase().indexOf(sq)>=0||id.toLowerCase().indexOf(sq)>=0})}
+  return ids}
+function buildDTabs(){var el=document.getElementById('dtabs');
+  var h='';Object.keys(DCAT).forEach(function(k){h+='<div class="dtab '+(CCAT===k?'act':'')+'" onclick="setCCAT(\''+k+'\')">'+DCAT[k].l+'</div>'});el.innerHTML=h}
+function buildDList(){var el=document.getElementById('dl');if(!el)return;var ids=filteredDrugs();
+  var h='<div class="dg">';ids.forEach(function(id){var d=DRUGS[id];var inScheme=AD.hasOwnProperty(id);
+    h+='<div class="di'+(inScheme?' in-scheme':'')+'" style="--c:'+d.c+'" onclick="addFromCatalog(\''+id+'\')" title="'+d.n+(inScheme?' (добавлен)':'')+'"><div class="ddt"'+(inScheme?' style="background:var(--c);box-shadow:0 0 8px var(--c)"':'')+'></div><span>'+d.s+'</span></div>'});h+='</div>';
+  h+='<div class="disclaimer">Образовательный инструмент. НЕ медицинский совет.</div>';
+  el.innerHTML=h}
+function buildD(){buildDTabs();buildDList();buildActiveScheme()}
+
+function buildActiveScheme(){
+  var el=document.getElementById('active-scheme');if(!el)return;
+  var cnt=document.getElementById('scheme-count');
+  var ids=Object.keys(AD);
+  if(cnt)cnt.textContent=ids.length>0?ids.length+' шт':'';
+  if(ids.length===0){el.innerHTML='<div class="empty-scheme">Добавьте препараты из каталога ниже</div>';return}
+  var h='<div class="scheme-grid">';
+  ids.forEach(function(id){
+    var d=DRUGS[id];if(!d)return;
+    var dose=AD[id];var rd=realD(id);
+    var hasWarn=d.warnDose&&dose>=d.warnDose;
+    var mn=d.doses[0],mx=d.doses[d.doses.length-1];
+    var step=d.doses.length>1?d.doses[1]-d.doses[0]:1;
+    h+='<div class="scheme-card" style="--c:'+d.c+'">';
+    h+='<div class="scheme-header"><span class="scheme-dot" style="background:'+d.c+'"></span>';
+    h+='<span class="scheme-name">'+d.s+'</span>';
+    h+='<button class="scheme-remove" onclick="event.stopPropagation();removeFromScheme(\''+id+'\')" title="Убрать">&times;</button></div>';
+    h+='<div class="scheme-dose"><span id="sdv-'+id+'">'+dose+'</span> '+d.u+'</div>';
+    if(rd&&Math.abs(rd-dose)>1)h+='<div class="scheme-real-dose">реально ~'+Math.round(rd)+d.u+'</div>';
+    if(hasWarn)h+='<div class="scheme-warning">\u26A0</div>';
+    if(hasWarn&&d.warnText)h+='<div class="scheme-warn-text">'+d.warnText+'</div>';
+    h+='<input type="range" class="scheme-slider" min="'+mn+'" max="'+mx+'" step="'+step+'" value="'+dose+'" style="accent-color:'+d.c+'" oninput="updateDose(\''+id+'\',this.value)">';
+    h+='</div>';
+  });
+  h+='</div>';el.innerHTML=h
+}
+
+// === DEFICIT CARDS ===
+function defCov(df){
+  return df.needs.map(function(n){
+    if(n.coveredBy.length===0)return{target:n.target,cov:-1,covering:[],blocking:[],np:true,desc:n.desc};
+    var covering=n.coveredBy.filter(function(id){return AD[id]!==undefined});
+    var blocking=(n.blockedBy||[]).filter(function(id){return AD[id]!==undefined});
+    var cov=Math.min(100,covering.length*40);
+    if(blocking.length>0&&cov>0)cov=Math.round(cov*0.5);
+    return{target:n.target,cov:cov,covering:covering,blocking:blocking,np:false,desc:n.desc}
+  })
+}
+function defTotalCov(df){
+  var covs=defCov(df);var pharma=covs.filter(function(c){return!c.np});
+  if(pharma.length===0)return 0;
+  return Math.round(pharma.reduce(function(s,c){return s+c.cov},0)/pharma.length)
+}
+function covCol(pct){
+  if(pct<=20)return'#ef4444';if(pct<=40)return'#f97316';if(pct<=60)return'#f59e0b';if(pct<=80)return'#22c55e';return'#10b981'}
+function defNTs(df){
+  var nts={};df.defs.forEach(function(d){nts[d.nt]=1});
+  return Object.keys(nts).map(function(nt){
+    var col=NTC[nt==='s1'?'s1':nt]||'#999';
+    return'<span style="display:inline-block;font-size:8px;padding:1px 4px;border-radius:3px;background:'+col+'22;color:'+col+';font-weight:600;font-family:var(--font-mono)">'+nt+'\u2193</span>'
+  }).join(' ')
+}
+
+function buildDC(){
+  var el=document.getElementById('dfc');if(!el)return;
+  var h='';
+  DEFICITS.forEach(function(df){
+    var tc=defTotalCov(df);
+    var cc=covCol(tc);
+    var isSel=DSEL===df.id;
+    var isExp=isSel;
+    h+='<div class="dc '+df.status+(isSel?' sel':'')+(isExp?' exp':'')+'" onclick="selDef(\''+df.id+'\')">';
+    // header
+    h+='<div class="dc-head"><span class="dc-icon">'+df.icon+'</span><span class="dc-name">'+df.st+'</span><span class="dc-status '+df.status+'"></span></div>';
+    // zone chips
+    h+='<div class="dc-zones">';
+    df.zones.forEach(function(z){var rg=RG[z];if(rg)h+='<span class="zc" onmouseenter="hoverDZ(\''+z+'\')" onmouseleave="unhoverDZ()" onclick="event.stopPropagation();clickDZ(\''+z+'\')">'+rg.n+'</span>'});
+    h+='</div>';
+    // coverage bar
+    h+='<div class="dc-cov"><div class="dc-cbar"><div class="dc-cfill" style="width:'+tc+'%;background:'+cc+'"></div></div><span class="dc-cpct" style="color:'+cc+'">'+tc+'%</span><span class="dc-cnts">'+defNTs(df)+'</span></div>';
+    // dynamic blocking warnings
+    var blockers=[];df.needs.forEach(function(n){(n.blockedBy||[]).forEach(function(bid){if(AD[bid]!==undefined&&blockers.indexOf(bid)<0)blockers.push(bid)})});
+    if(blockers.length>0){h+='<div class="dc-block">\u26A0 Блокирует: '+blockers.map(function(id){return DRUGS[id]?DRUGS[id].s:id}).join(', ')+'</div>'}
+
+    // expanded body
+    h+='<div class="dc-body">';
+    h+='<div class="dc-desc">'+df.desc+'</div>';
+
+    // deficits
+    h+='<div class="dc-sec">Дефициты</div>';
+    df.defs.forEach(function(d){
+      var rg=RG[d.zone];var zn=rg?rg.n:d.zone;
+      var ntc=NTC[d.nt==='s1'?'s1':d.nt]||'#999';
+      h+='<div class="dc-def"><div class="dc-def-title" style="color:'+ntc+'">'+d.nt+' в '+zn+'</div>';
+      h+='<div class="dc-def-mech">'+d.mech+'</div>';
+      if(d.src)h+='<div class="dc-def-src">'+d.src+'</div>';
+      h+='</div>'
+    });
+
+    // coverage details
+    h+='<div class="dc-sec">Покрытие схемой</div>';
+    var covs=defCov(df);
+    covs.forEach(function(c){
+      if(c.np){
+        h+='<div class="dc-need-np">'+c.target+': '+c.desc+'</div>';return
+      }
+      var cc2=covCol(c.cov);
+      h+='<div class="dc-need"><div class="dc-need-title">'+c.target+'</div>';
+      h+='<div class="dc-need-bar"><div class="dc-need-fill"><div style="width:'+c.cov+'%;background:'+cc2+'"></div></div><span class="dc-need-pct" style="color:'+cc2+'">'+c.cov+'%</span></div>';
+      if(c.covering.length)h+='<div class="dc-need-drugs">'+c.covering.map(function(id){return DRUGS[id]?DRUGS[id].s:id}).join(', ')+'</div>';
+      if(c.blocking.length)h+='<div class="dc-need-block">\u26A0 Блокирует: '+c.blocking.map(function(id){return DRUGS[id]?DRUGS[id].s:id}).join(', ')+'</div>';
+      h+='</div>'
+    });
+
+    // AI placeholder
+    h+='<div class="dc-ai"><div class="dc-ai-text">AI-анализ будет доступен в следующей версии</div></div>';
+
+    // footer
+    h+='<div class="dc-foot"><select class="dc-stsel" onclick="event.stopPropagation()" onchange="chDefSt(\''+df.id+'\',this.value)">';
+    ['critical','working','compensated'].forEach(function(s){
+      var lb=s==='critical'?'Критично':s==='working'?'В работе':'Компенсировано';
+      h+='<option value="'+s+'"'+(df.status===s?' selected':'')+'>'+lb+'</option>'
+    });
+    h+='</select><span class="dc-del" onclick="event.stopPropagation();delDef(\''+df.id+'\')">\u{1F5D1} Удалить</span></div>';
+
+    h+='</div>'; // dc-body
+    h+='</div>'; // dc
+  });
+  el.innerHTML=h
+}
+
+window.selDef=function(id){
+  if(DSEL===id){DSEL=null;SR=null}else{DSEL=id}
+  buildDC();uVis();uDefInfo()
+};
+window.hoverDZ=function(zid){
+  if(!MK[zid])return;
+  MK[zid].material.emissiveIntensity=2.5;MK[zid].scale.setScalar(1.8)
+};
+window.unhoverDZ=function(){uVis()};
+var _defOverlayOn=false;
+window.toggleDefView=function(){var btn=document.getElementById('defToggle');_defOverlayOn=!_defOverlayOn;btn.classList.toggle('active',_defOverlayOn);
+  if(_defOverlayOn){
+    btn.textContent='\u{1F534} Скрыть дефициты';
+    // Save original marker states and apply deficit overlay
+    DEFICITS.forEach(function(df){if(df.status==='compensated')return;
+      df.zones.forEach(function(zid){var m=MK[zid];if(!m)return;
+        if(!m.userData._defOrig){m.userData._defOrig={s:m.scale.clone(),e:m.material.emissive.clone(),ei:m.material.emissiveIntensity,o:m.material.opacity}}
+        m.scale.setScalar(Math.max(m.scale.x,1.5));
+        var col=df.status==='critical'?0xff0000:0xff9900;
+        m.material.emissive.set(col);m.material.emissiveIntensity=0.8;m.material.opacity=0.9})});
+    // Also expand deficit section in left panel
+    var dfcEl=document.getElementById('dfc');if(dfcEl){var sec=dfcEl.closest('.section');if(sec){var sb=sec.querySelector('.sb');var sa=sec.querySelector('.sa');if(sb&&!sb.classList.contains('open')){sb.classList.add('open');if(sa)sa.classList.add('open')}}}
+  }else{
+    btn.textContent='\u0414\u0435\u0444\u0438\u0446\u0438\u0442\u044B';
+    // Restore original marker states
+    Object.keys(MK).forEach(function(zid){var m=MK[zid];if(m.userData._defOrig){var o=m.userData._defOrig;m.scale.copy(o.s);m.material.emissive.copy(o.e);m.material.emissiveIntensity=o.ei;m.material.opacity=o.o;delete m.userData._defOrig}});
+    DSEL=null;buildDC();uVis()
+  }};
+window.clickDZ=function(zid){SR=zid;uAll()};
+window.chDefSt=function(id,st){
+  var d=DEFICITS.find(function(x){return x.id===id});if(d)d.status=st;buildDC()
+};
+window.delDef=function(id){
+  var i=DEFICITS.findIndex(function(x){return x.id===id});
+  if(i>=0){DEFICITS.splice(i,1);if(DSEL===id)DSEL=null;buildDC();uVis()}
+};
+
+function uDefInfo(){
+  if(!DSEL)return;
+  var df=DEFICITS.find(function(x){return x.id===DSEL});if(!df)return;
+  // highlight zones on brain
+  df.zones.forEach(function(zid){
+    if(!MK[zid])return;
+    var col=df.status==='critical'?'#ef4444':df.status==='working'?'#f59e0b':'#22c55e';
+    MK[zid].material.emissive.set(col);
+    MK[zid].material.emissiveIntensity=df.status==='critical'?1.5:1;
+    MK[zid].material.opacity=0.9;
+    MK[zid].scale.setScalar(1.3)
+  })
+}
+
+window.buildDList=buildDList;window.buildDTabs=buildDTabs;window.buildActiveScheme=buildActiveScheme;
+window.setCCAT=function(k){CCAT=k;buildDTabs();buildDList()};
+window.setDSQ=function(v){window._dsq=v;buildDList()};
+window.tSec=function(h){var b=h.nextElementSibling;var a=h.querySelector('.sa');b.classList.toggle('open');a.classList.toggle('open')};
+window.tD=function(id){if(AD.hasOwnProperty(id))delete AD[id];else AD[id]=DRUGS[id].def;buildDList();uAll();saveSession()};
+window.addFromCatalog=function(id){if(AD.hasOwnProperty(id))return;AD[id]=DRUGS[id].def;buildActiveScheme();buildDList();uAll();saveSession()};
+window.removeFromScheme=function(id){delete AD[id];buildActiveScheme();buildDList();uAll();saveSession()};
+window.updateDose=function(id,v){var dose=parseFloat(v);AD[id]=dose;var el=document.getElementById('sdv-'+id);if(el)el.textContent=v;
+  var d=DRUGS[id];if(el){var card=el.closest('.scheme-card');if(card){
+    // Update real dose inline
+    var rd=realD(id);var rdEl=card.querySelector('.scheme-real-dose');
+    if(rd&&Math.abs(rd-dose)>1){if(rdEl){rdEl.textContent='реально ~'+Math.round(rd)+d.u}else{var sp=document.createElement('div');sp.className='scheme-real-dose';sp.textContent='реально ~'+Math.round(rd)+d.u;card.querySelector('.scheme-dose').insertAdjacentElement('afterend',sp)}}
+    else if(rdEl){rdEl.remove()}
+    // Update warning inline
+    if(d&&d.warnDose){var w=card.querySelector('.scheme-warning');var wt=card.querySelector('.scheme-warn-text');if(w)w.style.display=dose>=d.warnDose?'block':'none';if(wt)wt.style.display=dose>=d.warnDose?'block':'none'}
+  }}
+  uAll();saveSession()};
+window.toggleCatalog=function(){var sec=document.getElementById('catalog-section');var arr=document.getElementById('catalog-toggle');sec.classList.toggle('open');arr.textContent=sec.classList.contains('open')?'\u25B2':'\u25BC'};
+window.cD=function(id,v){var dose=parseFloat(v);AD[id]=dose;var el=document.getElementById('dv-'+id);if(el)el.textContent=v;
+  var d=DRUGS[id];if(d&&d.warnDose){var w=document.getElementById('dw-'+id);if(w){w.classList.toggle('show',dose>=d.warnDose);w.classList.toggle('danger',dose>=d.maxDose)}}
+  uAll()};
+window.aP=function(id){AD={};var d=PRESETS[id].d;Object.keys(d).forEach(function(k){AD[k]=d[k]});SR=null;buildDList();buildActiveScheme();uAll();saveSession()};
+window.aCP=function(n){AD={};var d=CP[n];Object.keys(d).forEach(function(k){AD[k]=d[k]});SR=null;buildDList();buildActiveScheme();uAll();saveSession()};
+window.saveP=function(){var n=prompt('Название:');if(!n)return;CP[n]={};Object.keys(AD).forEach(function(k){CP[n][k]=AD[k]});buildP()};
+
+document.getElementById('opsl').addEventListener('input',function(e){var o=e.target.value/100;if(BM)BM.traverse(function(c){if(c.isMesh)c.material.opacity=o})});
+
+// === σ1 CASCADE ===
+var S1N=[
+  {id:'s1r',l:'σ1R',d:'Сигма-1 рецептор на мембране ЭР (MAM). При покое связан с BiP.',x:400,y:40,w:60},
+  {id:'bip',l:'BiP',d:'Шаперон BiP/GRP78. В покое держит σ1R неактивным.',x:250,y:40,w:50},
+  {id:'ip3r3',l:'IP3R3',d:'Кальциевый канал на ЭР. σ1R стабилизирует → Ca²⁺.',x:540,y:40,w:55},
+  {id:'ca',l:'Ca²⁺',d:'Ионы кальция. Триггер киназных каскадов и АТФ.',x:660,y:90,w:50},
+  {id:'mito',l:'Мито',d:'Митохондрия. Ca²⁺ → производство АТФ.',x:750,y:40,w:50},
+  {id:'atp',l:'АТФ',d:'Энергия для синаптической пластичности и LTP.',x:750,y:130,w:50},
+  {id:'camk',l:'CaMKII',d:'Кальций-кальмодулин киназа II/IV.',x:550,y:170,w:60},
+  {id:'erk',l:'ERK1/2',d:'MAP-киназа. Передаёт сигнал к CREB.',x:450,y:240,w:60},
+  {id:'creb',l:'CREB',d:'Транскрипционный фактор. CREB → BDNF.',x:400,y:330,w:55},
+  {id:'bdnf',l:'BDNF',d:'Нейротрофический фактор. Нейрогенез, пластичность, реконсолидация.',x:400,y:420,w:55},
+  {id:'ire1',l:'IRE1',d:'σ1R стабилизирует IRE1 → XBP1. Альт. путь к BDNF.',x:250,y:170,w:50},
+  {id:'xbp1',l:'XBP1',d:'Транскрипционный фактор. Доп. путь к BDNF.',x:250,y:280,w:55},
+  {id:'sk',l:'SK-кан.',d:'SK калиевые каналы. σ1R ингибирует → потенцирование NMDA.',x:660,y:210,w:60},
+  {id:'nmda',l:'NMDA-R',d:'NMDA-рецептор. Потенцирование = основа LTP.',x:700,y:300,w:65},
+  {id:'glun',l:'GluN2A/2B',d:'σ1R → трафик субъединиц к мембране.',x:600,y:340,w:70},
+  {id:'psd',l:'PSD-95',d:'Скаффолд. Организует рецепторы в постсинапсе.',x:650,y:400,w:60},
+  {id:'ltp',l:'LTP',d:'Долговременная потенциация. Обучение, память.',x:600,y:470,w:50},
+  {id:'recon',l:'Реконсол.',d:'Реконсолидация травматических воспоминаний (EMDR/PE).',x:500,y:500,w:70}
+];
+var S1E=[
+  {f:'s1r',t:'bip',tp:'inh',l:'Диссоциация'},
+  {f:'s1r',t:'ip3r3',tp:'stab',l:'Стабилизация'},
+  {f:'ip3r3',t:'ca',tp:'act',l:'Ca²⁺ выброс'},
+  {f:'ca',t:'mito',tp:'act'},
+  {f:'mito',t:'atp',tp:'prod'},
+  {f:'ca',t:'camk',tp:'act'},
+  {f:'camk',t:'erk',tp:'act'},
+  {f:'erk',t:'creb',tp:'act'},
+  {f:'creb',t:'bdnf',tp:'prod',l:'Транскрипция'},
+  {f:'s1r',t:'ire1',tp:'stab',l:'Стабилизация'},
+  {f:'ire1',t:'xbp1',tp:'act'},
+  {f:'xbp1',t:'bdnf',tp:'prod',l:'Доп. BDNF'},
+  {f:'s1r',t:'sk',tp:'inh',l:'Ингибиция SK'},
+  {f:'sk',t:'nmda',tp:'act',l:'NMDA потенц.'},
+  {f:'s1r',t:'glun',tp:'act',l:'Трафик'},
+  {f:'glun',t:'psd',tp:'act',l:'+PSD-95'},
+  {f:'nmda',t:'ltp',tp:'act'},
+  {f:'psd',t:'ltp',tp:'act'},
+  {f:'bdnf',t:'recon',tp:'act'},
+  {f:'ltp',t:'recon',tp:'act'}
+];
+
+function s1Bal(){var ag=0,inv=0,ant=0;Object.keys(AD).forEach(function(did){var d=DRUGS[did];if(!d||!d.ki||!d.ki.s1)return;var o=occ(did,'s1');
+  if(d.s1t==='ag')ag+=o;else if(d.s1t==='inv')inv+=o;else if(d.s1t==='ant')ant+=o});return{ag:ag,inv:inv,ant:ant,net:ag-inv-ant}}
+
+function buildS1SVG(){var svg=document.getElementById('s1svg');var bal=s1Bal();
+  var hasAny=bal.ag>0||bal.inv>0||bal.ant>0;
+  var state=!hasAny?'off':bal.net>10?'ag':bal.net<-10?'inv':bal.ant>20?'ant':'mix';
+  var nc=state==='ag'?'#22c55e':state==='inv'?'#ef4444':state==='ant'?'#f59e0b':state==='mix'?'#a78bfa':'#475569';
+  var ec=state==='ag'?'#16a34a':state==='inv'?'#dc2626':state==='ant'?'#d97706':state==='mix'?'#7c3aed':'#334155';
+  var glow=state==='ag'?'rgba(34,197,94,.3)':state==='inv'?'rgba(239,68,68,.3)':state==='mix'?'rgba(167,139,250,.3)':'rgba(71,85,105,.2)';
+  var speed=state==='ag'?'2s':state==='inv'?'8s':state==='mix'?'4s':'0s';
+  var nmap={};S1N.forEach(function(n){nmap[n.id]=n});
+  var h='<defs><filter id="s1glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
+  // edges
+  S1E.forEach(function(e,i){var fn=nmap[e.f],tn=nmap[e.t];if(!fn||!tn)return;
+    var x1=fn.x,y1=fn.y+15,x2=tn.x,y2=tn.y-15;
+    var mx=(x1+x2)/2,my=(y1+y2)/2;
+    var pid='s1p'+i;
+    h+='<path id="'+pid+'" d="M'+x1+','+y1+' Q'+mx+','+(my-15)+' '+x2+','+y2+'" fill="none" stroke="'+ec+'" stroke-width="1.5" opacity="0.5"/>';
+    if(state!=='off'){
+      for(var p=0;p<3;p++){
+        h+='<circle r="3" fill="'+nc+'" opacity="0.8" filter="url(#s1glow)"><animateMotion dur="'+speed+'" begin="'+(p*0.7)+'s" repeatCount="indefinite"><mpath href="#'+pid+'"/></animateMotion></circle>';
+      }
+    }
+    if(e.l){h+='<text x="'+mx+'" y="'+(my-8)+'" fill="'+ec+'" font-size="7" text-anchor="middle" opacity="0.7">'+e.l+'</text>'}
+  });
+  // nodes
+  S1N.forEach(function(n){
+    var fill=n.id==='bdnf'?(state==='ag'?'#22c55e':state==='inv'?'#7f1d1d':'#1e293b'):
+              n.id==='ltp'?(state==='ag'?'#16a34a':state==='inv'?'#7f1d1d':'#1e293b'):
+              n.id==='recon'?(state==='ag'?'#059669':state==='inv'?'#991b1b':'#1e293b'):'#0f172a';
+    var stroke=n.id==='s1r'?'#c084fc':nc;
+    var w=n.w||55,hw=w/2;
+    h+='<g class="s1node" onmouseenter="s1TT(evt,\''+n.d.replace(/'/g,"\\'")+'\')" onmouseleave="s1TH()">';
+    h+='<rect x="'+(n.x-hw)+'" y="'+(n.y-14)+'" width="'+w+'" height="28" rx="8" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.5" filter="url(#s1glow)"/>';
+    h+='<text x="'+n.x+'" y="'+(n.y+4)+'" fill="'+(state==='off'?'#64748b':'#e2e8f0')+'" font-size="10" font-weight="700" text-anchor="middle">'+n.l+'</text>';
+    h+='</g>';
+  });
+  // nucleus label
+  h+='<text x="400" y="370" fill="#475569" font-size="8" text-anchor="middle" opacity="0.5">—— ЯДРО (транскрипция) ——</text>';
+  h+='<text x="400" y="15" fill="#475569" font-size="8" text-anchor="middle" opacity="0.5">—— ЭР мембрана (MAM) ——</text>';
+  h+='<text x="700" y="250" fill="#475569" font-size="8" text-anchor="middle" opacity="0.4">Постсинапс</text>';
+  svg.innerHTML=h;
+  // status
+  var st=document.getElementById('s1status');
+  var info=document.getElementById('s1info');
+  if(state==='ag'){
+    st.textContent='σ1-агонизм активен (баланс: +'+bal.net.toFixed(0)+'%)';st.style.color='#22c55e';
+    var agDrugs=[];Object.keys(AD).forEach(function(d){var dr=DRUGS[d];if(dr&&dr.s1t==='ag'&&dr.ki&&dr.ki.s1){agDrugs.push(dr.s+' σ1:'+occ(d,'s1').toFixed(0)+'%')}});
+    info.textContent='Активные σ1-агонисты: '+agDrugs.join(', ')+' → каскад BiP→Ca²⁺→BDNF→LTP активен';
+    info.classList.add('show');
+  }else if(state==='inv'){
+    st.textContent='σ1-инверсный агонизм (баланс: '+bal.net.toFixed(0)+'%)';st.style.color='#ef4444';
+    info.innerHTML='⚠️ σ1 инверсный агонизм подавляет LTP и BDNF-транскрипцию.<br>Это может снижать эффективность травма-терапии (EMDR, PE).';
+    info.classList.add('show');
+  }else if(state==='ant'){
+    st.textContent='σ1-антагонизм (блокада каскада)';st.style.color='#f59e0b';
+    info.textContent='σ1-антагонист блокирует весь каскад нейропластичности.';info.classList.add('show');
+  }else if(state==='mix'){
+    st.textContent='σ1-конкуренция агонист vs инверсный — исход зависит от индивидуальной фармакокинетики';st.style.color='#a78bfa';
+    var parts=[];Object.keys(AD).forEach(function(d){var dr=DRUGS[d];if(dr&&dr.s1t&&dr.ki&&dr.ki.s1){parts.push(dr.s+' ('+dr.s1t+') σ1:'+occ(d,'s1').toFixed(0)+'%')}});
+    info.textContent='Конкуренция: '+parts.join(' vs ')+' → каскад частично активен';info.classList.add('show');
+  }else{
+    st.textContent='Нет активных σ1-лигандов';st.style.color='#94a3b8';info.classList.remove('show');
+  }
+}
+
+// === ZONE POPUP + RIGHT PANEL TOGGLE ===
+function showZonePopup(zoneId,sp){
+  var zone=RG[zoneId];var popup=document.getElementById('zone-popup');
+  var x=sp.x+20,y=sp.y-30;
+  if(x+260>innerWidth-20)x=sp.x-280;
+  if(y+200>innerHeight-80)y=innerHeight-280;
+  if(x<0)x=10;if(y<0)y=10;
+  popup.style.left=x+'px';popup.style.top=y+'px';
+  document.getElementById('zp-title').textContent=zone.f;
+  document.getElementById('zp-sub').textContent=zone.fn;
+  document.getElementById('zp-dot').style.background=zone.c;
+  document.getElementById('zp-dot').style.boxShadow='0 0 8px '+zone.c;
+  var body='';
+  Object.keys(AD).forEach(function(did){var d=DRUGS[did];if(!d||!d.z||!d.z[zoneId])return;
+    var zd=d.z[zoneId];var isBad=zd.bad;
+    var arrow=isBad?'\u2193':'\u2191';var cls=isBad?'down':'up';
+    body+='<div class="popup-effect"><span class="popup-effect-arrow '+cls+'">'+arrow+'</span>';
+    body+='<span class="popup-effect-name" style="color:'+d.c+'">'+d.s+'</span>';
+    body+='<span class="popup-effect-detail">'+zd.fx[0]+'</span></div>'});
+  if(!body)body='<div style="color:var(--text-muted);font-style:italic;font-size:11px">Нет активных препаратов</div>';
+  document.getElementById('zp-body').innerHTML=body;
+  popup.dataset.zoneId=zoneId;
+  popup.classList.remove('hidden')
+}
+function closeZonePopup(){document.getElementById('zone-popup').classList.add('hidden')}
+window.closeZonePopup=closeZonePopup;
+window.openRightPanelForZone=function(){
+  var zid=document.getElementById('zone-popup').dataset.zoneId;
+  closeZonePopup();SR=zid;uAll();
+  var rp=document.getElementById('rp');if(!rp.classList.contains('open')){rp.classList.add('open');rsz();setTimeout(rsz,350)}
+};
+window.toggleRightPanel=function(){document.getElementById('rp').classList.toggle('open');rsz();setTimeout(rsz,350)};
+function updatePanelBadge(){var b=document.getElementById('panel-badge');if(!b)return;
+  var el=document.getElementById('cfb');var hasIssues=el&&el.innerHTML.length>10;
+  b.classList.toggle('hidden',!hasIssues)}
+
+window.showS1=function(){buildS1SVG();document.getElementById('s1overlay').classList.add('show')};
+window.s1TT=function(evt,txt){var tt=document.getElementById('s1tooltip');tt.style.display='block';tt.style.left=(evt.clientX+12)+'px';tt.style.top=(evt.clientY-10)+'px';tt.textContent=txt};
+window.s1TH=function(){document.getElementById('s1tooltip').style.display='none'};
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){document.getElementById('s1overlay').classList.remove('show');closeZonePopup();var rp=document.getElementById('rp');if(rp.classList.contains('open'))rp.classList.remove('open')}});
+
+(function(){
+  var pc=document.createElement('canvas');
+  pc.style.cssText='position:absolute;inset:0;z-index:1;pointer-events:none';
+  document.getElementById('cv').insertBefore(pc,document.getElementById('cv').firstChild);
+  var ctx=pc.getContext('2d');
+  var dots=[];for(var i=0;i<80;i++){dots.push({x:Math.random(),y:Math.random(),r:Math.random()*1.5+0.5,o:Math.random()*0.3+0.05,vx:(Math.random()-0.5)*0.0002,vy:(Math.random()-0.5)*0.0002})}
+  function rsz2(){pc.width=pc.parentElement.clientWidth;pc.height=pc.parentElement.clientHeight}
+  window.addEventListener('resize',rsz2);rsz2();
+  (function draw(){ctx.clearRect(0,0,pc.width,pc.height);dots.forEach(function(d){d.x+=d.vx;d.y+=d.vy;if(d.x<0)d.x=1;if(d.x>1)d.x=0;if(d.y<0)d.y=1;if(d.y>1)d.y=0;ctx.beginPath();ctx.arc(d.x*pc.width,d.y*pc.height,d.r,0,Math.PI*2);ctx.fillStyle='rgba(200,210,230,'+d.o+')';ctx.fill()});requestAnimationFrame(draw)})();
+})();
+
+var clk = new THREE.Clock();
+(function anim(){requestAnimationFrame(anim);var t=clk.getElapsedTime();ctrl.update();
+  Object.values(MK).forEach(function(m){if(m.material.emissiveIntensity>0.3)m.material.emissiveIntensity+=Math.sin(t*3)*0.015});
+  if(DSEL){var df=DEFICITS.find(function(x){return x.id===DSEL});if(df&&df.status==='critical'){df.zones.forEach(function(z){if(MK[z]){MK[z].material.opacity=0.6+0.4*Math.sin(t*4);MK[z].scale.setScalar(1.4+0.2*Math.sin(t*3))}})}}
+  mg.children.forEach(function(c){if(c.userData.isR){c.lookAt(cam.position);c.material.opacity=0.2+Math.sin(t*2)*0.08}});
+  TL.forEach(function(l){if(l.material.opacity>0)l.material.opacity=0.2+Math.sin(t*2)*0.15});
+  if(window._brainParticles){window._brainParticles.rotation.y+=0.0003;window._brainParticles.material.opacity=0.3+Math.sin(Date.now()*0.001)*0.1}
+  composer.render();
+})();
+</script>
+</body>
+</html>
