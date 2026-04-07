@@ -9,6 +9,7 @@ import BottomBar from '@/components/Panels/BottomBar';
 import ZonePopup from '@/components/Panels/ZonePopup';
 import CascadeOverlay from '@/components/Sigma1/CascadeOverlay';
 import ChatPanel from '@/components/Chat/ChatPanel';
+import Topbar from '@/components/Header/Topbar';
 import { useScheme } from '@/hooks/useScheme';
 import { useDeficits } from '@/hooks/useDeficits';
 
@@ -50,6 +51,21 @@ export default function Home() {
   } | null>(null);
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const rightPanelRef = useRef<HTMLDivElement>(null);
+
+  // Cmd+K / Ctrl+K hotkey for AI chat + Escape to close
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setChatOpen(true);
+      }
+      if (e.key === 'Escape' && chatOpen) {
+        setChatOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [chatOpen]);
 
   // БЛОК D: Auto-hide right panel after 6s of inactivity
   useEffect(() => {
@@ -184,7 +200,7 @@ export default function Home() {
             top: 0,
             left: LEFT_PANEL_WIDTH,
             right: 0,
-            bottom: 48,
+            bottom: 0,
           }}
         >
           <BrainCanvas
@@ -212,6 +228,9 @@ export default function Home() {
           onOpenDetail={openRegionDetail}
         />
       )}
+
+      {/* Topbar */}
+      <Topbar />
 
       {/* Left Panel */}
       <div
@@ -250,17 +269,8 @@ export default function Home() {
         />
       </div>
 
-      {/* Bottom Bar — always from left panel to right edge */}
-      <div
-        className="absolute bottom-0 z-20"
-        style={{
-          left: LEFT_PANEL_WIDTH,
-          right: 0,
-          height: 48,
-        }}
-      >
-        <BottomBar activeDrugs={scheme} />
-      </div>
+      {/* Bottom Bar — glass pill */}
+      <BottomBar activeDrugs={scheme} />
 
       {/* Sigma-1 Cascade Overlay */}
       <CascadeOverlay
@@ -281,7 +291,7 @@ export default function Home() {
         <button
           onClick={() => setChatOpen(true)}
           style={{
-            position: 'fixed', right: 20, bottom: 64, zIndex: 40,
+            position: 'fixed', right: 16, bottom: 16, zIndex: 40,
             width: 48, height: 48, borderRadius: '50%',
             background: 'linear-gradient(135deg,#60a5fa,#818cf8)',
             border: 'none', cursor: 'pointer', fontSize: 20,

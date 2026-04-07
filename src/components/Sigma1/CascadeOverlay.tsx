@@ -5,6 +5,7 @@ import { DRUGS } from '../../data/drugs';
 import { S1N, S1E } from '../../data/sigma1Cascade';
 import { s1Bal } from '../../lib/sigma1';
 import { occ } from '../../lib/pharmacology';
+import { SIGMA1_ZONES, getNormalRangeLabel, getZoneForValue } from '../../lib/sigma1Display';
 import type { ActiveDrugs } from '../../lib/pharmacology';
 
 interface CascadeOverlayProps {
@@ -12,6 +13,14 @@ interface CascadeOverlayProps {
   activeDrugs: ActiveDrugs;
   onClose: () => void;
 }
+
+// Edge type labels for legend
+const EDGE_TYPE_LABELS: Record<string, { label: string; color: string }> = {
+  inh: { label: 'Ингибирование', color: '#ef4444' },
+  stab: { label: 'Стабилизация', color: '#a78bfa' },
+  act: { label: 'Активация', color: '#22c55e' },
+  prod: { label: 'Продукция', color: '#60a5fa' },
+};
 
 export default function CascadeOverlay({
   isOpen,
@@ -38,33 +47,22 @@ export default function CascadeOverlay({
           : 'mix';
 
   const nc =
-    state === 'ag'
-      ? '#22c55e'
-      : state === 'inv'
-        ? '#ef4444'
-        : state === 'ant'
-          ? '#f59e0b'
-          : state === 'mix'
-            ? '#a78bfa'
-            : '#475569';
+    state === 'ag' ? '#22c55e'
+    : state === 'inv' ? '#ef4444'
+    : state === 'ant' ? '#f59e0b'
+    : state === 'mix' ? '#a78bfa'
+    : '#475569';
   const ec =
-    state === 'ag'
-      ? '#16a34a'
-      : state === 'inv'
-        ? '#dc2626'
-        : state === 'ant'
-          ? '#d97706'
-          : state === 'mix'
-            ? '#7c3aed'
-            : '#334155';
+    state === 'ag' ? '#16a34a'
+    : state === 'inv' ? '#dc2626'
+    : state === 'ant' ? '#d97706'
+    : state === 'mix' ? '#7c3aed'
+    : '#334155';
   const speed =
-    state === 'ag'
-      ? '2s'
-      : state === 'inv'
-        ? '8s'
-        : state === 'mix'
-          ? '4s'
-          : '0s';
+    state === 'ag' ? '2s'
+    : state === 'inv' ? '8s'
+    : state === 'mix' ? '4s'
+    : '0s';
 
   const nmap = useMemo(() => {
     const m: Record<string, (typeof S1N)[number]> = {};
@@ -72,21 +70,9 @@ export default function CascadeOverlay({
     return m;
   }, []);
 
-  const statusText = useMemo(() => {
-    if (state === 'ag') return `\u03C31-агонизм активен (баланс: +${bal.net.toFixed(0)}%)`;
-    if (state === 'inv') return `\u03C31-инверсный агонизм (баланс: ${bal.net.toFixed(0)}%)`;
-    if (state === 'ant') return '\u03C31-антагонизм (блокада каскада)';
-    if (state === 'mix') return '\u03C31-конкуренция агонист vs инверсный — исход зависит от индивидуальной фармакокинетики';
-    return 'Нет активных \u03C31-лигандов';
-  }, [state, bal.net]);
-
-  const statusColor = useMemo(() => {
-    if (state === 'ag') return '#22c55e';
-    if (state === 'inv') return '#ef4444';
-    if (state === 'ant') return '#f59e0b';
-    if (state === 'mix') return '#a78bfa';
-    return '#94a3b8';
-  }, [state]);
+  // Balance card data
+  const balanceZone = useMemo(() => getZoneForValue(bal.net), [bal.net]);
+  const normalRange = useMemo(() => getNormalRangeLabel(), []);
 
   const infoText = useMemo(() => {
     const AD = activeDrugs;
@@ -101,7 +87,7 @@ export default function CascadeOverlay({
       return `Активные \u03C31-агонисты: ${agDrugs.join(', ')} \u2192 каскад BiP\u2192Ca\u00B2\u207A\u2192BDNF\u2192LTP активен`;
     }
     if (state === 'inv') {
-      return '\u26A0\uFE0F \u03C31 инверсный агонизм подавляет LTP и BDNF-транскрипцию. Это может снижать эффективность травма-терапии (EMDR, PE).';
+      return '\u03C31 инверсный агонизм подавляет LTP и BDNF-транскрипцию. Это может снижать эффективность травма-терапии (EMDR, PE).';
     }
     if (state === 'ant') {
       return '\u03C31-антагонист блокирует весь каскад нейропластичности.';
@@ -132,22 +118,137 @@ export default function CascadeOverlay({
 
   if (!isOpen) return null;
 
+  // Collect unique edge types used
+  const usedEdgeTypes = [...new Set(S1E.map(e => e.tp))];
+
   return (
-    <div id="s1overlay" className="show" style={{ display: 'flex' }}>
+    <div id="s1overlay" className="show" style={{ display: 'flex' }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <span className="s1close" onClick={onClose}>
         &times;
       </span>
-      <div className="s1title">
-        Клеточный уровень: {'\u03C3'}1-каскад нейропластичности
+
+      {/* 13a: Header in pill */}
+      <div style={{
+        background: 'rgba(8,12,24,0.6)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+        padding: '12px 24px', borderRadius: 12, display: 'inline-block', margin: '0 auto', marginBottom: 16,
+      }}>
+        <div className="s1title" style={{ marginBottom: 0 }}>
+          Клеточный уровень: {'\u03C3'}1-каскад нейропластичности
+        </div>
       </div>
-      <div className="s1sub" style={{ color: statusColor }}>
-        {statusText}
+      {/* 13b: removed statusText from header zone */}
+
+      {/* 13c: Balance card (left sticky) */}
+      <div style={{
+        position: 'absolute', left: 24, top: '50%', transform: 'translateY(-50%)',
+        width: 240, padding: 20, zIndex: 10,
+        background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+        border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12,
+      }}>
+        {/* Overline */}
+        <div style={{
+          fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em',
+          color: 'rgba(255,255,255,0.38)', marginBottom: 8,
+        }}>
+          БАЛАНС \u03C31
+        </div>
+
+        {/* Value */}
+        <div style={{
+          fontSize: 32, fontWeight: 700, color: balanceZone.color,
+          fontFamily: 'var(--font-mono)', lineHeight: 1, marginBottom: 12,
+        }}>
+          {bal.net >= 0 ? '+' : ''}{bal.net.toFixed(0)}%
+        </div>
+
+        {/* Breakdown */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 12 }}>
+          <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: '#22c55e' }}>
+            Агонисты:{'    '}+{bal.ag.toFixed(0)}%
+          </div>
+          <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: '#ef4444' }}>
+            Инверсные:{'   '}&minus;{bal.inv.toFixed(0)}%
+          </div>
+          <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: '#f59e0b' }}>
+            Антагонисты:{'  '}&minus;{bal.ant.toFixed(0)}%
+          </div>
+        </div>
+
+        {/* Progress bar with zones */}
+        <div style={{ height: 6, borderRadius: 3, overflow: 'hidden', display: 'flex', marginBottom: 6 }}>
+          {SIGMA1_ZONES.map(zone => (
+            <div key={zone.id} style={{
+              flex: zone.max - zone.min,
+              background: zone.color,
+              opacity: zone.id === balanceZone.id ? 1 : 0.2,
+            }} />
+          ))}
+        </div>
+
+        {/* Normal range */}
+        <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 4 }}>
+          Норма: {normalRange}
+        </div>
+
+        {/* Zone label */}
+        <div style={{ fontSize: 11, color: balanceZone.color, fontWeight: 600, marginBottom: 12 }}>
+          Зона: {balanceZone.label}
+        </div>
+
+        {/* 13d: moved warning info into balance card */}
+        {infoText && (
+          <div style={{
+            fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5,
+            borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 10,
+          }}>
+            {infoText}
+          </div>
+        )}
       </div>
 
+      {/* 13e: Cascade legend (right side) */}
+      <div style={{
+        position: 'absolute', right: 24, top: 24, zIndex: 10,
+        background: 'rgba(255,255,255,0.03)', padding: 12, borderRadius: 8,
+        backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+        border: '1px solid rgba(255,255,255,0.06)',
+      }}>
+        <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          Типы связей
+        </div>
+        {usedEdgeTypes.map(tp => {
+          const info = EDGE_TYPE_LABELS[tp];
+          if (!info) return null;
+          return (
+            <div key={tp} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4, fontSize: 11, color: 'var(--text-secondary)' }}>
+              <div style={{ width: 8, height: 8, borderRadius: 2, background: info.color, flexShrink: 0 }} />
+              {info.label}
+            </div>
+          );
+        })}
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', marginTop: 8, paddingTop: 8 }}>
+          <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Состояния
+          </div>
+          {[
+            { c: '#22c55e', l: '\u03C31-агонист (активен)' },
+            { c: '#ef4444', l: '\u03C31-инверсный (подавлен)' },
+            { c: '#f59e0b', l: '\u03C31-антагонист (блокирован)' },
+            { c: '#475569', l: 'Неактивен' },
+          ].map(item => (
+            <div key={item.l} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3, fontSize: 11, color: 'var(--text-secondary)' }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: item.c, flexShrink: 0 }} />
+              {item.l}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* SVG cascade graph */}
       <svg
         id="s1svg"
         viewBox="0 0 800 520"
-        style={{ width: 'min(90vw,900px)', height: 'auto', maxHeight: '70vh' }}
+        style={{ width: 'min(55vw,700px)', height: 'auto', maxHeight: '70vh' }}
       >
         <defs>
           <filter id="s1glow">
@@ -159,7 +260,7 @@ export default function CascadeOverlay({
           </filter>
         </defs>
 
-        {/* Edges */}
+        {/* Edges — no inline labels (moved to legend) */}
         {S1E.map((e, i) => {
           const fn = nmap[e.f];
           const tn = nmap[e.t];
@@ -171,13 +272,14 @@ export default function CascadeOverlay({
           const mx = (x1 + x2) / 2;
           const my = (y1 + y2) / 2;
           const pid = `s1p${i}`;
+          const edgeColor = EDGE_TYPE_LABELS[e.tp]?.color || ec;
           return (
             <g key={`edge-${i}`}>
               <path
                 id={pid}
                 d={`M${x1},${y1} Q${mx},${my - 15} ${x2},${y2}`}
                 fill="none"
-                stroke={ec}
+                stroke={state === 'off' ? '#334155' : edgeColor}
                 strokeWidth="1.5"
                 opacity="0.5"
               />
@@ -199,18 +301,6 @@ export default function CascadeOverlay({
                     </animateMotion>
                   </circle>
                 ))}
-              {e.l && (
-                <text
-                  x={mx}
-                  y={my - 8}
-                  fill={ec}
-                  fontSize="7"
-                  textAnchor="middle"
-                  opacity="0.7"
-                >
-                  {e.l}
-                </text>
-              )}
             </g>
           );
         })}
@@ -219,24 +309,12 @@ export default function CascadeOverlay({
         {S1N.map((n) => {
           const fill =
             n.id === 'bdnf'
-              ? state === 'ag'
-                ? '#22c55e'
-                : state === 'inv'
-                  ? '#7f1d1d'
-                  : '#1e293b'
-              : n.id === 'ltp'
-                ? state === 'ag'
-                  ? '#16a34a'
-                  : state === 'inv'
-                    ? '#7f1d1d'
-                    : '#1e293b'
-                : n.id === 'recon'
-                  ? state === 'ag'
-                    ? '#059669'
-                    : state === 'inv'
-                      ? '#991b1b'
-                      : '#1e293b'
-                  : '#0f172a';
+              ? state === 'ag' ? '#22c55e' : state === 'inv' ? '#7f1d1d' : '#1e293b'
+            : n.id === 'ltp'
+              ? state === 'ag' ? '#16a34a' : state === 'inv' ? '#7f1d1d' : '#1e293b'
+            : n.id === 'recon'
+              ? state === 'ag' ? '#059669' : state === 'inv' ? '#991b1b' : '#1e293b'
+            : '#0f172a';
           const stroke = n.id === 's1r' ? '#c084fc' : nc;
           const w = n.w || 55;
           const hw = w / 2;
@@ -272,7 +350,7 @@ export default function CascadeOverlay({
           );
         })}
 
-        {/* Labels */}
+        {/* Zone labels */}
         <text x="400" y="370" fill="#475569" fontSize="8" textAnchor="middle" opacity="0.5">
           {'--- \u042F\u0414\u0420\u041E (\u0442\u0440\u0430\u043D\u0441\u043A\u0440\u0438\u043F\u0446\u0438\u044F) ---'}
         </text>
@@ -283,30 +361,6 @@ export default function CascadeOverlay({
           Постсинапс
         </text>
       </svg>
-
-      <div className="s1legend">
-        <span>
-          <span className="s1dot" style={{ background: '#22c55e' }} />{' '}
-          {'\u03C3'}1-агонист (каскад активен)
-        </span>
-        <span>
-          <span className="s1dot" style={{ background: '#ef4444' }} />{' '}
-          {'\u03C3'}1-инверсный агонист (подавлен)
-        </span>
-        <span>
-          <span className="s1dot" style={{ background: '#f59e0b' }} />{' '}
-          {'\u03C3'}1-антагонист (блокирован)
-        </span>
-        <span>
-          <span className="s1dot" style={{ background: '#475569' }} /> Неактивен
-        </span>
-      </div>
-
-      {infoText && (
-        <div className="s1info show">
-          {infoText}
-        </div>
-      )}
 
       {/* Tooltip */}
       {tooltip && (

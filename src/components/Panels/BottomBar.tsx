@@ -14,12 +14,12 @@ export default function BottomBar({ activeDrugs }: BottomBarProps) {
   const hasActive = Object.keys(activeDrugs).length > 0;
 
   const BARS = useMemo(() => [
-    { key: 'da', label: t('da'), nt: 'DA' },
-    { key: 'na', label: t('na'), nt: 'NA' },
-    { key: '5ht', label: t('serotonin'), nt: '5-HT' },
-    { key: 's1', label: t('sigma1'), nt: 's1' },
-    { key: 'cyp', label: t('cyp'), isCyp: true },
-  ], [t]);
+    { key: 'da', label: 'DA', nt: 'DA' },
+    { key: 'na', label: 'NA', nt: 'NA' },
+    { key: '5ht', label: '5-HT', nt: '5-HT' },
+    { key: 's1', label: 'σ1', nt: 's1' },
+    { key: 'cyp', label: 'CYP', isCyp: true },
+  ], []);
 
   const barData = useMemo(() => {
     return BARS.map((bar) => {

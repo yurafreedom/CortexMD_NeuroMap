@@ -7,7 +7,6 @@ import ActiveScheme from '../Drugs/ActiveScheme';
 import DrugCatalog from '../Drugs/DrugCatalog';
 import DeficitList from '../Deficits/DeficitList';
 import WhoopCard from '../Whoop/WhoopCard';
-import ProfileMenu from '../Header/ProfileMenu';
 import type { Deficit, DeficitStatus } from '../../data/defaultDeficits';
 import type { ActiveDrugs } from '../../lib/pharmacology';
 
@@ -80,12 +79,9 @@ export default function LeftPanel({
 
   return (
     <div id="lp">
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-        <div>
-          <div className="logo" style={{ textAlign: 'left', padding: '4px 0 0' }}>CortexMD</div>
-          <div className="sub" style={{ textAlign: 'left', marginBottom: 0 }}>{t('dashboard.subtitle')}</div>
-        </div>
-        <ProfileMenu />
+      <div style={{ marginBottom: 4 }}>
+        <div className="logo" style={{ textAlign: 'left', padding: '4px 0 0' }}>CortexMD</div>
+        <div className="sub" style={{ textAlign: 'left', marginBottom: 0 }}>{t('dashboard.subtitle')}</div>
       </div>
 
       {/* Presets */}
@@ -104,37 +100,26 @@ export default function LeftPanel({
       </Section>
 
       {/* Active scheme */}
-      <div className="section">
-        <div className="sh">
-          <span className="st">{t('dashboard.activeScheme')}</span>
-          <span
-            style={{
-              fontSize: '9px',
-              color: 'var(--text-muted)',
-              marginLeft: 'auto',
-            }}
-          >
-            {schemeCount > 0 ? `${schemeCount} ${t('dashboard.items')}` : ''}
-          </span>
-        </div>
-        <div className="sb open" style={{ display: 'block' }}>
-          <ActiveScheme
-            activeDrugs={activeDrugs}
-            onRemove={onRemoveDrug}
-            onUpdateDose={onUpdateDose}
-          />
-        </div>
-        <button
-          className="catalog-toggle-btn"
-          onClick={() => setCatalogOpen(!catalogOpen)}
-        >
-          {t('dashboard.drugCatalog')}{' '}
-          <span>{catalogOpen ? '\u25B2' : '\u25BC'}</span>
-        </button>
-        {catalogOpen && (
-          <DrugCatalog activeDrugs={activeDrugs} onAdd={onAddDrug} />
-        )}
-      </div>
+      <Section title={`${t('dashboard.activeScheme')}${schemeCount > 0 ? ` (${schemeCount})` : ''}`} defaultOpen>
+        <ActiveScheme
+          activeDrugs={activeDrugs}
+          onRemove={onRemoveDrug}
+          onUpdateDose={onUpdateDose}
+        />
+      </Section>
+
+      {/* Drug Catalog — opens as modal */}
+      <button
+        className="catalog-toggle-btn"
+        style={{ borderRadius: 'var(--radius-md)', marginBottom: 8, border: '1px solid var(--glass-border)' }}
+        onClick={() => setCatalogOpen(true)}
+      >
+        {t('dashboard.drugCatalog')}{' '}
+        <span>{'\u25BC'}</span>
+      </button>
+      {catalogOpen && (
+        <DrugCatalog activeDrugs={activeDrugs} onAdd={onAddDrug} isModal onClose={() => setCatalogOpen(false)} />
+      )}
 
       {/* Deficits */}
       <Section title={t('dashboard.myDeficits')}>
