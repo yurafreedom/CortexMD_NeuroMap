@@ -228,13 +228,13 @@ function migrate(): Record<string, DrugSchemaV2> {
         continue;
       }
 
-      // A3a: Fix opipramol s1 Ki=0.2 (erroneous donepezil value)
+      // A3a: opipramol s1 Ki=0.2 nM is correct (one of the most potent σ1 agonists known)
       if (id === 'opipramol' && key === 's1') {
         bindings.push({
           receptor: 's1',
-          ki_nM: 50,
+          ki_nM: 0.2,
           type: 'agonist',
-          source: 'Muller et al. 2004 (corrected from erroneous 0.2 nM)',
+          source: 'Holoubek & Muller 2003, PMID:14751441',
         });
         continue;
       }

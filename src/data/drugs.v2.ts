@@ -274,14 +274,14 @@ export const DRUGS_V2: Record<string, DrugSchemaV2> = {
         "ki_nM": 0.5,
         "type": "agonist",
         "intrinsic_efficacy": 1,
-        "source": "Piercey et al. 1996"
+        "source": "needs verification"
       },
       {
         "receptor": "D2",
         "ki_nM": 3.9,
         "type": "agonist",
         "intrinsic_efficacy": 0.9,
-        "source": "Piercey et al. 1996"
+        "source": "needs verification"
       }
     ],
     "pk": {
@@ -393,14 +393,14 @@ export const DRUGS_V2: Record<string, DrugSchemaV2> = {
         "ki_nM": 0.49,
         "type": "partial_agonist",
         "intrinsic_efficacy": 0.25,
-        "source": "Kiss et al. 2010"
+        "source": "needs verification"
       },
       {
         "receptor": "D3",
         "ki_nM": 0.085,
         "type": "partial_agonist",
         "intrinsic_efficacy": 0.4,
-        "source": "Kiss et al. 2010"
+        "source": "needs verification"
       }
     ],
     "pk": {
@@ -601,7 +601,7 @@ export const DRUGS_V2: Record<string, DrugSchemaV2> = {
         "receptor": "presynapticGluRelease",
         "ki_nM": 0,
         "type": "modulator",
-        "source": "Xie & Bhatt 2005, via Nav"
+        "source": "needs verification"
       },
       {
         "receptor": "Nav",
@@ -660,7 +660,7 @@ export const DRUGS_V2: Record<string, DrugSchemaV2> = {
         "receptor": "mGluR2",
         "ki_nM": 0,
         "type": "modulator",
-        "source": "indirect via xCT→extrasynaptic Glu↓→mGluR2/3"
+        "source": "needs verification"
       }
     ],
     "pk": {
@@ -1236,9 +1236,9 @@ export const DRUGS_V2: Record<string, DrugSchemaV2> = {
     "bindings": [
       {
         "receptor": "s1",
-        "ki_nM": 50,
+        "ki_nM": 0.2,
         "type": "agonist",
-        "source": "Muller et al. 2004 (corrected from erroneous 0.2 nM)"
+        "source": "Holoubek & Muller 2003, PMID:14751441"
       },
       {
         "receptor": "H1",
@@ -1348,7 +1348,7 @@ export const DRUGS_V2: Record<string, DrugSchemaV2> = {
         "receptor": "GluN2B",
         "ki_nM": 680,
         "type": "antagonist",
-        "source": "Bhatt et al. 2017"
+        "source": "needs verification"
       }
     ],
     "pk": {
@@ -1568,13 +1568,13 @@ export const DRUGS_V2: Record<string, DrugSchemaV2> = {
         "receptor": "s1",
         "ki_nM": 130,
         "type": "agonist",
-        "source": "Robson et al. 2012"
+        "source": "needs verification"
       },
       {
         "receptor": "mu",
         "ki_nM": 25000,
         "type": "agonist",
-        "source": "Hirota et al. 1999, weak"
+        "source": "needs verification"
       }
     ],
     "pk": {
@@ -1655,14 +1655,14 @@ export const DRUGS_V2: Record<string, DrugSchemaV2> = {
         "ki_nM": 0.34,
         "type": "partial_agonist",
         "intrinsic_efficacy": 0.3,
-        "source": "Burris et al. 2002"
+        "source": "needs verification"
       },
       {
         "receptor": "5HT1A",
         "ki_nM": 1.7,
         "type": "partial_agonist",
         "intrinsic_efficacy": 0.5,
-        "source": "Jordan et al. 2002"
+        "source": "needs verification"
       }
     ],
     "pk": {
@@ -1717,14 +1717,14 @@ export const DRUGS_V2: Record<string, DrugSchemaV2> = {
         "ki_nM": 0.3,
         "type": "partial_agonist",
         "intrinsic_efficacy": 0.35,
-        "source": "Maeda et al. 2014"
+        "source": "needs verification"
       },
       {
         "receptor": "5HT1A",
         "ki_nM": 0.12,
         "type": "partial_agonist",
         "intrinsic_efficacy": 0.5,
-        "source": "Maeda et al. 2014"
+        "source": "needs verification"
       }
     ],
     "pk": {
@@ -2332,13 +2332,13 @@ export const DRUGS_V2: Record<string, DrugSchemaV2> = {
         "receptor": "5HT3",
         "ki_nM": 2400,
         "type": "antagonist",
-        "source": "Rammes et al. 2001"
+        "source": "needs verification"
       },
       {
         "receptor": "s1",
         "ki_nM": 2600,
         "type": "agonist",
-        "source": "Nguyen et al. 2014, weak"
+        "source": "needs verification"
       }
     ],
     "pk": {
@@ -2381,25 +2381,25 @@ export const DRUGS_V2: Record<string, DrugSchemaV2> = {
         "receptor": "AMPA",
         "ki_nM": 0,
         "type": "antagonist",
-        "source": "Gibbs et al. 2000"
+        "source": "needs verification"
       },
       {
         "receptor": "kainate",
         "ki_nM": 0,
         "type": "antagonist",
-        "source": "Gibbs et al. 2000"
+        "source": "needs verification"
       },
       {
         "receptor": "GABAa",
         "ki_nM": 0,
         "type": "modulator",
-        "source": "White et al. 1997, positive allosteric"
+        "source": "needs verification"
       },
       {
         "receptor": "Nav",
         "ki_nM": 0,
         "type": "modulator",
-        "source": "Zona & Bhatt 2001"
+        "source": "needs verification"
       }
     ],
     "pk": {
@@ -2442,19 +2442,19 @@ export const DRUGS_V2: Record<string, DrugSchemaV2> = {
         "receptor": "glutamateUptake",
         "ki_nM": 0,
         "type": "modulator",
-        "source": "Doble 1996, enhances EAAT2"
+        "source": "needs verification"
       },
       {
         "receptor": "Nav",
         "ki_nM": 0,
         "type": "modulator",
-        "source": "Song et al. 1997"
+        "source": "needs verification"
       },
       {
         "receptor": "NMDA",
         "ki_nM": 0,
         "type": "antagonist",
-        "source": "Bhatt et al. 2010, weak/indirect"
+        "source": "needs verification"
       }
     ],
     "pk": {
@@ -2495,7 +2495,7 @@ export const DRUGS_V2: Record<string, DrugSchemaV2> = {
         "ki_nM": 5.7,
         "type": "partial_agonist",
         "intrinsic_efficacy": 0.5,
-        "source": "Loane & Bhatt 1996"
+        "source": "needs verification"
       },
       {
         "receptor": "D2",
@@ -2545,13 +2545,13 @@ export const DRUGS_V2: Record<string, DrugSchemaV2> = {
         "ki_nM": 70,
         "type": "partial_agonist",
         "intrinsic_efficacy": 0.8,
-        "source": "Bhatt et al. 2019"
+        "source": "needs verification"
       },
       {
         "receptor": "D2",
         "ki_nM": 11800,
         "type": "antagonist",
-        "source": "Ponten et al. 2010, very weak"
+        "source": "needs verification"
       }
     ],
     "pk": {

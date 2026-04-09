@@ -29,7 +29,7 @@ console.log('\n=== Data Corrections ===');
 // A3a: opipramol s1
 const opi = DRUGS_V2['opipramol'];
 const opiS1 = opi?.bindings.find(b => b.receptor === 's1');
-console.log(`A3a opipramol s1: Ki=${opiS1?.ki_nM} (should be 50, was 0.2) → ${opiS1?.ki_nM === 50 ? '✅' : '❌'}`);
+console.log(`A3a opipramol s1: Ki=${opiS1?.ki_nM} (should be 0.2) → ${opiS1?.ki_nM === 0.2 ? '✅' : '❌'}`);
 
 // A3b: atomoxetine no s1
 const atm = DRUGS_V2['atomoxetine'];
