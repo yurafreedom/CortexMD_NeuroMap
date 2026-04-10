@@ -8,6 +8,7 @@ import { defTotalCov, covCol } from '../../lib/coverage';
 import ConflictBox from '../Drugs/ConflictBox';
 import type { Deficit } from '../../data/defaultDeficits';
 import type { ActiveDrugs } from '../../lib/pharmacology';
+import RegionalDensityCard from './RegionalDensityCard';
 
 interface RightPanelProps {
   isOpen: boolean;
@@ -98,6 +99,11 @@ export default function RightPanel({
                 <div className="zone-header-title">{region.f}</div>
                 <div className="zone-header-subtitle">{region.fn}</div>
               </div>
+
+              <RegionalDensityCard
+                region={selectedRegion!}
+                activeDrugs={activeDrugs}
+              />
 
               {zoneEffects.length > 0 ? (
                 <>
