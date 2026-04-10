@@ -22,19 +22,26 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'File too large (max 10MB)' }, { status: 400 });
   }
 
-  const allowedTypes = ['application/xml', 'text/xml', 'application/pdf'];
-  if (!allowedTypes.includes(file.type) && !file.name.endsWith('.xml') && !file.name.endsWith('.pdf')) {
-    return NextResponse.json({ error: 'Only XML and PDF files are accepted' }, { status: 400 });
+  // Validate file content via magic bytes (don't trust client-provided MIME or extension)
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const header = buffer.slice(0, 5).toString('utf-8');
+  const isXml = header.startsWith('<?xml') || header.startsWith('<');
+  const isPdf = buffer.slice(0, 4).toString('utf-8') === '%PDF';
+
+  if (!isXml && !isPdf) {
+    return NextResponse.json({
+      error: 'File type not allowed. Only XML (Apple Health) and PDF (lab reports) are accepted.',
+    }, { status: 400 });
   }
 
-  // Upload to Supabase Storage
-  const ext = file.name.split('.').pop() || 'bin';
+  const ext = isPdf ? 'pdf' : 'xml';
+  const contentType = isPdf ? 'application/pdf' : 'application/xml';
   const path = `${user.id}/${fileType}/${Date.now()}.${ext}`;
 
   const { error: uploadError } = await supabase.storage
     .from('user-uploads')
-    .upload(path, file, {
-      contentType: file.type,
+    .upload(path, buffer, {
+      contentType,
       upsert: false,
     });
 

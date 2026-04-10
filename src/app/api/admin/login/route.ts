@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { timingSafeEqual } from 'crypto';
 import { getAdminSession } from '@/lib/admin-session';
 
 export async function POST(req: NextRequest) {
@@ -6,10 +7,16 @@ export async function POST(req: NextRequest) {
   const adminPassword = process.env.ADMIN_PASSWORD;
 
   if (!adminPassword) {
-    return NextResponse.json({ error: 'ADMIN_PASSWORD not configured' }, { status: 500 });
+    console.error('[admin-login] ADMIN_PASSWORD not set');
+    return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
   }
 
-  if (password !== adminPassword) {
+  const submitted = Buffer.from(String(password));
+  const expected = Buffer.from(adminPassword);
+  const match = submitted.length === expected.length &&
+                timingSafeEqual(submitted, expected);
+
+  if (!match) {
     return NextResponse.json({ error: 'Wrong password' }, { status: 401 });
   }
 
