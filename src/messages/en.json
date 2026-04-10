@@ -382,5 +382,32 @@
     "appleHealthFormat": "export.xml from iPhone Settings > Health > Export All Health Data",
     "labPdfFormat": "PDF lab reports from any laboratory",
     "maxSize": "Maximum file size: 10 MB"
+  },
+  "labInsights": {
+    "noData": "No lab results yet. Add results below to see insights.",
+    "inflammatoryLoad": "Inflammatory Load",
+    "hpaAxis": "HPA Axis",
+    "flaggedResults": "Flagged Results",
+    "outOfRange": "out of range",
+    "inflammatoryMarkers": "Inflammatory Marker Breakdown",
+    "abnormalFindings": "Abnormal Findings",
+    "allResults": "All Results",
+    "test": "Test",
+    "result": "Result",
+    "range": "Range",
+    "status": "Status",
+    "refRange": "Ref",
+    "optimal": "optimal",
+    "missing": "Missing",
+    "inflam_low": "Low inflammation",
+    "inflam_moderate": "Moderate inflammation",
+    "inflam_high": "High inflammation",
+    "inflam_severe": "Severe inflammation",
+    "hpa_normal": "Normal",
+    "hpa_hyperactivation": "HPA Hyperactivation",
+    "hpa_severe_hyperactivation": "Severe Dysregulation",
+    "hpa_hypoactivation": "HPA Hypoactivation",
+    "hpa_burnout": "Adrenal Burnout",
+    "hpa_insufficient_data": "Insufficient Data"
   }
 }

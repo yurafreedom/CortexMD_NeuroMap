@@ -16,6 +16,7 @@ import SymptomScaleForm from './SymptomScaleForm';
 import LabResultsForm from './LabResultsForm';
 import TreatmentHistoryForm from './TreatmentHistoryForm';
 import DataUploadPanel from './DataUploadPanel';
+import LabInsightsPanel from './LabInsightsPanel';
 
 export interface ProfileUser {
   id: string;
@@ -238,7 +239,12 @@ export default function ProfileDashboard({
             <SymptomScaleForm existingScores={symptomScores} />
           )}
           {activeTab === 'labs' && (
-            <LabResultsForm existingResults={labResults} />
+            <>
+              <LabInsightsPanel labResults={labResults} />
+              <div style={{ marginTop: 24 }}>
+                <LabResultsForm existingResults={labResults} />
+              </div>
+            </>
           )}
           {activeTab === 'treatment' && (
             <TreatmentHistoryForm existingHistory={treatmentHistory} />

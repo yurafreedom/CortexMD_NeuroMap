@@ -382,5 +382,32 @@
     "appleHealthFormat": "export.xml з Налаштування iPhone > Здоров'я > Експортувати всі дані",
     "labPdfFormat": "PDF-звіти аналізів з будь-якої лабораторії",
     "maxSize": "Максимальний розмір файлу: 10 МБ"
+  },
+  "labInsights": {
+    "noData": "Немає результатів аналізів. Додайте дані нижче для отримання інсайтів.",
+    "inflammatoryLoad": "Запальне навантаження",
+    "hpaAxis": "Вісь HPA",
+    "flaggedResults": "Відхилення",
+    "outOfRange": "поза нормою",
+    "inflammatoryMarkers": "Маркери запалення",
+    "abnormalFindings": "Відхилення від норми",
+    "allResults": "Всі результати",
+    "test": "Тест",
+    "result": "Результат",
+    "range": "Діапазон",
+    "status": "Статус",
+    "refRange": "Реф",
+    "optimal": "оптимально",
+    "missing": "Відсутні",
+    "inflam_low": "Низьке запалення",
+    "inflam_moderate": "Помірне запалення",
+    "inflam_high": "Високе запалення",
+    "inflam_severe": "Тяжке запалення",
+    "hpa_normal": "Норма",
+    "hpa_hyperactivation": "Гіперактивація HPA",
+    "hpa_severe_hyperactivation": "Тяжка дисрегуляція",
+    "hpa_hypoactivation": "Гіпоактивація HPA",
+    "hpa_burnout": "Адреналове виснаження",
+    "hpa_insufficient_data": "Недостатньо даних"
   }
 }
