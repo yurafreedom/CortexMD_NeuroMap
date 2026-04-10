@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslations } from 'next-intl';
 import { DRUGS } from '../../data/drugs';
 import { DCAT } from '../../data/presets';
@@ -154,9 +155,9 @@ export default function DrugCatalog({ activeDrugs, onAdd, isModal, onClose }: Dr
     </>
   );
 
-  // Modal mode
+  // Modal mode — portal to document.body to escape parent stacking contexts
   if (isModal) {
-    return (
+    return createPortal(
       <div
         style={{
           position: 'fixed', inset: 0, zIndex: Z.modal,
@@ -187,7 +188,8 @@ export default function DrugCatalog({ activeDrugs, onAdd, isModal, onClose }: Dr
           </div>
           {content}
         </div>
-      </div>
+      </div>,
+      document.body,
     );
   }
 
