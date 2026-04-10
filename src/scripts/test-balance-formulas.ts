@@ -14,6 +14,9 @@ import {
 import { calculateDopamineBalance } from '../lib/indicators/dopamine';
 import { calculateNorepinephrineBalance } from '../lib/indicators/norepinephrine';
 import { calculateSerotoninBalance } from '../lib/indicators/serotonin';
+import { calculateGlutamateBalance } from '../lib/indicators/glutamate';
+import { calculateSigma1Balance } from '../lib/indicators/sigma1';
+import { calculateCYPBalance } from '../lib/indicators/cyp';
 
 let passed = 0;
 let failed = 0;
@@ -165,6 +168,46 @@ console.log('=== Balance Formula Sanity Tests ===\n');
   console.log(`  Combined:  ${combined.value.toFixed(1)}`);
   // Bupropion has no significant SERT binding, so combined ≈ sert only
   assert('5-HT still high', combined.value > 10, `value=${combined.value.toFixed(1)}`);
+  console.log('');
+}
+
+// Test 9: Ketamine NMDA effect through Glu indicator
+{
+  const drug = DRUGS_V2['ketamine'];
+  const balance = calculateGlutamateBalance([{ drug, dose_mg: 0.5 }]);
+
+  console.log('Test 9: Ketamine 0.5mg/kg Glu');
+  console.log(`  Value: ${balance.value.toFixed(1)}, Zone: ${balance.zone.id}`);
+  console.log(`  Breakdown: ant=${balance.breakdown.antagonist.toFixed(1)}, ag=${balance.breakdown.agonist.toFixed(1)}`);
+  // Ketamine is NMDA antagonist — should show activity (non-zero)
+  assert('Glu non-zero', Math.abs(balance.value) > 0, `value=${balance.value.toFixed(1)}`);
+  console.log('');
+}
+
+// Test 10: Sertraline σ1 via calculateSigma1Balance — MUST equal Test 1
+{
+  const drug = DRUGS_V2['sertraline'];
+  const balance = calculateSigma1Balance([{ drug, dose_mg: 100 }]);
+
+  console.log('Test 10: Sertraline 100mg σ1 via calculateSigma1Balance');
+  console.log(`  Value: ${balance.value.toFixed(1)}, Zone: ${balance.zone.id}`);
+  // CRITICAL: must match Test 1 exactly (-69.2)
+  const test1Value = -69.2;
+  const diff = Math.abs(balance.value - test1Value);
+  assert('matches Test 1', diff < 0.1, `value=${balance.value.toFixed(1)} vs test1=${test1Value}`);
+  console.log('');
+}
+
+// Test 11: Bupropion CYP2D6 inhibition
+{
+  const drug = DRUGS_V2['bupropion'];
+  const balance = calculateCYPBalance([{ drug, dose_mg: 300 }]);
+
+  console.log('Test 11: Bupropion 300mg CYP');
+  console.log(`  Value: ${balance.value.toFixed(1)}, Zone: ${balance.zone.id}`);
+  console.log(`  Inhibition: ${(-balance.value).toFixed(0)}%`);
+  // Bupropion is moderate CYP2D6 inhibitor → value should be -50
+  assert('CYP inhibited', balance.value < 0, `value=${balance.value.toFixed(1)}`);
   console.log('');
 }
 
