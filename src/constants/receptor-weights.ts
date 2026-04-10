@@ -49,6 +49,9 @@ export const GLUTAMATE_WEIGHTS: Partial<Record<Receptor, number>> = {
   mGluR2: 0.3,
   mGluR3: 0.3,
   cystineGlutamateAntiporter: 0.6,
+  presynapticGluRelease: 0.7,    // lamotrigine mechanism
+  glutamateUptake: 0.6,          // riluzole mechanism
+  kainate: 0.3,                  // topiramate mechanism
 };
 
 export const SIGMA1_WEIGHTS: Partial<Record<Receptor, number>> = {
@@ -56,10 +59,7 @@ export const SIGMA1_WEIGHTS: Partial<Record<Receptor, number>> = {
 };
 
 export const GABA_WEIGHTS: Partial<Record<Receptor, number>> = {
-  GABAa_alpha1: 0.7, // sedation
-  GABAa_alpha2: 0.6, // anxiolysis
-  GABAa_alpha3: 0.5,
-  GABAa_alpha5: 0.4,
+  GABAa: 1.0,
   GABAb: 0.3,
 };
 
