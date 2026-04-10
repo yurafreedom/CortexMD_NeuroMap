@@ -11,6 +11,11 @@ import {
   History,
   Upload,
 } from 'lucide-react';
+import GeneticProfileForm from './GeneticProfileForm';
+import SymptomScaleForm from './SymptomScaleForm';
+import LabResultsForm from './LabResultsForm';
+import TreatmentHistoryForm from './TreatmentHistoryForm';
+import DataUploadPanel from './DataUploadPanel';
 
 export interface ProfileUser {
   id: string;
@@ -227,39 +232,19 @@ export default function ProfileDashboard({
           }}
         >
           {activeTab === 'genetics' && (
-            <TabPlaceholder
-              title={t('genetics')}
-              description={t('geneticsDesc')}
-              hasData={!!geneticProfile}
-            />
+            <GeneticProfileForm initialData={geneticProfile} />
           )}
           {activeTab === 'symptoms' && (
-            <TabPlaceholder
-              title={t('symptoms')}
-              description={t('symptomsDesc')}
-              hasData={symptomScores.length > 0}
-            />
+            <SymptomScaleForm existingScores={symptomScores} />
           )}
           {activeTab === 'labs' && (
-            <TabPlaceholder
-              title={t('labs')}
-              description={t('labsDesc')}
-              hasData={labResults.length > 0}
-            />
+            <LabResultsForm existingResults={labResults} />
           )}
           {activeTab === 'treatment' && (
-            <TabPlaceholder
-              title={t('treatment')}
-              description={t('treatmentDesc')}
-              hasData={treatmentHistory.length > 0}
-            />
+            <TreatmentHistoryForm existingHistory={treatmentHistory} />
           )}
           {activeTab === 'upload' && (
-            <TabPlaceholder
-              title={t('upload')}
-              description={t('uploadDesc')}
-              hasData={false}
-            />
+            <DataUploadPanel />
           )}
         </div>
       </div>
@@ -291,56 +276,3 @@ function SummaryRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function TabPlaceholder({
-  title,
-  description,
-  hasData,
-}: {
-  title: string;
-  description: string;
-  hasData: boolean;
-}) {
-  return (
-    <div>
-      <h2
-        style={{
-          fontSize: 20,
-          fontWeight: 600,
-          fontFamily: 'var(--font-display)',
-          marginBottom: 8,
-          background: 'linear-gradient(135deg, #60a5fa, #818cf8)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-        }}
-      >
-        {title}
-      </h2>
-      <p
-        style={{
-          fontSize: 13,
-          color: 'var(--text-secondary)',
-          marginBottom: 24,
-          lineHeight: 1.6,
-        }}
-      >
-        {description}
-      </p>
-
-      {!hasData && (
-        <div
-          style={{
-            background: 'var(--glass)',
-            border: '1px dashed var(--glass-border)',
-            borderRadius: 12,
-            padding: '40px 24px',
-            textAlign: 'center',
-            color: 'var(--text-muted)',
-            fontSize: 13,
-          }}
-        >
-          No data yet. Fill in the form below to get started.
-        </div>
-      )}
-    </div>
-  );
-}
