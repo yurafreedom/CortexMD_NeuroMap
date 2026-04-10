@@ -1,13 +1,18 @@
 'use client';
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { BrainCanvas } from '@/components/Brain3D';
 import LeftPanel from '@/components/Panels/LeftPanel';
 import RightPanel from '@/components/Panels/RightPanel';
 import BottomBar from '@/components/Panels/BottomBar';
+import type { IndicatorKey } from '@/components/Panels/BottomBar';
 import ZonePopup from '@/components/Panels/ZonePopup';
 import CascadeOverlay from '@/components/Sigma1/CascadeOverlay';
+import GlutamateCascadeOverlay from '@/components/GlutamateCascade/GlutamateCascadeOverlay';
+import { DopaminePopup, SerotoninPopup, NorepinephrinePopup, GlutamatePopup, CYPPopup } from '@/components/IndicatorPopup';
+import { DRUGS_V2 } from '@/data/drugs.v2';
+import type { ActiveDrug } from '@/lib/indicators/balance';
 import ChatPanel from '@/components/Chat/ChatPanel';
 import Topbar from '@/components/Header/Topbar';
 import { useScheme } from '@/hooks/useScheme';
@@ -37,6 +42,8 @@ export default function Home() {
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const [rightPanelOpen, setRightPanelOpen] = useState(false);
   const [sigma1Open, setSigma1Open] = useState(false);
+  const [indicatorPopup, setIndicatorPopup] = useState<IndicatorKey | null>(null);
+  const [gluCascadeOpen, setGluCascadeOpen] = useState(false);
   const [zonePopup, setZonePopup] = useState<{
     position: { x: number; y: number };
     zoneId: string;
@@ -51,6 +58,24 @@ export default function Home() {
   } | null>(null);
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const rightPanelRef = useRef<HTMLDivElement>(null);
+
+  // Convert scheme to ActiveDrug[] for detail popups
+  const activeDrugList = useMemo((): ActiveDrug[] => {
+    const result: ActiveDrug[] = [];
+    for (const [id, dose] of Object.entries(scheme)) {
+      const drug = DRUGS_V2[id];
+      if (drug) result.push({ drug, dose_mg: dose });
+    }
+    return result;
+  }, [scheme]);
+
+  const handleIndicatorClick = useCallback((key: IndicatorKey) => {
+    if (key === 's1') {
+      setSigma1Open(true);
+    } else {
+      setIndicatorPopup(key);
+    }
+  }, []);
 
   // Cmd+K / Ctrl+K hotkey for AI chat + Escape to close
   useEffect(() => {
@@ -270,13 +295,46 @@ export default function Home() {
       </div>
 
       {/* Bottom Bar — glass pill */}
-      <BottomBar activeDrugs={scheme} />
+      <BottomBar activeDrugs={scheme} onIndicatorClick={handleIndicatorClick} />
 
       {/* Sigma-1 Cascade Overlay */}
       <CascadeOverlay
         isOpen={sigma1Open}
         activeDrugs={scheme}
         onClose={() => setSigma1Open(false)}
+      />
+
+      {/* Indicator detail popups */}
+      <DopaminePopup
+        isOpen={indicatorPopup === 'da'}
+        onClose={() => setIndicatorPopup(null)}
+        activeDrugs={activeDrugList}
+      />
+      <NorepinephrinePopup
+        isOpen={indicatorPopup === 'na'}
+        onClose={() => setIndicatorPopup(null)}
+        activeDrugs={activeDrugList}
+      />
+      <SerotoninPopup
+        isOpen={indicatorPopup === '5ht'}
+        onClose={() => setIndicatorPopup(null)}
+        activeDrugs={activeDrugList}
+      />
+      <GlutamatePopup
+        isOpen={indicatorPopup === 'glu'}
+        onClose={() => setIndicatorPopup(null)}
+        activeDrugs={activeDrugList}
+        onShowCascade={() => setGluCascadeOpen(true)}
+      />
+      <GlutamateCascadeOverlay
+        isOpen={gluCascadeOpen}
+        activeDrugs={activeDrugList}
+        onClose={() => setGluCascadeOpen(false)}
+      />
+      <CYPPopup
+        isOpen={indicatorPopup === 'cyp'}
+        onClose={() => setIndicatorPopup(null)}
+        activeDrugs={activeDrugList}
       />
 
       {/* AI Chat */}

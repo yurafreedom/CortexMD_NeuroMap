@@ -181,5 +181,24 @@
     "copyright": "© 2026 CortexMD",
     "privacy": "Privacy Policy",
     "dataProtected": "Your data is protected by encryption"
+  },
+  "profilePage": {
+    "backToDashboard": "Back to dashboard",
+    "sections": "Sections",
+    "genetics": "Genetic Profile",
+    "symptoms": "Symptom Scales",
+    "labs": "Lab Results",
+    "treatment": "Treatment History",
+    "upload": "Data Upload",
+    "dataSummary": "Data Summary",
+    "geneticMarkers": "Genetic profiles",
+    "labRecords": "Lab records",
+    "symptomAssessments": "Assessments",
+    "treatmentEntries": "Treatment entries",
+    "geneticsDesc": "CYP enzymes, MTHFR, COMT, BDNF, 5-HTTLPR, HLA polymorphisms that affect drug metabolism and response.",
+    "symptomsDesc": "PHQ-9, GAD-7, PCL-5, ASRS standardized symptom assessments with score tracking over time.",
+    "labsDesc": "Blood panels, hormones, inflammatory markers, and other lab results with reference ranges.",
+    "treatmentDesc": "Past and current medications, doses, durations, and response outcomes.",
+    "uploadDesc": "Upload Apple Health XML, PDF lab reports, or other clinical documents."
   }
 }

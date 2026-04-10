@@ -3,9 +3,11 @@
 import React, { useMemo, useCallback, useState } from 'react';
 import { DRUGS } from '../../data/drugs';
 import { S1N, S1E } from '../../data/sigma1Cascade';
-import { s1Bal } from '../../lib/sigma1';
 import { occ } from '../../lib/pharmacology';
-import { SIGMA1_ZONES, getNormalRangeLabel, getZoneForValue } from '../../lib/sigma1Display';
+import { SIGMA1_ZONES, getNormalRangeLabel } from '../../lib/sigma1Display';
+import { calculateSigma1Balance } from '../../lib/indicators/sigma1';
+import { DRUGS_V2 } from '../../data/drugs.v2';
+import type { ActiveDrug } from '../../lib/indicators/balance';
 import type { ActiveDrugs } from '../../lib/pharmacology';
 
 interface CascadeOverlayProps {
@@ -22,6 +24,16 @@ const EDGE_TYPE_LABELS: Record<string, { label: string; color: string }> = {
   prod: { label: 'Продукция', color: '#60a5fa' },
 };
 
+/** Convert legacy ActiveDrugs (id→dose) to ActiveDrug[] for v2 indicators */
+function toActiveDrugList(activeDrugs: ActiveDrugs): ActiveDrug[] {
+  const result: ActiveDrug[] = [];
+  for (const [id, dose] of Object.entries(activeDrugs)) {
+    const drug = DRUGS_V2[id];
+    if (drug) result.push({ drug, dose_mg: dose });
+  }
+  return result;
+}
+
 export default function CascadeOverlay({
   isOpen,
   activeDrugs,
@@ -33,16 +45,23 @@ export default function CascadeOverlay({
     y: number;
   } | null>(null);
 
-  const bal = useMemo(() => s1Bal(activeDrugs), [activeDrugs]);
+  const balance = useMemo(
+    () => calculateSigma1Balance(toActiveDrugList(activeDrugs)),
+    [activeDrugs]
+  );
 
-  const hasAny = bal.ag > 0 || bal.inv > 0 || bal.ant > 0;
+  const ag = balance.breakdown.agonist;
+  const inv = balance.breakdown.inverse_agonist;
+  const ant = balance.breakdown.antagonist;
+
+  const hasAny = ag > 0 || inv > 0 || ant > 0;
   const state = !hasAny
     ? 'off'
-    : bal.net > 10
+    : balance.value > 10
       ? 'ag'
-      : bal.net < -10
+      : balance.value < -10
         ? 'inv'
-        : bal.ant > 20
+        : ant > 20
           ? 'ant'
           : 'mix';
 
@@ -70,8 +89,8 @@ export default function CascadeOverlay({
     return m;
   }, []);
 
-  // Balance card data
-  const balanceZone = useMemo(() => getZoneForValue(bal.net), [bal.net]);
+  // Balance card data — use zone from unified formula
+  const balanceZone = balance.zone;
   const normalRange = useMemo(() => getNormalRangeLabel(), []);
 
   const infoText = useMemo(() => {
@@ -158,19 +177,19 @@ export default function CascadeOverlay({
           fontSize: 32, fontWeight: 700, color: balanceZone.color,
           fontFamily: 'var(--font-mono)', lineHeight: 1, marginBottom: 12,
         }}>
-          {bal.net >= 0 ? '+' : ''}{bal.net.toFixed(0)}%
+          {balance.value >= 0 ? '+' : ''}{balance.value.toFixed(0)}%
         </div>
 
         {/* Breakdown */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 12 }}>
           <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: '#22c55e' }}>
-            Агонисты:{'    '}+{bal.ag.toFixed(0)}%
+            Агонисты:{'    '}+{ag.toFixed(0)}%
           </div>
           <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: '#ef4444' }}>
-            Инверсные:{'   '}&minus;{bal.inv.toFixed(0)}%
+            Инверсные:{'   '}&minus;{inv.toFixed(0)}%
           </div>
           <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: '#f59e0b' }}>
-            Антагонисты:{'  '}&minus;{bal.ant.toFixed(0)}%
+            Антагонисты:{'  '}&minus;{ant.toFixed(0)}%
           </div>
         </div>
 

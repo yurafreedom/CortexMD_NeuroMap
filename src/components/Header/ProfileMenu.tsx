@@ -63,7 +63,7 @@ export default function ProfileMenu() {
             <div className="profile-dd-email">{user.email}</div>
           </div>
           <div className="profile-dd-sep" />
-          <button className="profile-dd-item" onClick={() => { setOpen(false); }}>
+          <button className="profile-dd-item" onClick={() => { setOpen(false); router.push('/profile'); }}>
             <User size={14} /> {t('profile')}
           </button>
           <button className="profile-dd-item" onClick={() => { setOpen(false); }}>

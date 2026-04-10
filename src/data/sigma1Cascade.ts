@@ -27,6 +27,10 @@ export const S1N: Sigma1Node[] = [
   { id: 'psd', l: 'PSD-95', d: 'Скаффолд. Организует рецепторы в постсинапсе.', x: 650, y: 400, w: 60 },
   { id: 'ltp', l: 'LTP', d: 'Долговременная потенциация. Обучение, память.', x: 600, y: 470, w: 50 },
   { id: 'recon', l: 'Реконсол.', d: 'Реконсолидация травматических воспоминаний (EMDR/PE).', x: 500, y: 500, w: 70 },
+  // Phase 7: extended cascade nodes
+  { id: 'trkb', l: 'TrkB', d: 'Tropomyosin receptor kinase B — рецептор BDNF. Запускает PI3K/Akt → mTOR сигналинг.', x: 320, y: 470, w: 55 },
+  { id: 'mtor', l: 'mTORC1', d: 'Mechanistic target of rapamycin — финальный путь синтеза синаптических белков.', x: 400, y: 500, w: 65 },
+  { id: 'eef2k', l: 'eEF2K', d: 'Eukaryotic elongation factor 2 kinase. Кетамин блокирует NMDA → ингибирует eEF2K → де-репрессия синтеза белков.', x: 760, y: 380, w: 55 },
 ];
 
 // Sigma-1 cascade edges
@@ -60,4 +64,9 @@ export const S1E: Sigma1Edge[] = [
   { f: 'psd', t: 'ltp', tp: 'act' },
   { f: 'bdnf', t: 'recon', tp: 'act' },
   { f: 'ltp', t: 'recon', tp: 'act' },
+  // Phase 7: extended cascade edges
+  { f: 'bdnf', t: 'trkb', tp: 'act', l: 'Активация' },
+  { f: 'trkb', t: 'mtor', tp: 'act', l: 'PI3K/Akt' },
+  { f: 'mtor', t: 'psd', tp: 'prod', l: 'Синтез белков' },
+  { f: 'nmda', t: 'eef2k', tp: 'inh', l: 'Dis-inhibition' },
 ];

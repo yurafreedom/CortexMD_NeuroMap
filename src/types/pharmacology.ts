@@ -120,6 +120,16 @@ export interface CYPInteraction {
   strength: 'weak' | 'moderate' | 'strong';
 }
 
+// ─── Active Metabolites ──────────────────────────────────
+
+export interface ActiveMetabolite {
+  name: string;
+  bindings: ReceptorBinding[];
+  half_life_hours: number;
+  /** Fraction of parent drug converted to this metabolite (0–1) */
+  formation_fraction: number;
+}
+
 // ─── Drug Schema V2 ─────────────────────────────────────
 
 export interface DrugSchemaV2 {
@@ -133,6 +143,7 @@ export interface DrugSchemaV2 {
   cyp_inhibits?: CYPInteraction[];
   cyp_induces?: CYPInteraction[];
   cyp_metabolized_by?: CYPEnzyme[];
+  active_metabolites?: ActiveMetabolite[];
   color: string;
   region_targets: BrainRegion[];
 

@@ -44,6 +44,17 @@ export const DRUGS_V2: Record<string, DrugSchemaV2> = {
       "brain_plasma_ratio": 0,
       "half_life_hours": 0
     },
+    "active_metabolites": [
+      {
+        "name": "desmethylsertraline",
+        "bindings": [
+          { "receptor": "SERT", "ki_nM": 76, "type": "reuptake_inhibitor" },
+          { "receptor": "s1", "ki_nM": 57, "type": "inverse_agonist", "source": "needs verification" }
+        ],
+        "half_life_hours": 66,
+        "formation_fraction": 0.5
+      }
+    ],
     "color": "#60a5fa",
     "region_targets": [
       "dlPFC",
@@ -1205,6 +1216,19 @@ export const DRUGS_V2: Record<string, DrugSchemaV2> = {
       "brain_plasma_ratio": 0,
       "half_life_hours": 0
     },
+    "active_metabolites": [
+      {
+        "name": "norquetiapine",
+        "bindings": [
+          { "receptor": "NET", "ki_nM": 58, "type": "reuptake_inhibitor" },
+          { "receptor": "H1", "ki_nM": 3.5, "type": "antagonist" },
+          { "receptor": "5HT2A", "ki_nM": 31, "type": "antagonist" },
+          { "receptor": "M1", "ki_nM": 39, "type": "antagonist", "source": "needs verification" }
+        ],
+        "half_life_hours": 12,
+        "formation_fraction": 0.3
+      }
+    ],
     "color": "#7c3aed",
     "region_targets": [
       "dlPFC",
@@ -1444,6 +1468,17 @@ export const DRUGS_V2: Record<string, DrugSchemaV2> = {
       "brain_plasma_ratio": 0,
       "half_life_hours": 0
     },
+    "active_metabolites": [
+      {
+        "name": "norfluoxetine",
+        "bindings": [
+          { "receptor": "SERT", "ki_nM": 20, "type": "reuptake_inhibitor" },
+          { "receptor": "5HT2C", "ki_nM": 55, "type": "antagonist", "source": "needs verification" }
+        ],
+        "half_life_hours": 336,
+        "formation_fraction": 0.8
+      }
+    ],
     "color": "#0ea5e9",
     "region_targets": [
       "amygdala",
