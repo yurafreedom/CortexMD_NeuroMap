@@ -2612,6 +2612,1759 @@ export const DRUGS_V2: Record<string, DrugSchemaV2> = {
     "default_dose": 45,
     "dose_unit": "мг",
     "max_dose": 135
+  },
+
+  "clomipramine": {
+    "id": "clomipramine",
+    "brand_name": "Anafranil",
+    "generic_name": "clomipramine",
+    "drug_class": "TCA",
+    "indications": [],
+    "bindings": [
+      { "receptor": "SERT", "ki_nM": 0.28, "type": "reuptake_inhibitor", "source": "needs verification" },
+      { "receptor": "NET", "ki_nM": 38, "type": "reuptake_inhibitor", "source": "needs verification" },
+      { "receptor": "5HT2A", "ki_nM": 36, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "H1", "ki_nM": 31, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "M1", "ki_nM": 37, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha1", "ki_nM": 38, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#f59e0b",
+    "region_targets": ["raphe", "lc", "amygdala", "hippo", "dlPFC", "brainstem", "hypothalamus"],
+    "legacy_short": "КЛМ",
+    "legacy_name_ru": "Анафранил",
+    "doses": [25, 50, 75, 100, 150, 200, 250],
+    "default_dose": 75,
+    "dose_unit": "мг",
+    "warn_dose": 200,
+    "max_dose": 250
+  },
+
+  "imipramine": {
+    "id": "imipramine",
+    "brand_name": "Tofranil",
+    "generic_name": "imipramine",
+    "drug_class": "TCA",
+    "indications": [],
+    "bindings": [
+      { "receptor": "SERT", "ki_nM": 1.4, "type": "reuptake_inhibitor", "source": "needs verification" },
+      { "receptor": "NET", "ki_nM": 37, "type": "reuptake_inhibitor", "source": "needs verification" },
+      { "receptor": "5HT2A", "ki_nM": 100, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "H1", "ki_nM": 11, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "M1", "ki_nM": 46, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha1", "ki_nM": 91, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#d97706",
+    "region_targets": ["raphe", "lc", "amygdala", "hippo", "dlPFC", "brainstem", "hypothalamus"],
+    "legacy_short": "ИМП",
+    "legacy_name_ru": "Тофранил",
+    "doses": [25, 50, 75, 100, 150, 200, 250],
+    "default_dose": 75,
+    "dose_unit": "мг",
+    "warn_dose": 200,
+    "max_dose": 250
+  },
+
+  "doxepin": {
+    "id": "doxepin",
+    "brand_name": "Sinequan",
+    "generic_name": "doxepin",
+    "drug_class": "TCA",
+    "indications": [],
+    "bindings": [
+      { "receptor": "SERT", "ki_nM": 68, "type": "reuptake_inhibitor", "source": "needs verification" },
+      { "receptor": "NET", "ki_nM": 29, "type": "reuptake_inhibitor", "source": "needs verification" },
+      { "receptor": "H1", "ki_nM": 0.24, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2A", "ki_nM": 27, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "M1", "ki_nM": 83, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha1", "ki_nM": 24, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#b45309",
+    "region_targets": ["raphe", "lc", "amygdala", "hippo", "dlPFC", "brainstem", "hypothalamus"],
+    "legacy_short": "ДОК",
+    "legacy_name_ru": "Синекван",
+    "doses": [25, 50, 75, 100, 150, 200, 300],
+    "default_dose": 75,
+    "dose_unit": "мг",
+    "warn_dose": 200,
+    "max_dose": 300
+  },
+
+  "trimipramine": {
+    "id": "trimipramine",
+    "brand_name": "Surmontil",
+    "generic_name": "trimipramine",
+    "drug_class": "TCA",
+    "indications": [],
+    "bindings": [
+      { "receptor": "D2", "ki_nM": 25, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2A", "ki_nM": 22, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "H1", "ki_nM": 0.27, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "M1", "ki_nM": 58, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha1", "ki_nM": 24, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "SERT", "ki_nM": 149, "type": "reuptake_inhibitor", "source": "needs verification" },
+      { "receptor": "NET", "ki_nM": 2450, "type": "reuptake_inhibitor", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#fbbf24",
+    "region_targets": ["raphe", "lc", "amygdala", "hippo", "dlPFC", "brainstem", "hypothalamus"],
+    "legacy_short": "ТРМ",
+    "legacy_name_ru": "Сурмонтил",
+    "doses": [25, 50, 75, 100, 150, 200],
+    "default_dose": 75,
+    "dose_unit": "мг",
+    "warn_dose": 200,
+    "max_dose": 200
+  },
+
+  "maprotiline": {
+    "id": "maprotiline",
+    "brand_name": "Ludiomil",
+    "generic_name": "maprotiline",
+    "drug_class": "TCA",
+    "indications": [],
+    "bindings": [
+      { "receptor": "NET", "ki_nM": 11, "type": "reuptake_inhibitor", "source": "needs verification" },
+      { "receptor": "H1", "ki_nM": 2, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha1", "ki_nM": 91, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2A", "ki_nM": 122, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "SERT", "ki_nM": 5800, "type": "reuptake_inhibitor", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#f97316",
+    "region_targets": ["raphe", "lc", "amygdala", "hippo", "dlPFC", "brainstem", "hypothalamus"],
+    "legacy_short": "МПТ",
+    "legacy_name_ru": "Людиомил",
+    "doses": [25, 50, 75, 100, 150],
+    "default_dose": 75,
+    "dose_unit": "мг",
+    "warn_dose": 150,
+    "max_dose": 150
+  },
+
+  "phenelzine": {
+    "id": "phenelzine",
+    "brand_name": "Nardil",
+    "generic_name": "phenelzine",
+    "drug_class": "MAOI",
+    "indications": [],
+    "bindings": [
+      { "receptor": "MAO_A", "ki_nM": 5, "type": "inhibitor", "source": "needs verification" },
+      { "receptor": "MAO_B", "ki_nM": 5, "type": "inhibitor", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#ef4444",
+    "region_targets": ["vta", "snc", "raphe", "lc", "striatum", "hippo", "dlPFC"],
+    "legacy_short": "ФНЗ",
+    "legacy_name_ru": "Нардил",
+    "doses": [15, 30, 45, 60, 75, 90],
+    "default_dose": 45,
+    "dose_unit": "мг",
+    "warn_dose": 75,
+    "max_dose": 90
+  },
+
+  "tranylcypromine": {
+    "id": "tranylcypromine",
+    "brand_name": "Parnate",
+    "generic_name": "tranylcypromine",
+    "drug_class": "MAOI",
+    "indications": [],
+    "bindings": [
+      { "receptor": "MAO_A", "ki_nM": 5, "type": "inhibitor", "source": "needs verification" },
+      { "receptor": "MAO_B", "ki_nM": 5, "type": "inhibitor", "source": "needs verification" },
+      { "receptor": "DAT", "ki_nM": 300, "type": "releaser", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#dc2626",
+    "region_targets": ["vta", "snc", "raphe", "lc", "striatum", "hippo", "dlPFC"],
+    "legacy_short": "ТНЦ",
+    "legacy_name_ru": "Парнат",
+    "doses": [10, 20, 30, 40, 50, 60],
+    "default_dose": 30,
+    "dose_unit": "мг",
+    "warn_dose": 50,
+    "max_dose": 60
+  },
+
+  "isocarboxazid": {
+    "id": "isocarboxazid",
+    "brand_name": "Marplan",
+    "generic_name": "isocarboxazid",
+    "drug_class": "MAOI",
+    "indications": [],
+    "bindings": [
+      { "receptor": "MAO_A", "ki_nM": 5, "type": "inhibitor", "source": "needs verification" },
+      { "receptor": "MAO_B", "ki_nM": 5, "type": "inhibitor", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#b91c1c",
+    "region_targets": ["vta", "snc", "raphe", "lc", "striatum", "hippo", "dlPFC"],
+    "legacy_short": "ИЗК",
+    "legacy_name_ru": "Марплан",
+    "doses": [10, 20, 30, 40, 50, 60],
+    "default_dose": 30,
+    "dose_unit": "мг",
+    "warn_dose": 50,
+    "max_dose": 60
+  },
+
+  "moclobemide": {
+    "id": "moclobemide",
+    "brand_name": "Aurorix",
+    "generic_name": "moclobemide",
+    "drug_class": "MAOI",
+    "indications": [],
+    "bindings": [
+      { "receptor": "MAO_A", "ki_nM": 6, "type": "inhibitor", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#f87171",
+    "region_targets": ["vta", "snc", "raphe", "lc", "striatum", "hippo", "dlPFC"],
+    "legacy_short": "МКБ",
+    "legacy_name_ru": "Аурорикс",
+    "doses": [150, 300, 450, 600],
+    "default_dose": 300,
+    "dose_unit": "мг",
+    "warn_dose": 450,
+    "max_dose": 600
+  },
+
+  "haloperidol": {
+    "id": "haloperidol",
+    "brand_name": "Haldol",
+    "generic_name": "haloperidol",
+    "drug_class": "typical_antipsychotic",
+    "indications": [],
+    "bindings": [
+      { "receptor": "D2", "ki_nM": 0.74, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "D3", "ki_nM": 1.5, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "s1", "ki_nM": 3.3, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha1", "ki_nM": 45, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#a855f7",
+    "region_targets": ["striatum", "nac", "vta", "dlPFC", "hypothalamus", "brainstem"],
+    "legacy_short": "ГАЛ",
+    "legacy_name_ru": "Галдол",
+    "doses": [0.5, 1, 2, 5, 10, 15, 20],
+    "default_dose": 5,
+    "dose_unit": "мг",
+    "warn_dose": 15,
+    "max_dose": 20
+  },
+
+  "chlorpromazine": {
+    "id": "chlorpromazine",
+    "brand_name": "Thorazine",
+    "generic_name": "chlorpromazine",
+    "drug_class": "typical_antipsychotic",
+    "indications": [],
+    "bindings": [
+      { "receptor": "D2", "ki_nM": 3.6, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2A", "ki_nM": 4, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "H1", "ki_nM": 3, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "M1", "ki_nM": 25, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha1", "ki_nM": 4, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#7c3aed",
+    "region_targets": ["striatum", "nac", "vta", "dlPFC", "hypothalamus", "brainstem"],
+    "legacy_short": "ХПЗ",
+    "legacy_name_ru": "Торазин",
+    "doses": [25, 50, 100, 200, 300, 400, 600],
+    "default_dose": 100,
+    "dose_unit": "мг",
+    "warn_dose": 400,
+    "max_dose": 600
+  },
+
+  "fluphenazine": {
+    "id": "fluphenazine",
+    "brand_name": "Prolixin",
+    "generic_name": "fluphenazine",
+    "drug_class": "typical_antipsychotic",
+    "indications": [],
+    "bindings": [
+      { "receptor": "D2", "ki_nM": 0.8, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "D1", "ki_nM": 35, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "s1", "ki_nM": 40, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha1", "ki_nM": 25, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#6d28d9",
+    "region_targets": ["striatum", "nac", "vta", "dlPFC", "hypothalamus", "brainstem"],
+    "legacy_short": "ФПЗ",
+    "legacy_name_ru": "Пролексин",
+    "doses": [1, 2, 5, 10, 20, 40],
+    "default_dose": 5,
+    "dose_unit": "мг",
+    "warn_dose": 20,
+    "max_dose": 40
+  },
+
+  "perphenazine": {
+    "id": "perphenazine",
+    "brand_name": "Trilafon",
+    "generic_name": "perphenazine",
+    "drug_class": "typical_antipsychotic",
+    "indications": [],
+    "bindings": [
+      { "receptor": "D2", "ki_nM": 0.73, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2A", "ki_nM": 5, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "H1", "ki_nM": 8, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha1", "ki_nM": 10, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#8b5cf6",
+    "region_targets": ["striatum", "nac", "vta", "dlPFC", "hypothalamus", "brainstem"],
+    "legacy_short": "ПРФ",
+    "legacy_name_ru": "Трилафон",
+    "doses": [4, 8, 16, 24, 32, 48, 64],
+    "default_dose": 16,
+    "dose_unit": "мг",
+    "warn_dose": 48,
+    "max_dose": 64
+  },
+
+  "thioridazine": {
+    "id": "thioridazine",
+    "brand_name": "Mellaril",
+    "generic_name": "thioridazine",
+    "drug_class": "typical_antipsychotic",
+    "indications": [],
+    "bindings": [
+      { "receptor": "D2", "ki_nM": 7.6, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2A", "ki_nM": 30, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "M1", "ki_nM": 18, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha1", "ki_nM": 32, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "H1", "ki_nM": 50, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#9333ea",
+    "region_targets": ["striatum", "nac", "vta", "dlPFC", "hypothalamus", "brainstem"],
+    "legacy_short": "ТРД",
+    "legacy_name_ru": "Меллерил",
+    "doses": [25, 50, 100, 150, 200, 300, 400],
+    "default_dose": 100,
+    "dose_unit": "мг",
+    "warn_dose": 300,
+    "max_dose": 400
+  },
+
+  "loxapine": {
+    "id": "loxapine",
+    "brand_name": "Loxitane",
+    "generic_name": "loxapine",
+    "drug_class": "typical_antipsychotic",
+    "indications": [],
+    "bindings": [
+      { "receptor": "D2", "ki_nM": 10, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2A", "ki_nM": 2, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "H1", "ki_nM": 7, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha1", "ki_nM": 33, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "M1", "ki_nM": 125, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#c084fc",
+    "region_targets": ["striatum", "nac", "vta", "dlPFC", "hypothalamus", "brainstem"],
+    "legacy_short": "ЛКС",
+    "legacy_name_ru": "Локситан",
+    "doses": [10, 25, 50, 75, 100, 125, 150],
+    "default_dose": 50,
+    "dose_unit": "мг",
+    "warn_dose": 100,
+    "max_dose": 150
+  },
+
+  "pimozide": {
+    "id": "pimozide",
+    "brand_name": "Orap",
+    "generic_name": "pimozide",
+    "drug_class": "typical_antipsychotic",
+    "indications": [],
+    "bindings": [
+      { "receptor": "D2", "ki_nM": 0.83, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "Cav", "ki_nM": 500, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#a78bfa",
+    "region_targets": ["striatum", "nac", "vta", "dlPFC", "hypothalamus", "brainstem"],
+    "legacy_short": "ПМЗ",
+    "legacy_name_ru": "Орап",
+    "doses": [1, 2, 4, 6, 8, 10],
+    "default_dose": 2,
+    "dose_unit": "мг",
+    "warn_dose": 8,
+    "max_dose": 10
+  },
+
+  "zuclopenthixol": {
+    "id": "zuclopenthixol",
+    "brand_name": "Clopixol",
+    "generic_name": "zuclopenthixol",
+    "drug_class": "typical_antipsychotic",
+    "indications": [],
+    "bindings": [
+      { "receptor": "D2", "ki_nM": 2.1, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2A", "ki_nM": 14, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha1", "ki_nM": 17, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "H1", "ki_nM": 5, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#7e22ce",
+    "region_targets": ["striatum", "nac", "vta", "dlPFC", "hypothalamus", "brainstem"],
+    "legacy_short": "ЗКП",
+    "legacy_name_ru": "Клопиксол",
+    "doses": [2, 10, 20, 40, 60, 80, 100],
+    "default_dose": 20,
+    "dose_unit": "мг",
+    "warn_dose": 75,
+    "max_dose": 100
+  },
+
+  "flupentixol": {
+    "id": "flupentixol",
+    "brand_name": "Fluanxol",
+    "generic_name": "flupentixol",
+    "drug_class": "typical_antipsychotic",
+    "indications": [],
+    "bindings": [
+      { "receptor": "D1", "ki_nM": 1.6, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "D2", "ki_nM": 1.6, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2A", "ki_nM": 36, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha1", "ki_nM": 29, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#581c87",
+    "region_targets": ["striatum", "nac", "vta", "dlPFC", "hypothalamus", "brainstem"],
+    "legacy_short": "ФПТ",
+    "legacy_name_ru": "Флюанксол",
+    "doses": [0.5, 1, 2, 3, 6, 9, 12],
+    "default_dose": 3,
+    "dose_unit": "мг",
+    "warn_dose": 9,
+    "max_dose": 12
+  },
+
+  "diazepam": {
+    "id": "diazepam",
+    "brand_name": "Valium",
+    "generic_name": "diazepam",
+    "drug_class": "benzodiazepine",
+    "indications": [],
+    "bindings": [
+      { "receptor": "GABAa", "ki_nM": 18, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha1", "ki_nM": 18, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha2", "ki_nM": 18, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha3", "ki_nM": 18, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha5", "ki_nM": 18, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#06b6d4",
+    "region_targets": ["amygdala", "hippo", "thalamus", "brainstem", "spinal", "pag", "acc"],
+    "legacy_short": "ДЗП",
+    "legacy_name_ru": "Диазепам",
+    "doses": [2, 5, 10, 20],
+    "default_dose": 5,
+    "dose_unit": "мг",
+    "max_dose": 40
+  },
+
+  "lorazepam": {
+    "id": "lorazepam",
+    "brand_name": "Ativan",
+    "generic_name": "lorazepam",
+    "drug_class": "benzodiazepine",
+    "indications": [],
+    "bindings": [
+      { "receptor": "GABAa", "ki_nM": 7, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha1", "ki_nM": 7, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha2", "ki_nM": 7, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha3", "ki_nM": 7, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha5", "ki_nM": 7, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#0891b2",
+    "region_targets": ["amygdala", "hippo", "thalamus", "brainstem", "spinal", "pag", "acc"],
+    "legacy_short": "ЛРЗ",
+    "legacy_name_ru": "Лоразепам",
+    "doses": [0.5, 1, 2, 4],
+    "default_dose": 1,
+    "dose_unit": "мг",
+    "max_dose": 6
+  },
+
+  "clonazepam": {
+    "id": "clonazepam",
+    "brand_name": "Klonopin",
+    "generic_name": "clonazepam",
+    "drug_class": "benzodiazepine",
+    "indications": [],
+    "bindings": [
+      { "receptor": "GABAa", "ki_nM": 2, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha1", "ki_nM": 2, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha2", "ki_nM": 2, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha3", "ki_nM": 2, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha5", "ki_nM": 2, "type": "modulator", "source": "needs verification" },
+      { "receptor": "5HT1A", "ki_nM": 1500, "type": "agonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#0e7490",
+    "region_targets": ["amygdala", "hippo", "thalamus", "brainstem", "spinal", "pag", "acc"],
+    "legacy_short": "КЛН",
+    "legacy_name_ru": "Клоназепам",
+    "doses": [0.25, 0.5, 1, 2],
+    "default_dose": 0.5,
+    "dose_unit": "мг",
+    "max_dose": 4
+  },
+
+  "alprazolam": {
+    "id": "alprazolam",
+    "brand_name": "Xanax",
+    "generic_name": "alprazolam",
+    "drug_class": "benzodiazepine",
+    "indications": [],
+    "bindings": [
+      { "receptor": "GABAa", "ki_nM": 6, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha1", "ki_nM": 6, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha2", "ki_nM": 6, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha3", "ki_nM": 6, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha5", "ki_nM": 6, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#22d3ee",
+    "region_targets": ["amygdala", "hippo", "thalamus", "brainstem", "spinal", "pag", "acc"],
+    "legacy_short": "АЛП",
+    "legacy_name_ru": "Алпразолам",
+    "doses": [0.25, 0.5, 1, 2],
+    "default_dose": 0.5,
+    "dose_unit": "мг",
+    "max_dose": 4
+  },
+
+  "midazolam": {
+    "id": "midazolam",
+    "brand_name": "Dormicum",
+    "generic_name": "midazolam",
+    "drug_class": "benzodiazepine",
+    "indications": [],
+    "bindings": [
+      { "receptor": "GABAa_alpha1", "ki_nM": 10, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha2", "ki_nM": 30, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha3", "ki_nM": 30, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha5", "ki_nM": 40, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#67e8f9",
+    "region_targets": ["amygdala", "hippo", "thalamus", "brainstem", "spinal", "pag", "acc"],
+    "legacy_short": "МДЗ",
+    "legacy_name_ru": "Мидазолам",
+    "doses": [7.5, 15],
+    "default_dose": 7.5,
+    "dose_unit": "мг",
+    "max_dose": 15
+  },
+
+  "chlordiazepoxide": {
+    "id": "chlordiazepoxide",
+    "brand_name": "Librium",
+    "generic_name": "chlordiazepoxide",
+    "drug_class": "benzodiazepine",
+    "indications": [],
+    "bindings": [
+      { "receptor": "GABAa", "ki_nM": 130, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha1", "ki_nM": 130, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha2", "ki_nM": 130, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha3", "ki_nM": 130, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha5", "ki_nM": 130, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#14b8a6",
+    "region_targets": ["amygdala", "hippo", "thalamus", "brainstem", "spinal", "pag", "acc"],
+    "legacy_short": "ХДЗ",
+    "legacy_name_ru": "Хлордиазепоксид",
+    "doses": [5, 10, 25],
+    "default_dose": 10,
+    "dose_unit": "мг",
+    "max_dose": 100
+  },
+
+  "oxazepam": {
+    "id": "oxazepam",
+    "brand_name": "Serax",
+    "generic_name": "oxazepam",
+    "drug_class": "benzodiazepine",
+    "indications": [],
+    "bindings": [
+      { "receptor": "GABAa", "ki_nM": 50, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha1", "ki_nM": 50, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha2", "ki_nM": 50, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha3", "ki_nM": 50, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha5", "ki_nM": 50, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#0d9488",
+    "region_targets": ["amygdala", "hippo", "thalamus", "brainstem", "spinal", "pag", "acc"],
+    "legacy_short": "ОКС",
+    "legacy_name_ru": "Оксазепам",
+    "doses": [10, 15, 30],
+    "default_dose": 15,
+    "dose_unit": "мг",
+    "max_dose": 120
+  },
+
+  "temazepam": {
+    "id": "temazepam",
+    "brand_name": "Restoril",
+    "generic_name": "temazepam",
+    "drug_class": "benzodiazepine",
+    "indications": [],
+    "bindings": [
+      { "receptor": "GABAa", "ki_nM": 25, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha1", "ki_nM": 25, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha2", "ki_nM": 25, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha3", "ki_nM": 25, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha5", "ki_nM": 25, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#2dd4bf",
+    "region_targets": ["amygdala", "hippo", "thalamus", "brainstem", "spinal", "pag", "acc"],
+    "legacy_short": "ТМЗ",
+    "legacy_name_ru": "Темазепам",
+    "doses": [7.5, 15, 30],
+    "default_dose": 15,
+    "dose_unit": "мг",
+    "max_dose": 30
+  },
+
+  "triazolam": {
+    "id": "triazolam",
+    "brand_name": "Halcion",
+    "generic_name": "triazolam",
+    "drug_class": "benzodiazepine",
+    "indications": [],
+    "bindings": [
+      { "receptor": "GABAa_alpha1", "ki_nM": 1, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha2", "ki_nM": 1, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha3", "ki_nM": 1, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha5", "ki_nM": 1, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#5eead4",
+    "region_targets": ["amygdala", "hippo", "thalamus", "brainstem", "spinal", "pag", "acc"],
+    "legacy_short": "ТРЗ",
+    "legacy_name_ru": "Триазолам",
+    "doses": [0.125, 0.25],
+    "default_dose": 0.25,
+    "dose_unit": "мг",
+    "max_dose": 0.5
+  },
+
+  "clobazam": {
+    "id": "clobazam",
+    "brand_name": "Onfi",
+    "generic_name": "clobazam",
+    "drug_class": "benzodiazepine",
+    "indications": [],
+    "bindings": [
+      { "receptor": "GABAa_alpha2", "ki_nM": 15, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha3", "ki_nM": 20, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha1", "ki_nM": 100, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha5", "ki_nM": 100, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#99f6e4",
+    "region_targets": ["amygdala", "hippo", "thalamus", "brainstem", "spinal", "pag", "acc"],
+    "legacy_short": "КЛБ",
+    "legacy_name_ru": "Клобазам",
+    "doses": [5, 10, 20, 40],
+    "default_dose": 10,
+    "dose_unit": "мг",
+    "max_dose": 40
+  },
+
+  "nitrazepam": {
+    "id": "nitrazepam",
+    "brand_name": "Mogadon",
+    "generic_name": "nitrazepam",
+    "drug_class": "benzodiazepine",
+    "indications": [],
+    "bindings": [
+      { "receptor": "GABAa", "ki_nM": 14, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha1", "ki_nM": 14, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha2", "ki_nM": 14, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha3", "ki_nM": 14, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha5", "ki_nM": 14, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#ccfbf1",
+    "region_targets": ["amygdala", "hippo", "thalamus", "brainstem", "spinal", "pag", "acc"],
+    "legacy_short": "НТЗ",
+    "legacy_name_ru": "Нитразепам",
+    "doses": [2.5, 5, 10],
+    "default_dose": 5,
+    "dose_unit": "мг",
+    "max_dose": 10
+  },
+
+  "zolpidem": {
+    "id": "zolpidem",
+    "brand_name": "Ambien",
+    "generic_name": "zolpidem",
+    "drug_class": "z_drug",
+    "indications": [],
+    "bindings": [
+      { "receptor": "GABAa_alpha1", "ki_nM": 20, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha2", "ki_nM": 400, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha3", "ki_nM": 500, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha5", "ki_nM": 700, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#6366f1",
+    "region_targets": ["thalamus", "hypothalamus", "brainstem"],
+    "legacy_short": "ЗЛП",
+    "legacy_name_ru": "Золпидем",
+    "doses": [5, 10],
+    "default_dose": 10,
+    "dose_unit": "мг",
+    "max_dose": 10
+  },
+
+  "zopiclone": {
+    "id": "zopiclone",
+    "brand_name": "Imovane",
+    "generic_name": "zopiclone",
+    "drug_class": "z_drug",
+    "indications": [],
+    "bindings": [
+      { "receptor": "GABAa", "ki_nM": 30, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha1", "ki_nM": 30, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha2", "ki_nM": 30, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha3", "ki_nM": 30, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha5", "ki_nM": 30, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#4f46e5",
+    "region_targets": ["thalamus", "hypothalamus", "brainstem"],
+    "legacy_short": "ЗПК",
+    "legacy_name_ru": "Зопиклон",
+    "doses": [3.75, 7.5],
+    "default_dose": 7.5,
+    "dose_unit": "мг",
+    "max_dose": 7.5
+  },
+
+  "eszopiclone": {
+    "id": "eszopiclone",
+    "brand_name": "Lunesta",
+    "generic_name": "eszopiclone",
+    "drug_class": "z_drug",
+    "indications": [],
+    "bindings": [
+      { "receptor": "GABAa", "ki_nM": 30, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha1", "ki_nM": 30, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha2", "ki_nM": 30, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha3", "ki_nM": 30, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha5", "ki_nM": 30, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#4338ca",
+    "region_targets": ["thalamus", "hypothalamus", "brainstem"],
+    "legacy_short": "ЭЗП",
+    "legacy_name_ru": "Эсзопиклон",
+    "doses": [1, 2, 3],
+    "default_dose": 2,
+    "dose_unit": "мг",
+    "max_dose": 3
+  },
+
+  "zaleplon": {
+    "id": "zaleplon",
+    "brand_name": "Sonata",
+    "generic_name": "zaleplon",
+    "drug_class": "z_drug",
+    "indications": [],
+    "bindings": [
+      { "receptor": "GABAa_alpha1", "ki_nM": 15, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha2", "ki_nM": 200, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha3", "ki_nM": 300, "type": "modulator", "source": "needs verification" },
+      { "receptor": "GABAa_alpha5", "ki_nM": 500, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#818cf8",
+    "region_targets": ["thalamus", "hypothalamus", "brainstem"],
+    "legacy_short": "ЗЛН",
+    "legacy_name_ru": "Залеплон",
+    "doses": [5, 10, 20],
+    "default_dose": 10,
+    "dose_unit": "мг",
+    "max_dose": 20
+  },
+
+  "pregabalin": {
+    "id": "pregabalin",
+    "brand_name": "Lyrica",
+    "generic_name": "pregabalin",
+    "drug_class": "gabapentinoid",
+    "indications": [],
+    "bindings": [
+      { "receptor": "alpha2delta", "ki_nM": 80, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#fb923c",
+    "region_targets": ["spinal", "thalamus", "amygdala", "brainstem", "dlPFC", "acc"],
+    "legacy_short": "ПРГ",
+    "legacy_name_ru": "Прегабалин",
+    "doses": [25, 50, 75, 150, 300],
+    "default_dose": 75,
+    "dose_unit": "мг",
+    "max_dose": 600
+  },
+
+  "gabapentin": {
+    "id": "gabapentin",
+    "brand_name": "Neurontin",
+    "generic_name": "gabapentin",
+    "drug_class": "gabapentinoid",
+    "indications": [],
+    "bindings": [
+      { "receptor": "alpha2delta", "ki_nM": 300, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#f97316",
+    "region_targets": ["spinal", "thalamus", "amygdala", "brainstem", "dlPFC", "acc"],
+    "legacy_short": "ГПН",
+    "legacy_name_ru": "Габапентин",
+    "doses": [100, 300, 600, 900, 1200],
+    "default_dose": 300,
+    "dose_unit": "мг",
+    "max_dose": 3600
+  },
+
+  "mirogabalin": {
+    "id": "mirogabalin",
+    "brand_name": "Tarlige",
+    "generic_name": "mirogabalin",
+    "drug_class": "gabapentinoid",
+    "indications": [],
+    "bindings": [
+      { "receptor": "alpha2delta", "ki_nM": 10, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#ea580c",
+    "region_targets": ["spinal", "thalamus", "amygdala", "brainstem", "dlPFC", "acc"],
+    "legacy_short": "МРГ",
+    "legacy_name_ru": "Мирогабалин",
+    "doses": [5, 10, 15],
+    "default_dose": 10,
+    "dose_unit": "мг",
+    "max_dose": 30
+  },
+
+  "lithium": {
+    "id": "lithium",
+    "brand_name": "Lithobid",
+    "generic_name": "lithium",
+    "drug_class": "mood_stabilizer",
+    "indications": [],
+    "bindings": [
+      { "receptor": "Nav", "ki_nM": 1000, "type": "modulator", "source": "needs verification" },
+      { "receptor": "HCN", "ki_nM": 1000, "type": "modulator", "source": "needs verification" },
+      { "receptor": "mGluR5", "ki_nM": 1000, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#facc15",
+    "region_targets": ["dlPFC", "hippo", "amygdala", "hypothalamus", "striatum"],
+    "legacy_short": "ЛТ",
+    "legacy_name_ru": "Литий",
+    "doses": [150, 300, 450, 600, 900, 1200],
+    "default_dose": 600,
+    "dose_unit": "мг",
+    "max_dose": 1800
+  },
+
+  "valproate": {
+    "id": "valproate",
+    "brand_name": "Depakote",
+    "generic_name": "valproate",
+    "drug_class": "mood_stabilizer",
+    "indications": [],
+    "bindings": [
+      { "receptor": "GABAa", "ki_nM": 1000, "type": "modulator", "source": "needs verification" },
+      { "receptor": "Nav", "ki_nM": 1000, "type": "modulator", "source": "needs verification" },
+      { "receptor": "HCN", "ki_nM": 1000, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#eab308",
+    "region_targets": ["dlPFC", "hippo", "amygdala", "striatum", "thalamus"],
+    "legacy_short": "ВПР",
+    "legacy_name_ru": "Вальпроат",
+    "doses": [250, 500, 750, 1000, 1500],
+    "default_dose": 500,
+    "dose_unit": "мг",
+    "max_dose": 2000
+  },
+
+  "carbamazepine": {
+    "id": "carbamazepine",
+    "brand_name": "Tegretol",
+    "generic_name": "carbamazepine",
+    "drug_class": "mood_stabilizer",
+    "indications": [],
+    "bindings": [
+      { "receptor": "Nav", "ki_nM": 1000, "type": "modulator", "source": "needs verification" },
+      { "receptor": "alpha2delta", "ki_nM": 1000, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#ca8a04",
+    "region_targets": ["dlPFC", "hippo", "amygdala", "thalamus", "brainstem"],
+    "legacy_short": "КБЗ",
+    "legacy_name_ru": "Карбамазепин",
+    "doses": [100, 200, 400, 600, 800],
+    "default_dose": 400,
+    "dose_unit": "мг",
+    "max_dose": 1600
+  },
+
+  "oxcarbazepine": {
+    "id": "oxcarbazepine",
+    "brand_name": "Trileptal",
+    "generic_name": "oxcarbazepine",
+    "drug_class": "mood_stabilizer",
+    "indications": [],
+    "bindings": [
+      { "receptor": "Nav", "ki_nM": 1000, "type": "modulator", "source": "needs verification" },
+      { "receptor": "Cav", "ki_nM": 1000, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#a16207",
+    "region_targets": ["dlPFC", "hippo", "amygdala", "thalamus", "brainstem"],
+    "legacy_short": "ОКБ",
+    "legacy_name_ru": "Окскарбазепин",
+    "doses": [150, 300, 600, 900, 1200],
+    "default_dose": 600,
+    "dose_unit": "мг",
+    "max_dose": 2400
+  },
+
+  "olanzapine": {
+    "id": "olanzapine",
+    "brand_name": "Zyprexa",
+    "generic_name": "olanzapine",
+    "drug_class": "atypical_antipsychotic",
+    "indications": [],
+    "bindings": [
+      { "receptor": "D2", "ki_nM": 11, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2A", "ki_nM": 4, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2C", "ki_nM": 11, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "H1", "ki_nM": 7, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "M1", "ki_nM": 73, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha1", "ki_nM": 19, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#c084fc",
+    "region_targets": ["dlPFC", "striatum", "nac", "vta", "amygdala", "hippo"],
+    "legacy_short": "ОЛЗ",
+    "legacy_name_ru": "Оланзапин",
+    "doses": [2.5, 5, 10, 15, 20],
+    "default_dose": 10,
+    "dose_unit": "мг",
+    "max_dose": 20
+  },
+
+  "risperidone": {
+    "id": "risperidone",
+    "brand_name": "Risperdal",
+    "generic_name": "risperidone",
+    "drug_class": "atypical_antipsychotic",
+    "indications": [],
+    "bindings": [
+      { "receptor": "D2", "ki_nM": 3, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2A", "ki_nM": 0.5, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha1", "ki_nM": 2, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "H1", "ki_nM": 3, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha2A", "ki_nM": 10, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#a78bfa",
+    "region_targets": ["dlPFC", "striatum", "nac", "vta", "amygdala"],
+    "legacy_short": "РСП",
+    "legacy_name_ru": "Рисперидон",
+    "doses": [0.5, 1, 2, 3, 4, 6],
+    "default_dose": 2,
+    "dose_unit": "мг",
+    "max_dose": 8
+  },
+
+  "paliperidone": {
+    "id": "paliperidone",
+    "brand_name": "Invega",
+    "generic_name": "paliperidone",
+    "drug_class": "atypical_antipsychotic",
+    "indications": [],
+    "bindings": [
+      { "receptor": "D2", "ki_nM": 3, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2A", "ki_nM": 1, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha1", "ki_nM": 2, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha2A", "ki_nM": 10, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "H1", "ki_nM": 10, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#8b5cf6",
+    "region_targets": ["dlPFC", "striatum", "nac", "vta", "amygdala"],
+    "legacy_short": "ПЛП",
+    "legacy_name_ru": "Палиперидон",
+    "doses": [3, 6, 9, 12],
+    "default_dose": 6,
+    "dose_unit": "мг",
+    "max_dose": 12
+  },
+
+  "ziprasidone": {
+    "id": "ziprasidone",
+    "brand_name": "Geodon",
+    "generic_name": "ziprasidone",
+    "drug_class": "atypical_antipsychotic",
+    "indications": [],
+    "bindings": [
+      { "receptor": "D2", "ki_nM": 5, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2A", "ki_nM": 0.4, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT1A", "ki_nM": 3, "type": "partial_agonist", "intrinsic_efficacy": 0.6, "source": "needs verification" },
+      { "receptor": "SERT", "ki_nM": 48, "type": "reuptake_inhibitor", "source": "needs verification" },
+      { "receptor": "NET", "ki_nM": 43, "type": "reuptake_inhibitor", "source": "needs verification" },
+      { "receptor": "H1", "ki_nM": 47, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#7c3aed",
+    "region_targets": ["dlPFC", "striatum", "nac", "vta", "raphe", "lc"],
+    "legacy_short": "ЗПР",
+    "legacy_name_ru": "Зипразидон",
+    "doses": [20, 40, 60, 80],
+    "default_dose": 40,
+    "dose_unit": "мг",
+    "max_dose": 160
+  },
+
+  "lurasidone": {
+    "id": "lurasidone",
+    "brand_name": "Latuda",
+    "generic_name": "lurasidone",
+    "drug_class": "atypical_antipsychotic",
+    "indications": [],
+    "bindings": [
+      { "receptor": "D2", "ki_nM": 1, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2A", "ki_nM": 2, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT7", "ki_nM": 0.5, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha2C", "ki_nM": 10, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#6d28d9",
+    "region_targets": ["dlPFC", "striatum", "nac", "vta", "amygdala", "hippo"],
+    "legacy_short": "ЛРС",
+    "legacy_name_ru": "Луразидон",
+    "doses": [20, 40, 60, 80, 120],
+    "default_dose": 40,
+    "dose_unit": "мг",
+    "max_dose": 160
+  },
+
+  "clozapine": {
+    "id": "clozapine",
+    "brand_name": "Clozaril",
+    "generic_name": "clozapine",
+    "drug_class": "atypical_antipsychotic",
+    "indications": [],
+    "bindings": [
+      { "receptor": "D2", "ki_nM": 126, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "D4", "ki_nM": 35, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2A", "ki_nM": 5, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2C", "ki_nM": 9, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "M1", "ki_nM": 1, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "M4", "ki_nM": 6, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "H1", "ki_nM": 1, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha1", "ki_nM": 7, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha2A", "ki_nM": 37, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#9333ea",
+    "region_targets": ["dlPFC", "striatum", "nac", "vta", "amygdala", "hippo", "thalamus"],
+    "legacy_short": "КЛЗ",
+    "legacy_name_ru": "Клозапин",
+    "doses": [12.5, 25, 50, 100, 200, 400],
+    "default_dose": 100,
+    "dose_unit": "мг",
+    "max_dose": 900
+  },
+
+  "iloperidone": {
+    "id": "iloperidone",
+    "brand_name": "Fanapt",
+    "generic_name": "iloperidone",
+    "drug_class": "atypical_antipsychotic",
+    "indications": [],
+    "bindings": [
+      { "receptor": "D2", "ki_nM": 7, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2A", "ki_nM": 5, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha1", "ki_nM": 0.4, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "NET", "ki_nM": 180, "type": "reuptake_inhibitor", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#7e22ce",
+    "region_targets": ["dlPFC", "striatum", "nac", "vta", "lc"],
+    "legacy_short": "ИЛП",
+    "legacy_name_ru": "Илоперидон",
+    "doses": [1, 2, 4, 6, 8, 12],
+    "default_dose": 6,
+    "dose_unit": "мг",
+    "max_dose": 24
+  },
+
+  "asenapine": {
+    "id": "asenapine",
+    "brand_name": "Saphris",
+    "generic_name": "asenapine",
+    "drug_class": "atypical_antipsychotic",
+    "indications": [],
+    "bindings": [
+      { "receptor": "D2", "ki_nM": 1, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2A", "ki_nM": 0.07, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2C", "ki_nM": 0.03, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT7", "ki_nM": 0.1, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha2A", "ki_nM": 1, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "H1", "ki_nM": 1, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#581c87",
+    "region_targets": ["dlPFC", "striatum", "nac", "vta", "amygdala", "raphe"],
+    "legacy_short": "АСН",
+    "legacy_name_ru": "Азенапин",
+    "doses": [2.5, 5, 10],
+    "default_dose": 5,
+    "dose_unit": "мг",
+    "max_dose": 20
+  },
+
+  "mirtazapine": {
+    "id": "mirtazapine",
+    "brand_name": "Remeron",
+    "generic_name": "mirtazapine",
+    "drug_class": "atypical_antidepressant",
+    "indications": [],
+    "bindings": [
+      { "receptor": "alpha2A", "ki_nM": 30, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2A", "ki_nM": 6, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2C", "ki_nM": 6, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT3", "ki_nM": 6, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "H1", "ki_nM": 1, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#34d399",
+    "region_targets": ["dlPFC", "raphe", "lc", "amygdala", "hippo"],
+    "legacy_short": "МРТ",
+    "legacy_name_ru": "Миртазапин",
+    "doses": [7.5, 15, 30, 45],
+    "default_dose": 15,
+    "dose_unit": "мг",
+    "max_dose": 45
+  },
+
+  "trazodone": {
+    "id": "trazodone",
+    "brand_name": "Desyrel",
+    "generic_name": "trazodone",
+    "drug_class": "atypical_antidepressant",
+    "indications": [],
+    "bindings": [
+      { "receptor": "5HT2A", "ki_nM": 36, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "SERT", "ki_nM": 160, "type": "reuptake_inhibitor", "source": "needs verification" },
+      { "receptor": "H1", "ki_nM": 210, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "alpha1", "ki_nM": 35, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#10b981",
+    "region_targets": ["dlPFC", "raphe", "amygdala", "hippo", "thalamus"],
+    "legacy_short": "ТРЗ",
+    "legacy_name_ru": "Тразодон",
+    "doses": [25, 50, 100, 150, 200, 300],
+    "default_dose": 100,
+    "dose_unit": "мг",
+    "max_dose": 400
+  },
+
+  "nefazodone": {
+    "id": "nefazodone",
+    "brand_name": "Serzone",
+    "generic_name": "nefazodone",
+    "drug_class": "atypical_antidepressant",
+    "indications": [],
+    "bindings": [
+      { "receptor": "5HT2A", "ki_nM": 26, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "SERT", "ki_nM": 200, "type": "reuptake_inhibitor", "source": "needs verification" },
+      { "receptor": "NET", "ki_nM": 360, "type": "reuptake_inhibitor", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#059669",
+    "region_targets": ["dlPFC", "raphe", "lc", "amygdala", "hippo"],
+    "legacy_short": "НФЗ",
+    "legacy_name_ru": "Нефазодон",
+    "doses": [50, 100, 200, 300],
+    "default_dose": 200,
+    "dose_unit": "мг",
+    "max_dose": 600
+  },
+
+  "agomelatine": {
+    "id": "agomelatine",
+    "brand_name": "Valdoxan",
+    "generic_name": "agomelatine",
+    "drug_class": "atypical_antidepressant",
+    "indications": [],
+    "bindings": [
+      { "receptor": "MT1", "ki_nM": 0.1, "type": "agonist", "source": "needs verification" },
+      { "receptor": "MT2", "ki_nM": 0.12, "type": "agonist", "source": "needs verification" },
+      { "receptor": "5HT2C", "ki_nM": 270, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#047857",
+    "region_targets": ["dlPFC", "hippo", "hypothalamus", "raphe"],
+    "legacy_short": "АГМ",
+    "legacy_name_ru": "Агомелатин",
+    "doses": [25, 50],
+    "default_dose": 25,
+    "dose_unit": "мг",
+    "max_dose": 50
+  },
+
+  "vilazodone": {
+    "id": "vilazodone",
+    "brand_name": "Viibryd",
+    "generic_name": "vilazodone",
+    "drug_class": "atypical_antidepressant",
+    "indications": [],
+    "bindings": [
+      { "receptor": "SERT", "ki_nM": 0.2, "type": "reuptake_inhibitor", "source": "needs verification" },
+      { "receptor": "5HT1A", "ki_nM": 0.5, "type": "partial_agonist", "intrinsic_efficacy": 0.7, "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#065f46",
+    "region_targets": ["dlPFC", "raphe", "hippo", "amygdala"],
+    "legacy_short": "ВЛЗ",
+    "legacy_name_ru": "Вилазодон",
+    "doses": [10, 20, 40],
+    "default_dose": 20,
+    "dose_unit": "мг",
+    "max_dose": 40
+  },
+
+  "tianeptine": {
+    "id": "tianeptine",
+    "brand_name": "Stablon",
+    "generic_name": "tianeptine",
+    "drug_class": "atypical_antidepressant",
+    "indications": [],
+    "bindings": [
+      { "receptor": "mu", "ki_nM": 194, "type": "agonist", "source": "needs verification" },
+      { "receptor": "AMPA", "ki_nM": 1000, "type": "modulator", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#064e3b",
+    "region_targets": ["dlPFC", "hippo", "amygdala", "nac", "acc"],
+    "legacy_short": "ТНП",
+    "legacy_name_ru": "Тианептин",
+    "doses": [12.5, 25, 37.5],
+    "default_dose": 37.5,
+    "dose_unit": "мг",
+    "max_dose": 50
+  },
+
+  "mianserin": {
+    "id": "mianserin",
+    "brand_name": "Tolvon",
+    "generic_name": "mianserin",
+    "drug_class": "atypical_antidepressant",
+    "indications": [],
+    "bindings": [
+      { "receptor": "alpha2A", "ki_nM": 73, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2A", "ki_nM": 22, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT2C", "ki_nM": 15, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "H1", "ki_nM": 1, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#6ee7b7",
+    "region_targets": ["dlPFC", "raphe", "lc", "amygdala", "hippo"],
+    "legacy_short": "МНС",
+    "legacy_name_ru": "Миансерин",
+    "doses": [10, 20, 30, 60],
+    "default_dose": 30,
+    "dose_unit": "мг",
+    "max_dose": 90
+  },
+
+  "hydroxyzine": {
+    "id": "hydroxyzine",
+    "brand_name": "Vistaril",
+    "generic_name": "hydroxyzine",
+    "drug_class": "antihistamine",
+    "indications": [],
+    "bindings": [
+      { "receptor": "H1", "ki_nM": 1, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "M1", "ki_nM": 100, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#fda4af",
+    "region_targets": ["thalamus", "amygdala", "hippo", "brainstem"],
+    "legacy_short": "ГДР",
+    "legacy_name_ru": "Гидроксизин",
+    "doses": [10, 25, 50, 100],
+    "default_dose": 25,
+    "dose_unit": "мг",
+    "max_dose": 100
+  },
+
+  "suvorexant": {
+    "id": "suvorexant",
+    "brand_name": "Belsomra",
+    "generic_name": "suvorexant",
+    "drug_class": "orexin_antagonist",
+    "indications": [],
+    "bindings": [],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#f9a8d4",
+    "region_targets": ["hypothalamus", "thalamus", "brainstem"],
+    "legacy_short": "СВР",
+    "legacy_name_ru": "Суворексант",
+    "doses": [10, 15, 20],
+    "default_dose": 10,
+    "dose_unit": "мг",
+    "max_dose": 20
+  },
+
+  "propranolol": {
+    "id": "propranolol",
+    "brand_name": "Inderal",
+    "generic_name": "propranolol",
+    "drug_class": "beta_blocker",
+    "indications": [],
+    "bindings": [
+      { "receptor": "beta1", "ki_nM": 1, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "beta2", "ki_nM": 1, "type": "antagonist", "source": "needs verification" },
+      { "receptor": "5HT1A", "ki_nM": 100, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#93c5fd",
+    "region_targets": ["amygdala", "hippo", "brainstem", "lc"],
+    "legacy_short": "ПРН",
+    "legacy_name_ru": "Пропранолол",
+    "doses": [10, 20, 40, 60, 80],
+    "default_dose": 40,
+    "dose_unit": "мг",
+    "max_dose": 160
+  },
+
+  "clonidine": {
+    "id": "clonidine",
+    "brand_name": "Catapres",
+    "generic_name": "clonidine",
+    "drug_class": "alpha2_agonist",
+    "indications": [],
+    "bindings": [
+      { "receptor": "alpha2A", "ki_nM": 1, "type": "agonist", "source": "needs verification" },
+      { "receptor": "alpha2B", "ki_nM": 1, "type": "agonist", "source": "needs verification" },
+      { "receptor": "alpha2C", "ki_nM": 1, "type": "agonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#86efac",
+    "region_targets": ["dlPFC", "lc", "brainstem", "hypothalamus"],
+    "legacy_short": "КЛН",
+    "legacy_name_ru": "Клонидин",
+    "doses": [0.1, 0.2, 0.3],
+    "default_dose": 0.1,
+    "dose_unit": "мг",
+    "max_dose": 0.6
+  },
+
+  "prazosin": {
+    "id": "prazosin",
+    "brand_name": "Minipress",
+    "generic_name": "prazosin",
+    "drug_class": "alpha1_blocker",
+    "indications": [],
+    "bindings": [
+      { "receptor": "alpha1", "ki_nM": 0.4, "type": "antagonist", "source": "needs verification" }
+    ],
+    "pk": {
+      "molecular_weight_g_mol": 0,
+      "oral_bioavailability": 0,
+      "protein_binding": 0,
+      "brain_plasma_ratio": 0,
+      "half_life_hours": 0
+    },
+    "color": "#7dd3fc",
+    "region_targets": ["amygdala", "hippo", "brainstem", "lc"],
+    "legacy_short": "ПРЗ",
+    "legacy_name_ru": "Празозин",
+    "doses": [1, 2, 5, 10],
+    "default_dose": 2,
+    "dose_unit": "мг",
+    "max_dose": 20
   }
 };
 

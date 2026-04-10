@@ -5,8 +5,18 @@ export interface AdminSession {
   isAdmin?: boolean;
 }
 
+function getSessionPassword(): string {
+  const password = process.env.ADMIN_SESSION_SECRET;
+  if (!password || password.length < 32) {
+    throw new Error(
+      'ADMIN_SESSION_SECRET environment variable must be set and at least 32 characters long.'
+    );
+  }
+  return password;
+}
+
 const sessionOptions = {
-  password: process.env.ADMIN_SESSION_SECRET || 'complex_password_at_least_32_characters_long_fallback',
+  password: getSessionPassword(),
   cookieName: 'cortexmd_admin',
   cookieOptions: {
     secure: process.env.NODE_ENV === 'production',

@@ -5,8 +5,14 @@ import type { AdminSession } from '@/lib/admin-session';
 
 export async function proxy(req: NextRequest) {
   const res = NextResponse.next();
+  const password = process.env.ADMIN_SESSION_SECRET;
+  if (!password || password.length < 32) {
+    throw new Error(
+      'ADMIN_SESSION_SECRET environment variable must be set and at least 32 characters long.'
+    );
+  }
   const session = await getIronSession<AdminSession>(req, res, {
-    password: process.env.ADMIN_SESSION_SECRET || 'complex_password_at_least_32_characters_long_fallback',
+    password,
     cookieName: 'cortexmd_admin',
   });
 
