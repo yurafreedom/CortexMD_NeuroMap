@@ -1,7 +1,17 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { z } from 'zod';
+import { createHash } from 'crypto';
+import { createSupabaseServer, createSupabaseAdmin } from '@/lib/supabase-server';
 import { DRUGS } from '@/data/drugs';
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || '' });
+
+const chatSchema = z.object({
+  message: z.string().min(1).max(10000),
+  activeScheme: z.record(z.string(), z.number()).optional(),
+  deficits: z.array(z.object({ title: z.string().max(200) })).max(50).optional(),
+  zoneContext: z.string().max(500).optional(),
+});
 
 // PubMed search helper
 async function searchPubMed(query: string, maxResults: number = 3) {
@@ -60,11 +70,27 @@ function lookupDrugKi(drugName: string) {
 }
 
 export async function POST(req: Request) {
+  // Auth check
+  const supabase = await createSupabaseServer();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   if (!process.env.ANTHROPIC_API_KEY) {
     return Response.json({ error: 'ANTHROPIC_API_KEY not configured' }, { status: 500 });
   }
 
-  const { message, activeScheme, deficits, zoneContext } = await req.json();
+  // Input validation
+  const body = await req.json();
+  const parsed = chatSchema.safeParse(body);
+  if (!parsed.success) {
+    return Response.json({
+      error: 'Invalid input',
+      details: parsed.error.flatten(),
+    }, { status: 400 });
+  }
+  const { message, activeScheme, deficits, zoneContext } = parsed.data;
 
   const systemPrompt = `Ты — фармакологический ассистент CortexMD.
 Отвечай ТОЛЬКО на вопросы о психотропных препаратах, рецепторах, нейромедиаторах, взаимодействиях, дозировках и механизмах.
@@ -167,6 +193,12 @@ ${zoneContext ? `Вопрос о зоне мозга: ${zoneContext}` : ''}
         .filter((b): b is Anthropic.TextBlock => b.type === 'text')
         .map(b => b.text)
         .join('');
+
+      // Audit logging (non-blocking)
+      const totalTokens = (response.usage?.input_tokens ?? 0) + (response.usage?.output_tokens ?? 0)
+        + (finalResponse.usage?.input_tokens ?? 0) + (finalResponse.usage?.output_tokens ?? 0);
+      await logAudit(user.id, message, text, totalTokens);
+
       return Response.json({ response: text });
     }
 
@@ -174,9 +206,39 @@ ${zoneContext ? `Вопрос о зоне мозга: ${zoneContext}` : ''}
       .filter((b): b is Anthropic.TextBlock => b.type === 'text')
       .map(b => b.text)
       .join('');
+
+    // Audit logging (non-blocking)
+    const totalTokens = (response.usage?.input_tokens ?? 0) + (response.usage?.output_tokens ?? 0);
+    await logAudit(user.id, message, text, totalTokens);
+
     return Response.json({ response: text });
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : 'Unknown error';
+    console.error('[chat] API error:', e);
+    const msg = process.env.NODE_ENV === 'production'
+      ? 'AI service temporarily unavailable. Please try again.'
+      : (e instanceof Error ? e.message : 'Unknown error');
     return Response.json({ error: msg }, { status: 500 });
+  }
+}
+
+async function logAudit(userId: string, message: string, aiResponse: string, totalTokens: number) {
+  try {
+    const adminSupabase = createSupabaseAdmin();
+    await adminSupabase.from('ai_audit_log').insert({
+      user_id: userId,
+      user_input_hash: createHash('sha256').update(message).digest('hex'),
+      user_input_sanitized: message.substring(0, 500),
+      ai_response_full: aiResponse,
+      inference_model: 'claude-sonnet-4-20250514',
+      total_tokens: totalTokens,
+      input_risk_level: 'low',
+      crisis_triggered: false,
+      was_blocked: false,
+      was_modified: false,
+      user_action: 'CHAT_REQUEST',
+    });
+  } catch (logError) {
+    // Do NOT fail the response if audit logging fails
+    console.error('[audit] Failed to log chat interaction:', logError);
   }
 }
