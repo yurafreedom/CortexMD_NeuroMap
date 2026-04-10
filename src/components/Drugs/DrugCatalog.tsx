@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { DRUGS } from '../../data/drugs';
 import { DCAT } from '../../data/presets';
 import type { ActiveDrugs } from '../../lib/pharmacology';
+import { Z } from '@/styles/zIndex';
 
 interface DrugCatalogProps {
   activeDrugs: ActiveDrugs;
@@ -158,7 +159,7 @@ export default function DrugCatalog({ activeDrugs, onAdd, isModal, onClose }: Dr
     return (
       <div
         style={{
-          position: 'fixed', inset: 0, zIndex: 1000,
+          position: 'fixed', inset: 0, zIndex: Z.modal,
           background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}

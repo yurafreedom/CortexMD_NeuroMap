@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { callAI, handleFallbackAction } from '@/lib/aiClient';
 import type { FallbackMessage } from '@/lib/aiClient';
+import { Z } from '@/styles/zIndex';
 
 interface ChatMessage {
   role: 'user' | 'assistant' | 'error';
@@ -114,7 +115,7 @@ export default function ChatPanel({ isOpen, onClose, activeDrugs, deficits, zone
   return (
     <div
       style={{
-        position: 'fixed', inset: 0, zIndex: 1000,
+        position: 'fixed', inset: 0, zIndex: Z.chat,
         background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}

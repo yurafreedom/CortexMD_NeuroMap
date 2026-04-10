@@ -4,6 +4,7 @@ import React, { useMemo, useCallback, useState } from 'react';
 import { GLU_NODES, GLU_EDGES, GLU_EDGE_TYPE_LABELS } from '../../data/glutamateCascade';
 import { calculateGlutamateBalance } from '../../lib/indicators/glutamate';
 import type { ActiveDrug } from '../../lib/indicators/balance';
+import { Z } from '@/styles/zIndex';
 
 interface GlutamateCascadeOverlayProps {
   isOpen: boolean;
@@ -75,7 +76,7 @@ export default function GlutamateCascadeOverlay({
   return (
     <div
       style={{
-        position: 'fixed', inset: 0, zIndex: 100,
+        position: 'fixed', inset: 0, zIndex: Z.overlay,
         background: 'rgba(8,11,18,0.92)', display: 'flex',
         flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         backdropFilter: 'blur(32px) saturate(1.1)',
@@ -87,7 +88,7 @@ export default function GlutamateCascadeOverlay({
         onClick={onClose}
         style={{
           position: 'absolute', top: 20, right: 28,
-          fontSize: 28, color: 'var(--text-muted)', cursor: 'pointer', zIndex: 101,
+          fontSize: 28, color: 'var(--text-muted)', cursor: 'pointer', zIndex: Z.overlayClose,
         }}
       >
         &times;

@@ -17,6 +17,7 @@ import ChatPanel from '@/components/Chat/ChatPanel';
 import Topbar from '@/components/Header/Topbar';
 import { useScheme } from '@/hooks/useScheme';
 import { useDeficits } from '@/hooks/useDeficits';
+import { Z } from '@/styles/zIndex';
 
 const LEFT_PANEL_WIDTH = 280;
 
@@ -57,7 +58,6 @@ export default function Home() {
     y: number;
   } | null>(null);
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const rightPanelRef = useRef<HTMLDivElement>(null);
 
   // Convert scheme to ActiveDrug[] for detail popups
   const activeDrugList = useMemo((): ActiveDrug[] => {
@@ -92,39 +92,15 @@ export default function Home() {
     return () => document.removeEventListener('keydown', handler);
   }, [chatOpen]);
 
-  // БЛОК D: Auto-hide right panel after 6s of inactivity
-  useEffect(() => {
-    if (!rightPanelOpen) return;
-
-    let timer = setTimeout(() => setRightPanelOpen(false), 6000);
-
-    const reset = () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => setRightPanelOpen(false), 6000);
-    };
-
-    const panel = rightPanelRef.current;
-    if (panel) {
-      panel.addEventListener('mousemove', reset);
-      panel.addEventListener('click', reset);
-    }
-
-    return () => {
-      clearTimeout(timer);
-      if (panel) {
-        panel.removeEventListener('mousemove', reset);
-        panel.removeEventListener('click', reset);
-      }
-    };
-  }, [rightPanelOpen]);
 
   const handleRegionClick = useCallback(
     (id: string | null, screenPos?: { x: number; y: number }) => {
+      // Clicking empty canvas (null) — do nothing, keep panel open
+      if (!id) return;
+
       setSelectedRegion(id);
-      if (id && screenPos) {
+      if (screenPos) {
         setZonePopup({ position: screenPos, zoneId: id });
-      } else {
-        setZonePopup(null);
       }
     },
     [],
@@ -259,8 +235,8 @@ export default function Home() {
 
       {/* Left Panel */}
       <div
-        className="absolute top-0 left-0 h-full z-20"
-        style={{ width: LEFT_PANEL_WIDTH }}
+        className="absolute top-0 left-0 h-full"
+        style={{ width: LEFT_PANEL_WIDTH, zIndex: Z.leftPanel }}
       >
         <LeftPanel
           activeDrugs={scheme}
@@ -279,7 +255,7 @@ export default function Home() {
       </div>
 
       {/* Right Panel — БЛОК C: overlays canvas, no resize */}
-      <div ref={rightPanelRef}>
+      <div>
         <RightPanel
           isOpen={rightPanelOpen}
           selectedRegion={selectedRegion}
@@ -349,7 +325,7 @@ export default function Home() {
         <button
           onClick={() => setChatOpen(true)}
           style={{
-            position: 'fixed', right: 16, bottom: 16, zIndex: 40,
+            position: 'fixed', right: 16, bottom: 16, zIndex: Z.chatFab,
             width: 48, height: 48, borderRadius: '50%',
             background: 'linear-gradient(135deg,#60a5fa,#818cf8)',
             border: 'none', cursor: 'pointer', fontSize: 20,
@@ -366,10 +342,11 @@ export default function Home() {
       {/* Tooltip (follows mouse on region hover) — E5 with background */}
       {tooltip && !zonePopup && (
         <div
-          className="zone-hover-label fixed z-50"
+          className="zone-hover-label fixed"
           style={{
             left: tooltip.x + 12,
             top: tooltip.y - 8,
+            zIndex: Z.hoverLabel,
           }}
         >
           {tooltip.text}

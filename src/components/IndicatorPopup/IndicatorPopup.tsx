@@ -2,6 +2,7 @@
 
 import React from 'react';
 import type { IndicatorBalance } from '@/types/indicators';
+import { Z } from '@/styles/zIndex';
 
 interface IndicatorPopupProps {
   isOpen: boolean;
@@ -32,7 +33,7 @@ export default function IndicatorPopup({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 100,
+        zIndex: Z.overlay,
         background: 'rgba(8,11,18,0.92)',
         display: 'flex',
         flexDirection: 'column',
@@ -48,7 +49,7 @@ export default function IndicatorPopup({
         onClick={onClose}
         style={{
           position: 'absolute', top: 20, right: 28,
-          fontSize: 28, color: 'var(--text-muted)', cursor: 'pointer', zIndex: 101,
+          fontSize: 28, color: 'var(--text-muted)', cursor: 'pointer', zIndex: Z.overlayClose,
           transition: 'color 0.2s ease',
         }}
         onMouseEnter={(e) => { (e.target as HTMLElement).style.color = 'var(--text-primary)'; }}
