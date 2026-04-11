@@ -1,23 +1,10 @@
-// Preset drug combinations
+// Preset interface (used by user_presets from Supabase)
 export interface Preset {
-  l: string;                        // label
-  d: { [drugId: string]: number };  // drug id -> dose
+  id: string;
+  name: string;
+  drugs: { [drugId: string]: number };
+  created_at: string;
 }
-
-export interface Presets {
-  [presetId: string]: Preset;
-}
-
-export const PRESETS: Presets = {
-  golden: { l: 'Золотая ($2k)', d: { sertraline: 100, bupropion: 225, atomoxetine: 10, vortioxetine: 10 } },
-  current: { l: 'Текущая (6шт)', d: { sertraline: 100, bupropion: 225, atomoxetine: 10, vortioxetine: 10, pramipexole: 0.125, duloxetine: 30 } },
-  clean: { l: 'Чистая CYP', d: { vortioxetine: 10, atomoxetine: 10, cariprazine: 1.5, dhea: 50 } },
-  optimal: { l: 'Оптимальная', d: { vortioxetine: 15, atomoxetine: 10, bupropion: 225, cariprazine: 1.5, dhea: 50 } },
-  esci: { l: 'σ1-агонист', d: { escitalopram: 10, vortioxetine: 10, atomoxetine: 10, cariprazine: 1.5, dhea: 50 } },
-  sigma1max: { l: 'σ1 макс', d: { fluvoxamine: 100, donepezil: 5, dhea: 50, atomoxetine: 10, cariprazine: 1.5 } },
-  auvelity_combo: { l: 'Auvelity+', d: { auvelity: 1, atomoxetine: 10, cariprazine: 1.5, dhea: 50 } },
-  tca_combo: { l: 'ТЦА+SSRI', d: { sertraline: 100, nortriptyline: 25, vortioxetine: 10, cariprazine: 1.5 } },
-};
 
 // Drug categories
 export interface DrugCategory {

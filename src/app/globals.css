@@ -675,3 +675,13 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;bac
   color:rgba(255,255,255,0.9)}
 .whoop-unit{font-size:10px;font-weight:400;color:rgba(255,255,255,0.4);margin-left:2px}
 .whoop-sleep-legend{display:flex;gap:8px;margin-top:4px;font-size:8px;font-family:var(--font-mono)}
+
+/* ================================================================ */
+/* === SCHEME SELECTION MODAL — RESPONSIVE === */
+/* ================================================================ */
+@media (max-width: 1024px) {
+  .scheme-modal-content {
+    grid-template-columns: 1fr !important;
+    overflow-y: auto !important;
+  }
+}

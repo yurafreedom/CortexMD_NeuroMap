@@ -2,12 +2,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
-import { PRESETS } from '../../data/presets';
-import ActiveScheme from '../Drugs/ActiveScheme';
 import DrugCatalog from '../Drugs/DrugCatalog';
-import DeficitList from '../Deficits/DeficitList';
-import WhoopCard from '../Whoop/WhoopCard';
-import type { Deficit, DeficitStatus } from '../../data/defaultDeficits';
 import type { ActiveDrugs } from '../../lib/pharmacology';
 
 interface LeftPanelProps {
@@ -15,15 +10,8 @@ interface LeftPanelProps {
   onAddDrug: (id: string) => void;
   onRemoveDrug: (id: string) => void;
   onUpdateDose: (id: string, dose: number) => void;
-  onApplyPreset: (presetId: string) => void;
-  deficits: Deficit[];
-  selectedDeficit: string | null;
-  onSelectDeficit: (id: string) => void;
-  onDeficitStatusChange?: (id: string, status: DeficitStatus) => void;
-  onDeficitDelete?: (id: string) => void;
+  onApplyPreset: (drugs: ActiveDrugs) => void;
   onOpacityChange: (value: number) => void;
-  onZoneClick?: (zoneId: string) => void;
-  onZoneHover?: (zoneId: string | null) => void;
 }
 
 function Section({
@@ -57,25 +45,19 @@ export default function LeftPanel({
   onRemoveDrug,
   onUpdateDose,
   onApplyPreset,
-  deficits,
-  selectedDeficit,
-  onSelectDeficit,
-  onDeficitStatusChange,
-  onDeficitDelete,
   onOpacityChange,
-  onZoneClick,
-  onZoneHover,
 }: LeftPanelProps) {
   const t = useTranslations();
   const [catalogOpen, setCatalogOpen] = useState(false);
-  const schemeCount = Object.keys(activeDrugs).length;
 
   const handleOpacity = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       onOpacityChange(parseInt(e.target.value, 10));
     },
-    [onOpacityChange]
+    [onOpacityChange],
   );
+
+  const schemeCount = Object.keys(activeDrugs).length;
 
   return (
     <div id="lp">
@@ -84,56 +66,29 @@ export default function LeftPanel({
         <div className="sub" style={{ textAlign: 'left', marginBottom: 0 }}>{t('dashboard.subtitle')}</div>
       </div>
 
-      {/* Presets */}
-      <Section title={t('dashboard.presets')}>
-        <div className="pl">
-          {Object.keys(PRESETS).map((id) => (
-            <button
-              key={id}
-              className="pb"
-              onClick={() => onApplyPreset(id)}
-            >
-              {PRESETS[id].l}
-            </button>
-          ))}
-        </div>
-      </Section>
-
-      {/* Active scheme */}
-      <Section title={`${t('dashboard.activeScheme')}${schemeCount > 0 ? ` (${schemeCount})` : ''}`} defaultOpen>
-        <ActiveScheme
-          activeDrugs={activeDrugs}
-          onRemove={onRemoveDrug}
-          onUpdateDose={onUpdateDose}
-        />
-      </Section>
-
-      {/* Drug Catalog — opens as modal */}
+      {/* Scheme Selection — opens as modal */}
       <button
         className="catalog-toggle-btn"
         style={{ borderRadius: 'var(--radius-md)', marginBottom: 8, border: '1px solid var(--glass-border)' }}
         onClick={() => setCatalogOpen(true)}
       >
         {t('dashboard.drugCatalog')}{' '}
+        {schemeCount > 0 && (
+          <span style={{ opacity: 0.6, fontSize: '0.85em' }}>({schemeCount})</span>
+        )}{' '}
         <span>{'\u25BC'}</span>
       </button>
       {catalogOpen && (
-        <DrugCatalog activeDrugs={activeDrugs} onAdd={onAddDrug} isModal onClose={() => setCatalogOpen(false)} />
-      )}
-
-      {/* Deficits */}
-      <Section title={t('dashboard.myDeficits')}>
-        <DeficitList
-          deficits={deficits}
+        <DrugCatalog
           activeDrugs={activeDrugs}
-          selectedDeficit={selectedDeficit}
-          onSelect={onSelectDeficit}
-          onStatusChange={onDeficitStatusChange || (() => {})}
-          onDelete={onDeficitDelete || (() => {})}
-          onZoneClick={onZoneClick}
-          onZoneHover={onZoneHover}
+          onAdd={onAddDrug}
+          onRemove={onRemoveDrug}
+          onUpdateDose={onUpdateDose}
+          onApplyPreset={onApplyPreset}
+          isModal
+          onClose={() => setCatalogOpen(false)}
         />
-      </Section>
+      )}
 
       {/* Visualization */}
       <Section title={t('dashboard.visualization')}>
@@ -149,9 +104,6 @@ export default function LeftPanel({
           onChange={handleOpacity}
         />
       </Section>
-
-      {/* Whoop Integration */}
-      <WhoopCard />
 
       <div
         style={{

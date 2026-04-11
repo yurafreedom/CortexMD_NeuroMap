@@ -244,13 +244,7 @@ export default function Home() {
           onRemoveDrug={removeDrug}
           onUpdateDose={updateDose}
           onApplyPreset={applyPreset}
-          deficits={deficits}
-          selectedDeficit={selectedDeficit}
-          onSelectDeficit={selectDeficit}
-          onDeficitStatusChange={changeStatus}
-          onDeficitDelete={deleteDeficit}
           onOpacityChange={setBrainOpacity}
-          onZoneClick={handleZoneClickFromPanel}
         />
       </div>
 

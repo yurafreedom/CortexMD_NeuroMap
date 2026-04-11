@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { DRUGS } from '@/data/drugs';
-import { PRESETS } from '@/data/presets';
 import type { ActiveDrugs } from '@/lib/pharmacology';
 
 const STORAGE_KEY = 'cortexmd_scheme';
@@ -73,10 +72,8 @@ export function useScheme() {
     });
   }, []);
 
-  const applyPreset = useCallback((presetId: string) => {
-    const preset = PRESETS[presetId];
-    if (!preset) return;
-    setScheme({ ...preset.d });
+  const applyPreset = useCallback((drugs: ActiveDrugs) => {
+    setScheme({ ...drugs });
   }, []);
 
   const saveCustomPreset = useCallback(
