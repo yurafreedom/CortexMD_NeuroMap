@@ -76,7 +76,7 @@ export default function LeftPanel({
         {schemeCount > 0 && (
           <span style={{ opacity: 0.6, fontSize: '0.85em' }}>({schemeCount})</span>
         )}{' '}
-        <span>{'\u25BC'}</span>
+        <span>{'▼'}</span>
       </button>
       {catalogOpen && (
         <DrugCatalog

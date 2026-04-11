@@ -65,10 +65,10 @@ function ErrorCard({ message }: { message: FallbackMessage }) {
 const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
 
 const DB_BUTTONS = [
-  { label: '\uD83D\uDD2C PubMed', prefix: 'Найди в PubMed: ' },
-  { label: '\uD83D\uDCCA Ki (ChEMBL)', prefix: 'Ki-значения для: ' },
-  { label: '\uD83D\uDCCB Cochrane', prefix: 'Cochrane обзоры: ' },
-  { label: '\uD83D\uDC8A FDA', prefix: 'FDA побочные эффекты: ' },
+  { label: '🔬 PubMed', prefix: 'Найди в PubMed: ' },
+  { label: '📊 Ki (ChEMBL)', prefix: 'Ki-значения для: ' },
+  { label: '📋 Cochrane', prefix: 'Cochrane обзоры: ' },
+  { label: '💊 FDA', prefix: 'FDA побочные эффекты: ' },
 ];
 
 export default function ChatPanel({ isOpen, onClose, activeDrugs, deficits, zoneContext, suggestedQuestion }: ChatPanelProps) {
@@ -142,7 +142,7 @@ export default function ChatPanel({ isOpen, onClose, activeDrugs, deficits, zone
               background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
               fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)',
             }}>
-              {isMac ? '\u2318K' : 'Ctrl K'}
+              {isMac ? '⌘K' : 'Ctrl K'}
             </span>
           </div>
           <button onClick={onClose} style={{
@@ -220,7 +220,7 @@ export default function ChatPanel({ isOpen, onClose, activeDrugs, deficits, zone
               background: loading ? '#334155' : 'linear-gradient(135deg,#6ee7b7,#818cf8)',
               color: '#080b12', fontSize: 13, fontWeight: 600, cursor: loading ? 'default' : 'pointer',
             }}>
-              \u2191
+              ↑
             </button>
           </form>
 

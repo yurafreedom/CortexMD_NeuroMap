@@ -100,26 +100,26 @@ export default function CascadeOverlay({
       Object.keys(AD).forEach((d) => {
         const dr = DRUGS[d];
         if (dr && dr.s1t === 'ag' && dr.ki && dr.ki.s1) {
-          agDrugs.push(`${dr.s} \u03C31:${occ(d, 's1', AD).toFixed(0)}%`);
+          agDrugs.push(`${dr.s} σ1:${occ(d, 's1', AD).toFixed(0)}%`);
         }
       });
-      return `Активные \u03C31-агонисты: ${agDrugs.join(', ')} \u2192 каскад BiP\u2192Ca\u00B2\u207A\u2192BDNF\u2192LTP активен`;
+      return `Активные σ1-агонисты: ${agDrugs.join(', ')} → каскад BiP→Ca²⁺→BDNF→LTP активен`;
     }
     if (state === 'inv') {
-      return '\u03C31 инверсный агонизм подавляет LTP и BDNF-транскрипцию. Это может снижать эффективность травма-терапии (EMDR, PE).';
+      return 'σ1 инверсный агонизм подавляет LTP и BDNF-транскрипцию. Это может снижать эффективность травма-терапии (EMDR, PE).';
     }
     if (state === 'ant') {
-      return '\u03C31-антагонист блокирует весь каскад нейропластичности.';
+      return 'σ1-антагонист блокирует весь каскад нейропластичности.';
     }
     if (state === 'mix') {
       const parts: string[] = [];
       Object.keys(AD).forEach((d) => {
         const dr = DRUGS[d];
         if (dr && dr.s1t && dr.ki && dr.ki.s1) {
-          parts.push(`${dr.s} (${dr.s1t}) \u03C31:${occ(d, 's1', AD).toFixed(0)}%`);
+          parts.push(`${dr.s} (${dr.s1t}) σ1:${occ(d, 's1', AD).toFixed(0)}%`);
         }
       });
-      return `Конкуренция: ${parts.join(' vs ')} \u2192 каскад частично активен`;
+      return `Конкуренция: ${parts.join(' vs ')} → каскад частично активен`;
     }
     return null;
   }, [state, activeDrugs]);
@@ -152,7 +152,7 @@ export default function CascadeOverlay({
         padding: '12px 24px', borderRadius: 12, display: 'inline-block', margin: '0 auto', marginBottom: 16,
       }}>
         <div className="s1title" style={{ marginBottom: 0 }}>
-          Клеточный уровень: {'\u03C3'}1-каскад нейропластичности
+          Клеточный уровень: {'σ'}1-каскад нейропластичности
         </div>
       </div>
       {/* 13b: removed statusText from header zone */}
@@ -169,7 +169,7 @@ export default function CascadeOverlay({
           fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em',
           color: 'rgba(255,255,255,0.38)', marginBottom: 8,
         }}>
-          БАЛАНС \u03C31
+          БАЛАНС σ1
         </div>
 
         {/* Value */}
@@ -250,9 +250,9 @@ export default function CascadeOverlay({
             Состояния
           </div>
           {[
-            { c: '#22c55e', l: '\u03C31-агонист (активен)' },
-            { c: '#ef4444', l: '\u03C31-инверсный (подавлен)' },
-            { c: '#f59e0b', l: '\u03C31-антагонист (блокирован)' },
+            { c: '#22c55e', l: 'σ1-агонист (активен)' },
+            { c: '#ef4444', l: 'σ1-инверсный (подавлен)' },
+            { c: '#f59e0b', l: 'σ1-антагонист (блокирован)' },
             { c: '#475569', l: 'Неактивен' },
           ].map(item => (
             <div key={item.l} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3, fontSize: 11, color: 'var(--text-secondary)' }}>
@@ -371,10 +371,10 @@ export default function CascadeOverlay({
 
         {/* Zone labels */}
         <text x="400" y="370" fill="#475569" fontSize="8" textAnchor="middle" opacity="0.5">
-          {'--- \u042F\u0414\u0420\u041E (\u0442\u0440\u0430\u043D\u0441\u043A\u0440\u0438\u043F\u0446\u0438\u044F) ---'}
+          {'--- ЯДРО (транскрипция) ---'}
         </text>
         <text x="400" y="15" fill="#475569" fontSize="8" textAnchor="middle" opacity="0.5">
-          {'--- \u042D\u0420 \u043C\u0435\u043C\u0431\u0440\u0430\u043D\u0430 (MAM) ---'}
+          {'--- ЭР мембрана (MAM) ---'}
         </text>
         <text x="700" y="250" fill="#475569" fontSize="8" textAnchor="middle" opacity="0.4">
           Постсинапс

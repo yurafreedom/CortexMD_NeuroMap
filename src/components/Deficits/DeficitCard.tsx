@@ -70,7 +70,7 @@ export default function DeficitCard({
             fontFamily: 'var(--font-mono)',
           }}
         >
-          {nt}{'\u2193'}
+          {nt}{'↓'}
         </span>
       );
     });
@@ -127,7 +127,7 @@ export default function DeficitCard({
       {/* Blocking warnings */}
       {blockers.length > 0 && (
         <div className="dc-block">
-          {'\u26A0'} {t('dashboard.blocks')}:{' '}
+          {'⚠'} {t('dashboard.blocks')}:{' '}
           {blockers.map((id) => DRUGS[id]?.s || id).join(', ')}
         </div>
       )}
@@ -182,7 +182,7 @@ export default function DeficitCard({
               )}
               {c.blocking.length > 0 && (
                 <div className="dc-need-block">
-                  {'\u26A0'} {t('dashboard.blocks')}:{' '}
+                  {'⚠'} {t('dashboard.blocks')}:{' '}
                   {c.blocking.map((id) => DRUGS[id]?.s || id).join(', ')}
                 </div>
               )}

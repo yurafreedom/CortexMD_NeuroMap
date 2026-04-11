@@ -32,11 +32,11 @@ export default function ConflictBox({ activeDrugs, onConflictHover, onConflictLe
     for (const rule of ruleConflicts) {
       const item: ConflictItem = { text: rule.description, zones: rule.zones };
       if (rule.severity === 'critical') {
-        item.text = `<span style="color:#ef4444">\u26D4 ${rule.title}: ${rule.description}</span>`;
+        item.text = `<span style="color:#ef4444">⛔ ${rule.title}: ${rule.description}</span>`;
         item.isHtml = true;
         cr.push(item);
       } else if (rule.severity === 'serious') {
-        item.text = `\u26A0\uFE0F ${rule.title}: ${rule.description}`;
+        item.text = `⚠️ ${rule.title}: ${rule.description}`;
         w.push(item);
       } else {
         item.text = `${rule.title}: ${rule.description}`;
@@ -48,17 +48,17 @@ export default function ConflictBox({ activeDrugs, onConflictHover, onConflictLe
     const s1inv = Object.keys(AD).some((d) => DRUGS[d]?.s1t === 'inv');
     const s1ag = Object.keys(AD).filter((d) => DRUGS[d]?.s1t === 'ag');
     if (s1inv && s1ag.length > 0) {
-      w.push({ text: '\u26A1 ' + t('sigma1Conflict'), zones: ['dlPFC', 'hippo', 'amygdala'] });
+      w.push({ text: '⚡ ' + t('sigma1Conflict'), zones: ['dlPFC', 'hippo', 'amygdala'] });
     }
     if (AD.progesterone !== undefined && s1ag.length > 0) {
-      w.push({ text: '\u26A0\uFE0F ' + t('progesteroneSigma1'), zones: ['dlPFC', 'hippo'] });
+      w.push({ text: '⚠️ ' + t('progesteroneSigma1'), zones: ['dlPFC', 'hippo'] });
     }
     const netDrugs = [
       'bupropion', 'duloxetine', 'atomoxetine', 'desipramine', 'nortriptyline',
       'protriptyline', 'reboxetine', 'milnacipran', 'levomilnacipran', 'venlafaxine',
     ].filter((d) => AD[d] !== undefined);
     if (netDrugs.length >= 3) {
-      w.push({ text: `\u26A0\uFE0F ${t('tripleNet', { count: netDrugs.length })}`, zones: ['lc', 'dlPFC', 'amygdala'] });
+      w.push({ text: `⚠️ ${t('tripleNet', { count: netDrugs.length })}`, zones: ['lc', 'dlPFC', 'amygdala'] });
     }
     const cy = cypVal(AD);
     if (cy > 0) {
@@ -68,11 +68,11 @@ export default function ConflictBox({ activeDrugs, onConflictHover, onConflictLe
         const d = DRUGS[id];
         if (d && d.cyp2d6s) {
           const r = realD(id, AD);
-          if (r !== AD[id]) cyps.push(`${d.s}\u2192${r.toFixed(0)}${d.u}`);
+          if (r !== AD[id]) cyps.push(`${d.s}→${r.toFixed(0)}${d.u}`);
         }
       });
-      if (AD.atomoxetine) cyps.push(`АТОМ\u2192${realD('atomoxetine', AD).toFixed(0)}мг`);
-      if (AD.vortioxetine) cyps.push(`ВОРТ\u2192${realD('vortioxetine', AD).toFixed(0)}мг`);
+      if (AD.atomoxetine) cyps.push(`АТОМ→${realD('atomoxetine', AD).toFixed(0)}мг`);
+      if (AD.vortioxetine) cyps.push(`ВОРТ→${realD('vortioxetine', AD).toFixed(0)}мг`);
       if (cyps.length) w.push({ text: cs + cyps.join(', '), zones: ['dlPFC', 'nac'] });
     }
 

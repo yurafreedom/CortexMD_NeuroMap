@@ -110,10 +110,10 @@ export default function RightPanel({
                   <div className="panel-section-title">{t('dashboard.activeEffects')}</div>
                   {zoneEffects.map((e, i) => {
                     const isBad = !!e.data.bad;
-                    let arrow = isBad ? '\u2193' : '\u2191';
+                    let arrow = isBad ? '↓' : '↑';
                     let cls = isBad ? 'down' : 'up';
                     if (e.data.i <= 1) {
-                      arrow = '\u2192';
+                      arrow = '→';
                       cls = 'neutral';
                     }
                     return (
@@ -149,7 +149,7 @@ export default function RightPanel({
 
               {hasS1 && (
                 <div className="cvbtn" onClick={onShowSigma1}>
-                  {'\u03C3'}1 {t('dashboard.sigma1Cellular')} {'\u2192'}
+                  {'σ'}1 {t('dashboard.sigma1Cellular')} {'→'}
                 </div>
               )}
 

@@ -75,7 +75,7 @@ export default function ZonePopup({
         {effects.length > 0 ? (
           effects.map((e, i) => {
             const isBad = !!e.zoneData.bad;
-            const arrow = isBad ? '\u2193' : '\u2191';
+            const arrow = isBad ? '↓' : '↑';
             const cls = isBad ? 'down' : 'up';
             return (
               <div key={i} className="popup-effect">

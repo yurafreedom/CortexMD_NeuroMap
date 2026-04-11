@@ -11,25 +11,25 @@ export interface FallbackMessage {
 function buildFallback(type: FallbackType, details?: unknown): FallbackMessage {
   const map: Record<FallbackType, Omit<FallbackMessage, 'type' | 'details'>> = {
     low_balance: {
-      title: '\uD83D\uDCB3 Закончился лимит',
+      title: '💳 Закончился лимит',
       text: 'Баланс кабинета исчерпан. Пополни баланс чтобы продолжить пользоваться AI-ассистентом.',
       cta: { label: 'Пополнить баланс', action: 'openBilling' },
     },
     rate_limit: {
-      title: '\u23F1 Слишком много запросов',
+      title: '⏱ Слишком много запросов',
       text: 'Подожди 30 секунд и попробуй ещё раз.',
     },
     server_error: {
-      title: '\u26A0\uFE0F Временный сбой на стороне Anthropic',
+      title: '⚠️ Временный сбой на стороне Anthropic',
       text: 'Это не у тебя. Попробуй через минуту, или сообщи в поддержку.',
       cta: { label: 'Сообщить в поддержку', action: 'sendReport' },
     },
     network: {
-      title: '\uD83D\uDCE1 Нет связи',
+      title: '📡 Нет связи',
       text: 'Проверь интернет.',
     },
     unknown: {
-      title: '\u274C Что-то пошло не так',
+      title: '❌ Что-то пошло не так',
       text: 'Неизвестная ошибка. Можешь отправить отчёт — я разберусь.',
       cta: { label: 'Отправить отчёт', action: 'sendReport' },
     },
