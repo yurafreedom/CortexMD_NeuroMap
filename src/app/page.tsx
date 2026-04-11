@@ -3,6 +3,7 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { BrainCanvas } from '@/components/Brain3D';
+import CanvasControls from '@/components/Brain3D/CanvasControls';
 import LeftPanel from '@/components/Panels/LeftPanel';
 import RightPanel from '@/components/Panels/RightPanel';
 import BottomBar from '@/components/Panels/BottomBar';
@@ -218,6 +219,10 @@ export default function Home() {
             leftPanelWidth={LEFT_PANEL_WIDTH}
             rightPanelWidth={0}
           />
+          <CanvasControls
+            opacity={Math.round(brainOpacity * 100)}
+            onOpacityChange={(v) => setBrainOpacity(v / 100)}
+          />
         </div>
       </div>
 
@@ -246,7 +251,6 @@ export default function Home() {
           onRemoveDrug={removeDrug}
           onUpdateDose={updateDose}
           onApplyPreset={applyPreset}
-          onOpacityChange={setBrainOpacity}
         />
       </div>
 

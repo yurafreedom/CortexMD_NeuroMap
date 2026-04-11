@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import DrugCatalog from '../Drugs/DrugCatalog';
 import type { ActiveDrugs } from '../../lib/pharmacology';
@@ -11,32 +11,6 @@ interface LeftPanelProps {
   onRemoveDrug: (id: string) => void;
   onUpdateDose: (id: string, dose: number) => void;
   onApplyPreset: (drugs: ActiveDrugs) => void;
-  onOpacityChange: (value: number) => void;
-}
-
-function Section({
-  title,
-  defaultOpen = false,
-  children,
-}: {
-  title: string;
-  defaultOpen?: boolean;
-  children: React.ReactNode;
-}) {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <div className="section">
-      <div className="sh" onClick={() => setOpen(!open)}>
-        <span className="st">{title}</span>
-        <span className={`sa${open ? ' open' : ''}`}>
-          <span /><span /><span />
-        </span>
-      </div>
-      <div className={`sb${open ? ' open' : ''}`} style={open ? { display: 'block' } : undefined}>
-        {children}
-      </div>
-    </div>
-  );
 }
 
 export default function LeftPanel({
@@ -45,17 +19,9 @@ export default function LeftPanel({
   onRemoveDrug,
   onUpdateDose,
   onApplyPreset,
-  onOpacityChange,
 }: LeftPanelProps) {
   const t = useTranslations();
   const [catalogOpen, setCatalogOpen] = useState(false);
-
-  const handleOpacity = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      onOpacityChange(parseInt(e.target.value, 10));
-    },
-    [onOpacityChange],
-  );
 
   const schemeCount = Object.keys(activeDrugs).length;
 
@@ -89,21 +55,6 @@ export default function LeftPanel({
           onClose={() => setCatalogOpen(false)}
         />
       )}
-
-      {/* Visualization */}
-      <Section title={t('dashboard.visualization')}>
-        <div style={{ fontSize: '9px', color: '#94a3b8', marginBottom: '3px' }}>
-          {t('dashboard.cortexOpacity')}
-        </div>
-        <input
-          type="range"
-          style={{ width: '100%', accentColor: '#64748b' }}
-          min={0}
-          max={100}
-          defaultValue={18}
-          onChange={handleOpacity}
-        />
-      </Section>
 
       <div
         style={{
