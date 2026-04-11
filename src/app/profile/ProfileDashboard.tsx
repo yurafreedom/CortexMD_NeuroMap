@@ -10,6 +10,7 @@ import {
   FlaskConical,
   History,
   Upload,
+  Activity,
 } from 'lucide-react';
 import GeneticProfileForm from './GeneticProfileForm';
 import SymptomScaleForm from './SymptomScaleForm';
@@ -17,6 +18,7 @@ import LabResultsForm from './LabResultsForm';
 import TreatmentHistoryForm from './TreatmentHistoryForm';
 import DataUploadPanel from './DataUploadPanel';
 import LabInsightsPanel from './LabInsightsPanel';
+import WhoopCard from '@/components/Whoop/WhoopCard';
 
 export interface ProfileUser {
   id: string;
@@ -26,13 +28,14 @@ export interface ProfileUser {
   role: 'patient' | 'doctor' | null;
 }
 
-type TabKey = 'genetics' | 'symptoms' | 'labs' | 'treatment' | 'upload';
+type TabKey = 'genetics' | 'symptoms' | 'labs' | 'treatment' | 'whoop' | 'upload';
 
 const TABS: { key: TabKey; icon: React.ReactNode; labelKey: string }[] = [
   { key: 'genetics', icon: <Dna size={16} />, labelKey: 'genetics' },
   { key: 'symptoms', icon: <ClipboardList size={16} />, labelKey: 'symptoms' },
   { key: 'labs', icon: <FlaskConical size={16} />, labelKey: 'labs' },
   { key: 'treatment', icon: <History size={16} />, labelKey: 'treatment' },
+  { key: 'whoop', icon: <Activity size={16} />, labelKey: 'whoop' },
   { key: 'upload', icon: <Upload size={16} />, labelKey: 'upload' },
 ];
 
@@ -248,6 +251,9 @@ export default function ProfileDashboard({
           )}
           {activeTab === 'treatment' && (
             <TreatmentHistoryForm existingHistory={treatmentHistory} />
+          )}
+          {activeTab === 'whoop' && (
+            <WhoopCard />
           )}
           {activeTab === 'upload' && (
             <DataUploadPanel />
