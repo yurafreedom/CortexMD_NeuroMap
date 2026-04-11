@@ -9,6 +9,7 @@ import type { Preset } from '../../data/presets';
 import type { ActiveDrugs } from '../../lib/pharmacology';
 import { realD } from '../../lib/pharmacology';
 import { Z } from '@/styles/zIndex';
+import PresetComparisonModal from '../Presets/PresetComparisonModal';
 
 interface DrugCatalogProps {
   activeDrugs: ActiveDrugs;
@@ -40,6 +41,7 @@ export default function DrugCatalog({
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [selectedForCompare, setSelectedForCompare] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState<string | null>(null);
+  const [comparisonOpen, setComparisonOpen] = useState(false);
 
   // Load presets from API
   useEffect(() => {
@@ -703,6 +705,9 @@ export default function DrugCatalog({
               {presets.length >= 2 && (
                 <button
                   disabled={selectedForCompare.size !== 2}
+                  onClick={() => {
+                    if (selectedForCompare.size === 2) setComparisonOpen(true);
+                  }}
                   style={{
                     width: '100%',
                     marginTop: 10,
@@ -721,6 +726,21 @@ export default function DrugCatalog({
                   {t('comparePresets')} ({selectedForCompare.size})
                 </button>
               )}
+
+              {/* Comparison modal */}
+              {comparisonOpen && selectedForCompare.size === 2 && (() => {
+                const ids = [...selectedForCompare];
+                const pA = presets.find((p) => p.id === ids[0]);
+                const pB = presets.find((p) => p.id === ids[1]);
+                if (!pA || !pB) return null;
+                return (
+                  <PresetComparisonModal
+                    presetA={{ id: pA.id, name: pA.name, drugs: pA.drugs as ActiveDrugs }}
+                    presetB={{ id: pB.id, name: pB.name, drugs: pB.drugs as ActiveDrugs }}
+                    onClose={() => setComparisonOpen(false)}
+                  />
+                );
+              })()}
             </div>
           </div>
 
