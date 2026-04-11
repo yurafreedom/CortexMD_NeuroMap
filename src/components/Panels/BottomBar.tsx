@@ -9,12 +9,15 @@ import { calculateSigma1Balance } from '../../lib/indicators/sigma1';
 import { calculateGlutamateBalance } from '../../lib/indicators/glutamate';
 import { CONDITIONAL_INDICATORS, calculateACBScore } from '../../lib/indicators/conditional';
 import type { ActiveDrug } from '../../lib/indicators/balance';
+import DeficitsButton from '../BrainDeficits/DeficitsButton';
 
 export type IndicatorKey = 'da' | 'na' | '5ht' | 'glu' | 's1' | 'cyp';
 
 interface BottomBarProps {
   activeDrugs: ActiveDrugs;
   onIndicatorClick?: (key: IndicatorKey) => void;
+  deficitCount?: number;
+  onDeficitsClick?: () => void;
 }
 
 /** Convert legacy ActiveDrugs (id→dose) to ActiveDrug[] for v2 indicators */
@@ -39,7 +42,7 @@ interface BarItem {
   acbScore?: number;
 }
 
-export default function BottomBar({ activeDrugs, onIndicatorClick }: BottomBarProps) {
+export default function BottomBar({ activeDrugs, onIndicatorClick, deficitCount = 0, onDeficitsClick }: BottomBarProps) {
   const t = useTranslations('neurotransmitters');
   const hasActive = Object.keys(activeDrugs).length > 0;
 
@@ -168,6 +171,11 @@ export default function BottomBar({ activeDrugs, onIndicatorClick }: BottomBarPr
             </div>
           </div>
         ))}
+
+        {/* Deficits button — between core and conditional */}
+        {onDeficitsClick && (
+          <DeficitsButton onClick={onDeficitsClick} deficitCount={deficitCount} />
+        )}
 
         {/* Divider + conditional indicators */}
         {conditionalData.length > 0 && (

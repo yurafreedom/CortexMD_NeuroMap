@@ -105,6 +105,8 @@
     "presetSaved": "Saved",
     "presetDeleted": "Deleted",
     "drugs": "drugs",
+    "deficitsPlaceholder": "Add drugs to the scheme to see deficits",
+    "openSchemeSelection": "Open scheme selection",
     "cortexOpacity": "Cortex opacity",
     "items": "items",
     "realDose": "actual ~",

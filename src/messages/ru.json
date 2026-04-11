@@ -105,6 +105,8 @@
     "presetSaved": "Сохранено",
     "presetDeleted": "Удалено",
     "drugs": "препаратов",
+    "deficitsPlaceholder": "Добавьте препараты в схему чтобы увидеть дефициты",
+    "openSchemeSelection": "Открыть выбор схемы",
     "cortexOpacity": "Прозрачность коры",
     "items": "шт",
     "realDose": "реально ~",

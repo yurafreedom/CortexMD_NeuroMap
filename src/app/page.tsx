@@ -17,6 +17,7 @@ import ChatPanel from '@/components/Chat/ChatPanel';
 import Topbar from '@/components/Header/Topbar';
 import { useScheme } from '@/hooks/useScheme';
 import { useDeficits } from '@/hooks/useDeficits';
+import DeficitsModal from '@/components/BrainDeficits/DeficitsModal';
 import { Z } from '@/styles/zIndex';
 
 const LEFT_PANEL_WIDTH = 280;
@@ -51,6 +52,7 @@ export default function Home() {
   } | null>(null);
   const [brainOpacity, setBrainOpacity] = useState(0.15);
   const [chatOpen, setChatOpen] = useState(false);
+  const [deficitsModalOpen, setDeficitsModalOpen] = useState(false);
   const [conflictZones, setConflictZones] = useState<string[]>([]);
   const [tooltip, setTooltip] = useState<{
     text: string;
@@ -265,7 +267,25 @@ export default function Home() {
       </div>
 
       {/* Bottom Bar — glass pill */}
-      <BottomBar activeDrugs={scheme} onIndicatorClick={handleIndicatorClick} />
+      <BottomBar
+        activeDrugs={scheme}
+        onIndicatorClick={handleIndicatorClick}
+        deficitCount={deficits.length}
+        onDeficitsClick={() => setDeficitsModalOpen(true)}
+      />
+
+      {/* Brain Deficits Modal */}
+      <DeficitsModal
+        isOpen={deficitsModalOpen}
+        onClose={() => setDeficitsModalOpen(false)}
+        deficits={deficits}
+        activeDrugs={scheme}
+        selectedDeficit={selectedDeficit}
+        onSelectDeficit={selectDeficit}
+        onDeficitStatusChange={changeStatus}
+        onDeficitDelete={deleteDeficit}
+        onZoneClick={handleZoneClickFromPanel}
+      />
 
       {/* Sigma-1 Cascade Overlay */}
       <CascadeOverlay
