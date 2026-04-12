@@ -6,11 +6,13 @@ import { DRUGS } from '../../data/drugs';
 import { cypVal, realD } from '../../lib/pharmacology';
 import { detectConflicts } from '../../data/conflictRules';
 import type { ActiveDrugs } from '../../lib/pharmacology';
+import WarningCard, { type WarningSeverity } from '../Warnings/WarningCard';
 
 interface ConflictItem {
-  text: string;
+  severity: WarningSeverity;
+  title: string;
+  description: string;
   zones: string[];
-  isHtml?: boolean;
 }
 
 interface ConflictBoxProps {
@@ -27,42 +29,59 @@ export default function ConflictBox({ activeDrugs, onConflictHover, onConflictLe
     const w: ConflictItem[] = [];
     const AD = activeDrugs;
 
-    // Use rule-based detection for conflicts with zone data
+    // Rule-based conflicts
     const ruleConflicts = detectConflicts(AD);
     for (const rule of ruleConflicts) {
-      const item: ConflictItem = { text: rule.description, zones: rule.zones };
       if (rule.severity === 'critical') {
-        item.text = `<span style="color:#ef4444">⛔ ${rule.title}: ${rule.description}</span>`;
-        item.isHtml = true;
-        cr.push(item);
-      } else if (rule.severity === 'serious') {
-        item.text = `⚠️ ${rule.title}: ${rule.description}`;
-        w.push(item);
+        cr.push({
+          severity: 'critical',
+          title: rule.title,
+          description: rule.description,
+          zones: rule.zones,
+        });
       } else {
-        item.text = `${rule.title}: ${rule.description}`;
-        w.push(item);
+        w.push({
+          severity: 'warning',
+          title: rule.title,
+          description: rule.description,
+          zones: rule.zones,
+        });
       }
     }
 
-    // Inline-only checks (sigma1, CYP, NET, progesterone) — not in conflictRules.ts
+    // Inline-only checks (sigma1, CYP, NET, progesterone)
     const s1inv = Object.keys(AD).some((d) => DRUGS[d]?.s1t === 'inv');
     const s1ag = Object.keys(AD).filter((d) => DRUGS[d]?.s1t === 'ag');
     if (s1inv && s1ag.length > 0) {
-      w.push({ text: '⚡ ' + t('sigma1Conflict'), zones: ['dlPFC', 'hippo', 'amygdala'] });
+      w.push({
+        severity: 'warning',
+        title: 'σ1',
+        description: t('sigma1Conflict'),
+        zones: ['dlPFC', 'hippo', 'amygdala'],
+      });
     }
     if (AD.progesterone !== undefined && s1ag.length > 0) {
-      w.push({ text: '⚠️ ' + t('progesteroneSigma1'), zones: ['dlPFC', 'hippo'] });
+      w.push({
+        severity: 'warning',
+        title: 'σ1',
+        description: t('progesteroneSigma1'),
+        zones: ['dlPFC', 'hippo'],
+      });
     }
     const netDrugs = [
       'bupropion', 'duloxetine', 'atomoxetine', 'desipramine', 'nortriptyline',
       'protriptyline', 'reboxetine', 'milnacipran', 'levomilnacipran', 'venlafaxine',
     ].filter((d) => AD[d] !== undefined);
     if (netDrugs.length >= 3) {
-      w.push({ text: `⚠️ ${t('tripleNet', { count: netDrugs.length })}`, zones: ['lc', 'dlPFC', 'amygdala'] });
+      w.push({
+        severity: 'warning',
+        title: 'NET',
+        description: t('tripleNet', { count: netDrugs.length }),
+        zones: ['lc', 'dlPFC', 'amygdala'],
+      });
     }
     const cy = cypVal(AD);
     if (cy > 0) {
-      let cs = t('cyp2d6Inhibition', { percent: cy });
       const cyps: string[] = [];
       Object.keys(AD).forEach((id) => {
         const d = DRUGS[id];
@@ -73,7 +92,14 @@ export default function ConflictBox({ activeDrugs, onConflictHover, onConflictLe
       });
       if (AD.atomoxetine) cyps.push(`АТОМ→${realD('atomoxetine', AD).toFixed(0)}мг`);
       if (AD.vortioxetine) cyps.push(`ВОРТ→${realD('vortioxetine', AD).toFixed(0)}мг`);
-      if (cyps.length) w.push({ text: cs + cyps.join(', '), zones: ['dlPFC', 'nac'] });
+      if (cyps.length) {
+        w.push({
+          severity: 'warning',
+          title: 'CYP2D6',
+          description: `${t('cyp2d6Inhibition', { percent: cy })} ${cyps.join(', ')}`,
+          zones: ['dlPFC', 'nac'],
+        });
+      }
     }
 
     return { critical: cr, warnings: w };
@@ -90,40 +116,63 @@ export default function ConflictBox({ activeDrugs, onConflictHover, onConflictLe
   if (critical.length === 0 && warnings.length === 0) return null;
 
   return (
-    <div id="cfb">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       {critical.length > 0 && (
-        <div className="cb">
-          <div className="cb-inner">
-            <div className="cbt" style={{ color: '#ef4444' }}>
-              {t('criticalTitle')} ({critical.length})
-            </div>
+        <div>
+          <div
+            style={{
+              fontSize: 9,
+              fontWeight: 700,
+              color: '#ef4444',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              fontFamily: 'var(--font-mono)',
+              marginBottom: 4,
+              paddingLeft: 2,
+            }}
+          >
+            {t('criticalTitle')} ({critical.length})
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {critical.map((item, i) => (
-              <div
-                key={i}
-                className="ci ci-hoverable"
-                style={{ cursor: 'pointer' }}
+              <WarningCard
+                key={`cr-${i}`}
+                severity="critical"
+                title={item.title}
+                description={item.description}
                 onMouseEnter={() => handleEnter(item.zones)}
                 onMouseLeave={handleLeave}
-                {...(item.isHtml ? { dangerouslySetInnerHTML: { __html: item.text } } : { children: item.text })}
               />
             ))}
           </div>
         </div>
       )}
       {warnings.length > 0 && (
-        <div className="cb" style={{ background: 'linear-gradient(160deg,rgba(245,158,11,0.3),rgba(245,158,11,0.05),rgba(245,158,11,0.18))' }}>
-          <div className="cb-inner">
-            <div className="cbt">{t('warningsTitle')} ({warnings.length})</div>
+        <div>
+          <div
+            style={{
+              fontSize: 9,
+              fontWeight: 700,
+              color: '#f59e0b',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              fontFamily: 'var(--font-mono)',
+              marginBottom: 4,
+              paddingLeft: 2,
+            }}
+          >
+            {t('warningsTitle')} ({warnings.length})
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {warnings.map((item, i) => (
-              <div
-                key={i}
-                className="ci ci-hoverable"
-                style={{ cursor: 'pointer' }}
+              <WarningCard
+                key={`w-${i}`}
+                severity="warning"
+                title={item.title}
+                description={item.description}
                 onMouseEnter={() => handleEnter(item.zones)}
                 onMouseLeave={handleLeave}
-              >
-                {item.text}
-              </div>
+              />
             ))}
           </div>
         </div>
