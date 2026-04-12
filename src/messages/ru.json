@@ -85,6 +85,8 @@
   },
   "dashboard": {
     "subtitle": "Нейрофармакологическая карта v4",
+    "collapsePanel": "Свернуть панель",
+    "expandPanel": "Развернуть панель",
     "activeScheme": "Активная схема",
     "addFromCatalog": "Добавьте препараты из каталога ниже",
     "drugCatalog": "Выбор схемы",

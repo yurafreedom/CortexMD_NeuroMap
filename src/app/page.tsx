@@ -21,7 +21,8 @@ import { useDeficits } from '@/hooks/useDeficits';
 import DeficitsModal from '@/components/BrainDeficits/DeficitsModal';
 import { Z } from '@/styles/zIndex';
 
-const LEFT_PANEL_WIDTH = 280;
+const LEFT_PANEL_WIDTH_EXPANDED = 280;
+const LEFT_PANEL_WIDTH_COLLAPSED = 56;
 
 export default function Home() {
   const t = useTranslations('dashboard');
@@ -52,6 +53,8 @@ export default function Home() {
     zoneId: string;
   } | null>(null);
   const [brainOpacity, setBrainOpacity] = useState(0.15);
+  const [leftCollapsed, setLeftCollapsed] = useState(false);
+  const leftPanelWidth = leftCollapsed ? LEFT_PANEL_WIDTH_COLLAPSED : LEFT_PANEL_WIDTH_EXPANDED;
   const [chatOpen, setChatOpen] = useState(false);
   const [deficitsModalOpen, setDeficitsModalOpen] = useState(false);
   const [conflictZones, setConflictZones] = useState<string[]>([]);
@@ -202,9 +205,10 @@ export default function Home() {
           style={{
             position: 'absolute',
             top: 0,
-            left: LEFT_PANEL_WIDTH,
+            left: leftPanelWidth,
             right: 0,
             bottom: 0,
+            transition: 'left 220ms ease',
           }}
         >
           <BrainCanvas
@@ -216,7 +220,7 @@ export default function Home() {
             onRegionHover={handleRegionHover}
             opacity={brainOpacity}
             rightPanelOpen={false}
-            leftPanelWidth={LEFT_PANEL_WIDTH}
+            leftPanelWidth={leftPanelWidth}
             rightPanelWidth={0}
           />
           <CanvasControls
@@ -243,7 +247,11 @@ export default function Home() {
       {/* Left Panel */}
       <div
         className="absolute top-0 left-0 h-full"
-        style={{ width: LEFT_PANEL_WIDTH, zIndex: Z.leftPanel }}
+        style={{
+          width: leftPanelWidth,
+          zIndex: Z.leftPanel,
+          transition: 'width 220ms ease',
+        }}
       >
         <LeftPanel
           activeDrugs={scheme}
@@ -251,6 +259,8 @@ export default function Home() {
           onRemoveDrug={removeDrug}
           onUpdateDose={updateDose}
           onApplyPreset={applyPreset}
+          collapsed={leftCollapsed}
+          onToggleCollapsed={() => setLeftCollapsed((v) => !v)}
         />
       </div>
 

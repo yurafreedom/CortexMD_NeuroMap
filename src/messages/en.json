@@ -85,6 +85,8 @@
   },
   "dashboard": {
     "subtitle": "Neuropharmacological map v4",
+    "collapsePanel": "Collapse panel",
+    "expandPanel": "Expand panel",
     "activeScheme": "Active Scheme",
     "addFromCatalog": "Add drugs from the catalog below",
     "drugCatalog": "Scheme Selection",
