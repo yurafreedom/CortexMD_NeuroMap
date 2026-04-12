@@ -220,6 +220,18 @@
     "treatmentDesc": "Past and current medications, doses, durations, and response outcomes.",
     "uploadDesc": "Upload Apple Health XML, PDF lab reports, or other clinical documents."
   },
+  "deleteData": {
+    "dangerZone": "Danger Zone",
+    "description": "Permanently delete all your data: schemes, presets, deficits, lab results, symptom scores, genetics, treatment history, and integrations. This cannot be undone.",
+    "deleteAllButton": "Delete all data",
+    "confirmTitle": "Delete all data?",
+    "confirmBody": "This will permanently remove every record tied to your account across all tables. Your account itself will stay, but all content will be wiped.",
+    "typeToConfirm": "Type {phrase} to confirm",
+    "cancel": "Cancel",
+    "confirmDelete": "Delete everything",
+    "deleting": "Deleting...",
+    "errorGeneric": "Failed to delete data. Please try again."
+  },
   "geneticForm": {
     "title": "Genetic Profile",
     "description": "CYP enzymes, MTHFR, COMT, BDNF, 5-HTTLPR, HLA polymorphisms that affect drug metabolism and response.",

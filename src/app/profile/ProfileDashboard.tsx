@@ -19,6 +19,7 @@ import TreatmentHistoryForm from './TreatmentHistoryForm';
 import DataUploadPanel from './DataUploadPanel';
 import LabInsightsPanel from './LabInsightsPanel';
 import WhoopCard from '@/components/Whoop/WhoopCard';
+import DeleteDataZone from '@/components/Profile/DeleteDataZone';
 
 export interface ProfileUser {
   id: string;
@@ -223,6 +224,9 @@ export default function ProfileDashboard({
                 <SummaryRow label={t('symptomAssessments')} value={String(symptomScores.length)} />
                 <SummaryRow label={t('treatmentEntries')} value={String(treatmentHistory.length)} />
               </div>
+            </div>
+            <div style={{ marginTop: 12 }}>
+              <DeleteDataZone />
             </div>
           </div>
         </div>
